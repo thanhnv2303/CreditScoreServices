@@ -1,0 +1,17 @@
+scipy==1.5.4
+pyetherchain==0.3.2
+eth-abi==2.0.0
+sqlalchemy==1.4.15
+python-dateutil==2.7.0
+eth-utils==1.9.5
+web3==5.19.0
+pymongo==3.11.4
+py2neo==2021.1.1
+pycoingecko==2.0.0
+ethereum-dasm==0.1.4
+click==8.0.1
+numpy==1.19.0
+nest-asyncio==1.5.1
+zmq
+aiohttp==3.7.4.post0
+aiohttp-cors==0.7.0
