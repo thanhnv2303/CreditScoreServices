@@ -6,6 +6,7 @@ from config.constant import EthKnowledgeGraphStreamerAdapterConstant
 from data_aggregation.database.intermediary_database import IntermediaryDatabase
 from data_aggregation.database.klg_database import KlgDatabase
 from data_aggregation.jobs.aggregation_data import aggregate
+from data_aggregation.services.credit_score_service_v_0_3_0 import CreditScoreServiceV030
 from exporter.console_item_exporter import ConsoleItemExporter
 from services.eth_item_id_calculator import EthItemIdCalculator
 from services.eth_item_timestamp_calculator import EthItemTimestampCalculator
@@ -38,7 +39,7 @@ class KLGLendingStreamerAdapter:
         self.tokens_filter_file = cur_path + tokens_filter_file
         self.v_tokens_filter_file = cur_path + v_tokens_filter_file
 
-        self.ethTokenService = None
+        self.credit_score_service = CreditScoreServiceV030(intermediary_database, list_token_filter, token_info)
         self.list_token_filter = list_token_filter
         self.token_info = token_info
 
@@ -47,7 +48,7 @@ class KLGLendingStreamerAdapter:
 
     def get_current_block_number(self):
         """
-        xác định điểm đồng bộ hiện tại
+        xác định điểm đồng bộ hiện tại trong cơ sở dữ liệu trung gian
         :return:
         """
         try:
@@ -82,10 +83,9 @@ class KLGLendingStreamerAdapter:
                 smart_contracts.append(token.lower())
 
         aggregate(start_block, end_block, self.max_workers, self.batch_size,
-                  self.item_exporter,
                   event_abi_dir=EthKnowledgeGraphStreamerAdapterConstant.event_abi_dir_default,
                   smart_contracts=smart_contracts,
-                  ethTokenService=self.ethTokenService,
+                  credit_score_service=self.credit_score_service,
                   intermediary_database=self.intermediary_database,
                   klg_database=self.klg_database
                   )

@@ -22,6 +22,7 @@
 # import asyncio
 import logging
 
+from calculate_credit_score.services.credit_score_service_v_0_3_0 import CreditScoreServiceV030
 from config.constant import LoggerConstant, TransactionConstant, WalletConstant, EventConstant
 from config.data_aggregation_constant import MemoryStorageKeyConstant
 from data_aggregation.database.intermediary_database import IntermediaryDatabase
@@ -40,6 +41,7 @@ class AggregateEventJob(BaseJob):
             start_block,
             end_block,
             smart_contract,
+            credit_score_service=CreditScoreServiceV030(),
             batch_size=128,
             max_workers=8,
             intermediary_database=IntermediaryDatabase(),
@@ -53,6 +55,7 @@ class AggregateEventJob(BaseJob):
         self.end_block = end_block
         self.start_block = start_block
         self.smart_contract = smart_contract
+        self.credit_score_service = credit_score_service
 
     def _start(self):
         local_storage = MemoryStorage.getInstance()

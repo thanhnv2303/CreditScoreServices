@@ -27,6 +27,7 @@ from config.data_aggregation_constant import MemoryStorageKeyConstant
 from data_aggregation.database.intermediary_database import IntermediaryDatabase
 from data_aggregation.database.klg_database import KlgDatabase
 from data_aggregation.jobs.aggregate_event_job import AggregateEventJob
+from data_aggregation.services.credit_score_service_v_0_3_0 import CreditScoreServiceV030
 from database_common.memory_storage import MemoryStorage
 from executors.batch_work_executor import BatchWorkExecutor
 from jobs.base_job import BaseJob
@@ -41,6 +42,7 @@ class AggregateSmartContractJob(BaseJob):
             start_block,
             end_block,
             smart_contracts,
+            credit_score_service=CreditScoreServiceV030(),
             batch_size=128,
             max_workers=8,
             intermediary_database=IntermediaryDatabase(),
@@ -54,6 +56,7 @@ class AggregateSmartContractJob(BaseJob):
         self.end_block = end_block
         self.start_block = start_block
         self.smart_contracts = smart_contracts
+        self.credit_score_service = credit_score_service
 
     def _start(self):
         local_storage = MemoryStorage.getInstance()
@@ -72,7 +75,8 @@ class AggregateSmartContractJob(BaseJob):
     def _export_data_in_smart_contract_collection(self, smart_contract):
         job = AggregateEventJob(self.start_block,
                                 self.end_block,
-                                smart_contract=smart_contract,
+                                smart_contract,
+                                self.credit_score_service,
                                 batch_size=self.batch_size,
                                 max_workers=self.max_workers,
                                 intermediary_database=self.intermediary_database,
