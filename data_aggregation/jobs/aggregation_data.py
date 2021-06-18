@@ -4,8 +4,9 @@ from config.constant import EthKnowledgeGraphStreamerAdapterConstant
 from config.data_aggregation_constant import MemoryStorageKeyConstant
 from data_aggregation.database.intermediary_database import IntermediaryDatabase
 from data_aggregation.database.klg_database import KlgDatabase
-from data_aggregation.jobs.aggregate_event_job import AggregateEventJob
 from data_aggregation.jobs.aggregate_native_token_transfer_job import AggregateNativeTokenTransferJob
+from data_aggregation.jobs.aggregate_smart_contract_job import AggregateSmartContractJob
+from data_aggregation.jobs.aggregate_wallet_job import AggregateWalletJob
 from database_common.memory_storage import MemoryStorage
 
 logger = logging.getLogger('Aggregation data')
@@ -44,8 +45,8 @@ def aggregate(start_block, end_block, max_workers, batch_size,
     """
     job = AggregateNativeTokenTransferJob(start_block,
                                           end_block,
-                                          batch_size=128,
-                                          max_workers=8,
+                                          batch_size=batch_size,
+                                          max_workers=max_workers,
                                           intermediary_database=intermediary_database,
                                           klg_database=klg_database)
 
@@ -53,19 +54,23 @@ def aggregate(start_block, end_block, max_workers, batch_size,
     """
     Tổng hợp thông tin theo từng event của các smart contract
     """
-    for smart_contract in smart_contracts:
-        job = AggregateEventJob(start_block,
-                                end_block,
-                                smart_contract=smart_contract,
-                                batch_size=128,
-                                max_workers=8,
-                                intermediary_database=intermediary_database,
-                                klg_database=klg_database)
 
-        job.run()
+    job = AggregateSmartContractJob(start_block,
+                                    end_block,
+                                    smart_contracts=smart_contracts,
+                                    batch_size=batch_size,
+                                    max_workers=max_workers,
+                                    intermediary_database=intermediary_database,
+                                    klg_database=klg_database)
+
+    job.run()
     """
     Tổng hợp thông tin của các ví có thay đổi dữ liệu đến thời điểm hiện tại
     """
-    wallets_updated =  local_storage.get_element(key=MemoryStorageKeyConstant.update_wallet)
-
+    wallets_updated = local_storage.get_element(key=MemoryStorageKeyConstant.update_wallet)
+    job = AggregateWalletJob(wallets_updated,
+                             batch_size=batch_size,
+                             max_workers=max_workers,
+                             intermediary_database=intermediary_database,
+                             klg_database=klg_database)
     pass

@@ -66,9 +66,9 @@ class AggregateEventJob(BaseJob):
         )
 
     def _export_batch(self, block_number_batch):
-        self._export_data_in_smart_contract_collection(block_number_batch)
+        self._export_data_events(block_number_batch)
 
-    def _export_data_in_smart_contract_collection(self, block):
+    def _export_data_events(self, block):
         events = self.intermediary_database.get_transfer_native_token_tx_in_block(block)
 
         for event in events:
