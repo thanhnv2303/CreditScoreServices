@@ -74,7 +74,7 @@ class AggregateNativeTokenTransferJob(BaseJob):
         txs = self.intermediary_database.get_transfer_native_token_tx_in_block(block)
 
         for tx in txs:
-            related_wallets = tx.get(TransactionConstant.wallets)
+            related_wallets = tx.get(TransactionConstant.related_wallets)
             timestamp = tx.get(TransactionConstant.block_timestamp)
             timestamp_day = round_timestamp_to_date(timestamp)
             for wallet in related_wallets:

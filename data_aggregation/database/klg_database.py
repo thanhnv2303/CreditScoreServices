@@ -14,7 +14,7 @@ class KlgDatabase(object):
         bolt = f"bolt://{Neo4jConfig.HOST}:{Neo4jConfig.BOTH_PORT}"
         self._graph = Graph(bolt, auth=(Neo4jConfig.NEO4J_USERNAME, Neo4jConfig.NEO4J_PASSWORD))
 
-    def update_wallet_token(self,wallet_address, token_map={}, balance=0):
+    def update_wallet_token(self, wallet_address, token_map={}, balance=0):
         """
         cập nhật  trường
         Token:[map trong neo4j] ghi lại các loại token và số lượng từng loại có trong wallet.
@@ -24,7 +24,8 @@ class KlgDatabase(object):
         """
         pass
 
-    def update_wallet_token_deposit_and_borrow(self,wallet_address, token_deposit_map={}, token_borrow_map={}, deposit=0, borrow=0):
+    def update_wallet_token_deposit_and_borrow(self, wallet_address, token_deposit_map={}, token_borrow_map={},
+                                               deposit=0, borrow=0):
         """
         cập nhật các trường
 
@@ -130,7 +131,7 @@ class KlgDatabase(object):
         """
         return
 
-    def create_transfer_relationship(self, from_address,to_address,tx_id,timestamp,token,value):
+    def create_transfer_relationship(self, tx_id, timestamp, from_address, to_address, token, value):
         """
         Relationship này xảy ra giữa node:
         wallet -> wallet
@@ -148,5 +149,77 @@ class KlgDatabase(object):
         :param timestamp:
         :param token:
         :param value:
+        :return:
+        """
+
+    def create_deposit_relationship(self, tx_id, timestamp, from_address, to_address, token, value):
+        """
+        Relationship này xảy ra giữa node:
+        wallet -> token
+        Các thông số của Relationship
+        transactionID: đặc trưng của relationship
+        timestamp: thời điểm thực hiện deposit
+        fromWallet: address của wallet gửi tiền
+        toAddress: address của token
+        token: Token được deposit
+        value: số lượng token được deposit
+
+        :param from_address:
+        :param to_address:
+        :param tx_id:
+        :param timestamp:
+        :param token:
+        :param value:
+        :return:
+        """
+
+    def create_borrow_relationship(self, tx_id, timestamp, from_address, to_address, token, value):
+        """
+
+        :param from_address:
+        :param to_address:
+        :param tx_id:
+        :param timestamp:
+        :param token:
+        :param value:
+        :return:
+        """
+
+    def create_repay_relationship(self, tx_id, timestamp, from_address, to_address, token, value):
+        """
+
+        :param from_address:
+        :param to_address:
+        :param tx_id:
+        :param timestamp:
+        :param token:
+        :param value:
+        :return:
+        """
+
+    def create_withdraw_relationship(self, tx_id, timestamp, from_address, to_address, token, value):
+        """
+
+        :param from_address:
+        :param to_address:
+        :param tx_id:
+        :param timestamp:
+        :param token:
+        :param value:
+        :return:
+        """
+
+    def create_liquidate_relationship(self, tx_id, timestamp, from_wallet, to_wallet, from_balance, from_amount,
+                                      to_balance, to_amount):
+        """
+
+        :param tx_id:
+        :param timestamp:
+        :param from_wallet:
+        :param to_wallet:
+        :param from_balance:
+        :param from_amount:
+        :param to_balance:
+        :param to_amount:
         :return:
         """

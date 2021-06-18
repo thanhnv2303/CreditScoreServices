@@ -23,7 +23,9 @@
 import logging
 
 from config.constant import LoggerConstant, TransactionConstant, WalletConstant, EventConstant
-from config.data_aggregation_constant import MemoryStorageKeyConstant, EventTypeAggregateConstant
+from config.data_aggregation_constant import MemoryStorageKeyConstant, EventTypeAggregateConstant, DepositEventConstant, \
+    MintEventConstant, BorrowEventVTokenConstant, BorrowEventPoolConstant, RedeemEventConstant, WithdrawEventConstant, \
+    RepayEventConstant, RepayBorrowEventConstant, LiquidateBorrowEventConstant, LiquidationCallEventConstant
 from data_aggregation.database.intermediary_database import IntermediaryDatabase
 from data_aggregation.database.klg_database import KlgDatabase
 from data_aggregation.services.price_service import PriceService
@@ -31,6 +33,7 @@ from data_aggregation.services.time_service import round_timestamp_to_date
 from database_common.memory_storage import MemoryStorage
 from executors.batch_work_executor import BatchWorkExecutor
 from jobs.base_job import BaseJob
+from services.zip_service import dict_to_two_list
 
 logger = logging.getLogger(LoggerConstant.ExportBlocksJob)
 
@@ -57,6 +60,19 @@ class AggregateEventJob(BaseJob):
         self.start_block = start_block
         self.smart_contract = smart_contract
         self.price_service = price_service
+
+        self.map_handler = {
+            EventTypeAggregateConstant.Transfer: self._transfer_handler,
+            EventTypeAggregateConstant.Borrow: self._borrow_handler,
+            EventTypeAggregateConstant.Deposit: self._deposit_handler,
+            EventTypeAggregateConstant.LiquidateBorrow: self._liquidate_borrow_handler,
+            EventTypeAggregateConstant.LiquidationCall: self.liquidate_call_handler,
+            EventTypeAggregateConstant.Mint: self._mint_handler,
+            EventTypeAggregateConstant.Redeem: self._redeem_handler,
+            EventTypeAggregateConstant.Repay: self._repay_handler,
+            EventTypeAggregateConstant.RepayBorrow: self._repay_borrow_handler,
+            EventTypeAggregateConstant.Withdraw: self._withdraw_handler,
+        }
 
     def _start(self):
         local_storage = MemoryStorage.getInstance()
@@ -85,7 +101,7 @@ class AggregateEventJob(BaseJob):
                     timestamp = self.intermediary_database.block_number_to_time_stamp(block_number)
 
                 timestamp_day = round_timestamp_to_date(timestamp)
-                related_wallets = event.get(TransactionConstant.wallets)
+                related_wallets = event.get(TransactionConstant.related_wallets)
                 for wallet in related_wallets:
                     """
                      thêm thông tin địa chỉ ví vào kho để update sau cho các thông tin không cần lịch sử.
@@ -132,6 +148,179 @@ class AggregateEventJob(BaseJob):
                 """
                 xử lý tạo relationship giữa các node theo từng loại sự kiện 
                 """
-
+                handler = self._handler_event(event_type)
+                if handler:
+                    handler(event, timestamp)
+                else:
+                    logger.info(f" event {event_type} has not been supported to update to knowledge graph")
             except Exception as e:
                 logger.error(e)
+
+    def _handler_event(self, event_type):
+        """
+
+        :param event_type: 
+        :return: 
+        """
+
+        return self.map_handler.get(event_type)
+
+    def _transfer_handler(self, event, timestamp):
+        """
+
+        :return:
+        """
+        from_address = event.get(TransactionConstant.from_address)
+        to_address = event.get(TransactionConstant.to_address)
+        tx_id = event.get(TransactionConstant.transaction_hash)
+        timestamp = timestamp
+        token = event.get(EventConstant.contract_address)
+        value = event.get(TransactionConstant.value)
+
+        self.klg_database.create_transfer_relationship(tx_id, timestamp, from_address, to_address, token, value)
+
+    def _deposit_handler(self, event, timestamp):
+        """
+
+        :return:
+        """
+        from_address = event.get(DepositEventConstant.onBehalfOf)
+        to_address = event.get(EventConstant.contract_address)
+        tx_id = event.get(TransactionConstant.transaction_hash)
+        timestamp = timestamp
+        token = event.get(DepositEventConstant.reserve)
+        value = event.get(DepositEventConstant.amount)
+
+        self.klg_database.create_deposit_relationship(tx_id, timestamp, from_address, to_address, token, value)
+
+    def _mint_handler(self, event, timestamp):
+        """
+
+        :return:
+        """
+        from_address = event.get(MintEventConstant.minter)
+        to_address = event.get(EventConstant.contract_address)
+        tx_id = event.get(TransactionConstant.transaction_hash)
+        timestamp = timestamp
+        token = event.get(EventConstant.contract_address)
+        value = event.get(MintEventConstant.mintAmount)
+
+        self.klg_database.create_deposit_relationship(tx_id, timestamp, from_address, to_address, token, value)
+
+    def _borrow_handler(self, event, timestamp):
+        """
+
+        :return:
+        """
+        tx_id = event.get(TransactionConstant.transaction_hash)
+        timestamp = timestamp
+        to_address = event.get(EventConstant.contract_address)
+        from_address = event.get(BorrowEventVTokenConstant.borrower)
+        if not from_address:
+            from_address = event.get(BorrowEventPoolConstant.user)
+            token = event.get(BorrowEventPoolConstant.reserve)
+            value = event.get(BorrowEventPoolConstant.amount)
+        else:
+            token = event.get(EventConstant.contract_address)
+            value = event.get(BorrowEventVTokenConstant.borrowAmount)
+        self.klg_database.create_borrow_relationship(tx_id, timestamp, from_address, to_address, token, value)
+
+    def _redeem_handler(self, event, timestamp):
+        """
+
+        :return:
+        """
+        tx_id = event.get(TransactionConstant.transaction_hash)
+        timestamp = timestamp
+        to_address = event.get(EventConstant.contract_address)
+        from_address = event.get(RedeemEventConstant.redeemer)
+        token = event.get(EventConstant.contract_address)
+        value = event.get(RedeemEventConstant.redeemAmount)
+        self.klg_database.create_withdraw_relationship(tx_id, timestamp, from_address, to_address, token, value)
+
+    def _withdraw_handler(self, event, timestamp):
+        """
+
+        :return:
+        """
+        tx_id = event.get(TransactionConstant.transaction_hash)
+        timestamp = timestamp
+        to_address = event.get(EventConstant.contract_address)
+        from_address = event.get(WithdrawEventConstant.user)
+        token = event.get(WithdrawEventConstant.reserve)
+        value = event.get(WithdrawEventConstant.amount)
+        self.klg_database.create_withdraw_relationship(tx_id, timestamp, from_address, to_address, token, value)
+
+    def _repay_handler(self, event, timestamp):
+        """
+
+        :return:
+        """
+        tx_id = event.get(TransactionConstant.transaction_hash)
+        timestamp = timestamp
+        to_address = event.get(EventConstant.contract_address)
+        from_address = event.get(RepayEventConstant.user)
+        token = event.get(RepayEventConstant.reserve)
+        value = event.get(RepayEventConstant.amount)
+        self.klg_database.create_repay_relationship(tx_id, timestamp, from_address, to_address, token, value)
+
+    def _repay_borrow_handler(self, event, timestamp):
+        """
+
+        :return:
+        """
+        tx_id = event.get(TransactionConstant.transaction_hash)
+        timestamp = timestamp
+        to_address = event.get(EventConstant.contract_address)
+        from_address = event.get(RepayBorrowEventConstant.borrower)
+        token = event.get(EventConstant.contract_address)
+        value = event.get(RepayBorrowEventConstant.repayAmount)
+        self.klg_database.create_repay_relationship(tx_id, timestamp, from_address, to_address, token, value)
+
+    def _liquidate_borrow_handler(self, event, timestamp):
+        """
+
+        :return:
+        """
+        tx_id = event.get(TransactionConstant.transaction_hash)
+        timestamp = timestamp
+
+        from_wallet = event.get(LiquidateBorrowEventConstant.liquidator)
+        to_wallet = event.get(LiquidateBorrowEventConstant.borrower)
+        wallets = event.get(TransactionConstant.related_wallets)
+        from_balance, from_amount, to_balance, to_amount = [], [], [], []
+        for wallet in wallets:
+            if from_wallet == wallet.get(WalletConstant.address):
+                balance = wallet.get(WalletConstant.balance)
+                from_balance, from_amount = dict_to_two_list(balance)
+            if to_wallet == wallet.get(WalletConstant.address):
+                balance = wallet.get(WalletConstant.balance)
+                to_balance, to_amount = dict_to_two_list(balance)
+
+        self.klg_database.create_liquidate_relationship(tx_id, timestamp, from_wallet, to_wallet, from_balance,
+                                                        from_amount,
+                                                        to_balance, to_amount)
+
+    def liquidate_call_handler(self, event, timestamp):
+        """
+
+        :return:
+        """
+        tx_id = event.get(TransactionConstant.transaction_hash)
+        timestamp = timestamp
+
+        from_wallet = event.get(LiquidationCallEventConstant.liquidator)
+        to_wallet = event.get(LiquidationCallEventConstant.user)
+        wallets = event.get(TransactionConstant.related_wallets)
+        from_balance, from_amount, to_balance, to_amount = [], [], [], []
+        for wallet in wallets:
+            if from_wallet == wallet.get(WalletConstant.address):
+                balance = wallet.get(WalletConstant.balance)
+                from_balance, from_amount = dict_to_two_list(balance)
+            if to_wallet == wallet.get(WalletConstant.address):
+                balance = wallet.get(WalletConstant.balance)
+                to_balance, to_amount = dict_to_two_list(balance)
+
+        self.klg_database.create_liquidate_relationship(tx_id, timestamp, from_wallet, to_wallet, from_balance,
+                                                        from_amount,
+                                                        to_balance, to_amount)

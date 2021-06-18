@@ -97,9 +97,9 @@ class KnowledgeGraphExporter:
 
     def _update_wallet_and_item(self, item, balance_address):
         # start_time_all = time.time()
-        if not item.get(TransactionConstant.wallets):
+        if not item.get(TransactionConstant.related_wallets):
             return
-        for wallet in item.get(TransactionConstant.wallets):
+        for wallet in item.get(TransactionConstant.related_wallets):
             address = wallet.get(WalletConstant.address)
             start_time = time.time()
             wallet_in_db = self.data_base.get_wallet(address)

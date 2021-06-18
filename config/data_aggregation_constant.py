@@ -13,3 +13,68 @@ class EventTypeAggregateConstant:
     RepayBorrow = "RepayBorrow"
     Withdraw = "Withdraw"
     Transfer = "Transfer"
+
+
+class DepositEventConstant:
+    reserve = "reserve"
+    onBehalfOf = "onBehalfOf"
+    user = "user"
+    amount = "amount"
+
+
+class MintEventConstant:
+    minter = "minter"
+    mintAmount = "mintAmount"
+
+
+class BorrowEventVTokenConstant:
+    borrower = "borrower"
+    borrowAmount = "borrowAmount"
+
+
+class BorrowEventPoolConstant:
+    user = "user"
+    onBehalfOf = "onBehalfOf"
+    reserve = "reserve"
+    amount = "amount"
+
+
+class RedeemEventConstant:
+    redeemer = "redeemer"
+    redeemAmount = "redeemAmount"
+
+
+class WithdrawEventConstant:
+    reserve = "reserve"
+    user = "user"
+    to = "to"
+    redeemer = "redeemer"
+    amount = "amount"
+
+
+class RepayEventConstant:
+    reserve = "reserve"
+    user = "user"
+    repayer = "repayer"
+    amount = "amount"
+
+
+class RepayBorrowEventConstant:
+    payer = "payer"
+    borrower = "borrower"
+    repayAmount = "repayAmount"
+
+class LiquidateBorrowEventConstant:
+    liquidator = "liquidator"
+    borrower = "borrower"
+    repayAmount = "repayAmount"
+    vTokenCollateral = "vTokenCollateral"
+    seizeTokens ="seizeTokens"
+
+class LiquidationCallEventConstant:
+    collateralAsset = "collateralAsset"
+    debtAsset = "debtAsset"
+    user = "user"
+    debtToCover = "debtToCover"
+    liquidatedCollateralAmount ="liquidatedCollateralAmount"
+    liquidator="liquidator"
