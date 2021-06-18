@@ -64,17 +64,19 @@ class RepayBorrowEventConstant:
     borrower = "borrower"
     repayAmount = "repayAmount"
 
+
 class LiquidateBorrowEventConstant:
     liquidator = "liquidator"
     borrower = "borrower"
     repayAmount = "repayAmount"
     vTokenCollateral = "vTokenCollateral"
-    seizeTokens ="seizeTokens"
+    seizeTokens = "seizeTokens"
+
 
 class LiquidationCallEventConstant:
     collateralAsset = "collateralAsset"
     debtAsset = "debtAsset"
     user = "user"
     debtToCover = "debtToCover"
-    liquidatedCollateralAmount ="liquidatedCollateralAmount"
-    liquidator="liquidator"
+    liquidatedCollateralAmount = "liquidatedCollateralAmount"
+    liquidator = "liquidator"
