@@ -26,7 +26,7 @@ from config.constant import LoggerConstant, TransactionConstant
 from config.data_aggregation_constant import MemoryStorageKeyConstant
 from data_aggregation.database.intermediary_database import IntermediaryDatabase
 from data_aggregation.database.klg_database import KlgDatabase
-from data_aggregation.services.credit_score_service_v_0_3_0 import CreditScoreServiceV030
+from data_aggregation.services.credit_score_service_v_0_3_0 import PriceService
 from database_common.memory_storage import MemoryStorage
 from executors.batch_work_executor import BatchWorkExecutor
 from jobs.base_job import BaseJob
@@ -40,7 +40,7 @@ class AggregateNativeTokenTransferJob(BaseJob):
             self,
             start_block,
             end_block,
-            credit_score_service=CreditScoreServiceV030(),
+            credit_score_service=PriceService(),
             batch_size=128,
             max_workers=8,
             intermediary_database=IntermediaryDatabase(),

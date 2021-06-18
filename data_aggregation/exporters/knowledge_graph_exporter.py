@@ -104,7 +104,7 @@ class KnowledgeGraphExporter:
             start_time = time.time()
             wallet_in_db = self.data_base.get_wallet(address)
             logger.debug(f"Time to get wallet in db{time.time() - start_time}")
-            balances = wallet_in_db.get(WalletConstant.balances)
+            balances = wallet_in_db.get(WalletConstant.balance)
             supply = wallet_in_db.get(WalletConstant.supply)
             borrow = wallet_in_db.get(WalletConstant.borrow)
             if not balances:
@@ -117,20 +117,20 @@ class KnowledgeGraphExporter:
             if not unit_token:
                 unit_token = balance_address
 
-            wallet[WalletConstant.balance] = str(wallet.get(WalletConstant.balance))
-            wallet[WalletConstant.pre_balance] = str(wallet.get(WalletConstant.pre_balance))
+            wallet[WalletConstant.new_balance_of_concerning_token] = str(wallet.get(WalletConstant.new_balance_of_concerning_token))
+            wallet[WalletConstant.old_balance_of_concerning_token] = str(wallet.get(WalletConstant.old_balance_of_concerning_token))
 
-            balances[balance_address] = wallet.get(WalletConstant.balance)
+            balances[balance_address] = wallet.get(WalletConstant.new_balance_of_concerning_token)
             if wallet.get(WalletConstant.supply):
                 supply[unit_token] = wallet.get(WalletConstant.supply)
             if wallet.get(WalletConstant.borrow):
                 borrow[unit_token] = wallet.get(WalletConstant.borrow)
 
-            wallet_in_db[WalletConstant.balances] = balances
+            wallet_in_db[WalletConstant.balance] = balances
             wallet_in_db[WalletConstant.supply] = supply
             wallet_in_db[WalletConstant.borrow] = borrow
 
-            wallet[WalletConstant.balances] = balances
+            wallet[WalletConstant.balance] = balances
             wallet_in_db[WalletConstant.at_block_number] = item.get(TransactionConstant.block_number)
             start_time = time.time()
             self.data_base.replace_wallet(wallet_in_db)

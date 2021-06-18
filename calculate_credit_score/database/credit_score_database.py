@@ -88,7 +88,7 @@ class Database(object):
                                      block_number=None):
         return {
             WalletConstant.address: address,
-            WalletConstant.balance: balance,
+            WalletConstant.new_balance_of_concerning_token: balance,
             WalletConstant.supply: supply,
             WalletConstant.borrow: borrow,
             WalletConstant.credit_score: credit_score,

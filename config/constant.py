@@ -41,9 +41,9 @@ class WalletConstant:
     address = "address"
     at_block_number = "at_block_number"
     address_nowhere = '0x0000000000000000000000000000000000000000'
-    balance = "new_balance_of_concerning_token"
-    pre_balance = "old_balance_of_concerning_token"
-    balances = "balance"
+    new_balance_of_concerning_token = "new_balance_of_concerning_token"
+    old_balance_of_concerning_token = "old_balance_of_concerning_token"
+    balance = "balance"
     supply = "supply"
     borrow = "borrow"
     unit_token = "unit_token"

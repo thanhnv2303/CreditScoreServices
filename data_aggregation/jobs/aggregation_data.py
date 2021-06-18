@@ -9,7 +9,7 @@ from data_aggregation.database.klg_database import KlgDatabase
 from data_aggregation.jobs.aggregate_native_token_transfer_job import AggregateNativeTokenTransferJob
 from data_aggregation.jobs.aggregate_smart_contract_job import AggregateSmartContractJob
 from data_aggregation.jobs.aggregate_wallet_job import AggregateWalletJob
-from data_aggregation.services.credit_score_service_v_0_3_0 import CreditScoreServiceV030
+from data_aggregation.services.credit_score_service_v_0_3_0 import PriceService
 from database_common.memory_storage import MemoryStorage
 
 logger = logging.getLogger('Aggregation data')
@@ -18,7 +18,7 @@ logger = logging.getLogger('Aggregation data')
 def aggregate(start_block, end_block, max_workers, batch_size,
               event_abi_dir=EthKnowledgeGraphStreamerAdapterConstant.event_abi_dir_default,
               smart_contracts=None,
-              credit_score_service=CreditScoreServiceV030(),
+              credit_score_service=PriceService(),
               intermediary_database=IntermediaryDatabase(),
               klg_database=KlgDatabase()
               ):
@@ -80,7 +80,7 @@ def aggregate(start_block, end_block, max_workers, batch_size,
     """
     wallets_updated = local_storage.get_element(key=MemoryStorageKeyConstant.update_wallet)
     job = AggregateWalletJob(wallets_updated,
-                             credit_score_service=credit_score_service,
+                             price_service=credit_score_service,
                              batch_size=batch_size,
                              max_workers=max_workers,
                              intermediary_database=intermediary_database,

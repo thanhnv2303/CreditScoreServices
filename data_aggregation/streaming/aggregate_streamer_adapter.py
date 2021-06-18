@@ -6,7 +6,7 @@ from config.constant import EthKnowledgeGraphStreamerAdapterConstant
 from data_aggregation.database.intermediary_database import IntermediaryDatabase
 from data_aggregation.database.klg_database import KlgDatabase
 from data_aggregation.jobs.aggregation_data import aggregate
-from data_aggregation.services.credit_score_service_v_0_3_0 import CreditScoreServiceV030
+from data_aggregation.services.credit_score_service_v_0_3_0 import PriceService
 from exporter.console_item_exporter import ConsoleItemExporter
 from services.eth_item_id_calculator import EthItemIdCalculator
 from services.eth_item_timestamp_calculator import EthItemTimestampCalculator
@@ -39,7 +39,7 @@ class KLGLendingStreamerAdapter:
         self.tokens_filter_file = cur_path + tokens_filter_file
         self.v_tokens_filter_file = cur_path + v_tokens_filter_file
 
-        self.credit_score_service = CreditScoreServiceV030(intermediary_database, list_token_filter, token_info)
+        self.credit_score_service = PriceService(intermediary_database, list_token_filter, token_info)
         self.list_token_filter = list_token_filter
         self.token_info = token_info
 

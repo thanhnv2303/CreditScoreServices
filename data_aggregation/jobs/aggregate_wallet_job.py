@@ -22,11 +22,11 @@
 # import asyncio
 import logging
 
-from config.constant import LoggerConstant
+from config.constant import LoggerConstant, WalletConstant
 from config.data_aggregation_constant import MemoryStorageKeyConstant
 from data_aggregation.database.intermediary_database import IntermediaryDatabase
 from data_aggregation.database.klg_database import KlgDatabase
-from data_aggregation.services.credit_score_service_v_0_3_0 import CreditScoreServiceV030
+from data_aggregation.services.credit_score_service_v_0_3_0 import PriceService
 from database_common.memory_storage import MemoryStorage
 from executors.batch_work_executor import BatchWorkExecutor
 from jobs.base_job import BaseJob
@@ -39,7 +39,7 @@ class AggregateWalletJob(BaseJob):
     def __init__(
             self,
             wallet_addresses,
-            credit_score_service=CreditScoreServiceV030(),
+            price_service=PriceService(),
             batch_size=128,
             max_workers=8,
             intermediary_database=IntermediaryDatabase(),
@@ -51,7 +51,7 @@ class AggregateWalletJob(BaseJob):
         self.intermediary_database = intermediary_database
         self.klg_database = klg_database
         self.wallet_addresses = wallet_addresses
-        self.credit_score_service = credit_score_service
+        self.price_service = price_service
 
     def _start(self):
         local_storage = MemoryStorage.getInstance()
@@ -68,8 +68,38 @@ class AggregateWalletJob(BaseJob):
         self._export_data_wallet(wallet_address)
 
     def _export_data_wallet(self, wallet_address):
-        wallet = self.intermediary_database.get_wallet(wallet_address)
+        try:
+            wallet = self.intermediary_database.get_wallet(wallet_address)
 
-        """
-        update thông tin ví lên knowledge graph 
-        """
+            """
+            update thông tin ví lên knowledge graph 
+            """
+            wallet_token = wallet.get(WalletConstant.balance)
+
+            ### update wallet_token vao truong Token cua vi trong klg
+            if wallet_token:
+                total_balance = self.price_service.get_total_value(wallet_token)
+                self.klg_database.update_wallet_token(wallet_token, total_balance)
+
+            wallet_token_deposit = wallet.get(WalletConstant.supply)
+            wallet_token_borrow = wallet.get(WalletConstant.borrow)
+            if wallet_token_deposit and wallet_token_borrow:
+                deposit_balance = self.price_service.get_total_value(wallet_token_deposit)
+                borrow_balance = self.price_service.get_total_value(wallet_token_borrow)
+
+                self.klg_database.update_wallet_token_deposit_and_borrow(
+                    wallet_token_deposit,
+                    wallet_token_borrow,
+                    deposit_balance,
+                    borrow_balance
+                )
+
+            """
+            cập nhật thông tin về ngày xuất hiện giao dịch đầu tiên trên hệ thống
+            """
+
+            create_at = self.intermediary_database.get_first_create_wallet(wallet_address)
+            self.klg_database.update_wallet_created_at(wallet_address, create_at)
+            ###
+        except Exception as e:
+            logger.error(e)
