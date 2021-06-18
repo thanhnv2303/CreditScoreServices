@@ -21,7 +21,7 @@
 # SOFTWARE.
 import logging
 
-from data_aggregation.database.aggregate_database import Database
+from data_aggregation.database.intermediary_database import IntermediaryDatabase
 from database_common.memory_storage import MemoryStorage
 from executors.batch_work_executor import BatchWorkExecutor
 from exporter.console_exporter import ConsoleExporter
@@ -43,7 +43,7 @@ class ExtractCreditDataJob(BaseJob):
             checkpoint=None,
             k_timestamp=None,
             item_exporter=ConsoleExporter(),
-            database=Database(),
+            database=IntermediaryDatabase(),
     ):
         self.item_exporter = item_exporter
         self.batch_size = batch_size

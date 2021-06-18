@@ -1,9 +1,10 @@
 from py2neo import Graph
+from pymongo import MongoClient
 
-from config.config import Neo4jConfig
+from config.config import Neo4jConfig, MongoDBConfig
 
 
-class Database(object):
+class KlgDatabase(object):
     """Manages connection to  database_common and makes async queries
     """
 
@@ -13,10 +14,5 @@ class Database(object):
         bolt = f"bolt://{Neo4jConfig.HOST}:{Neo4jConfig.BOTH_PORT}"
         self._graph = Graph(bolt, auth=(Neo4jConfig.NEO4J_USERNAME, Neo4jConfig.NEO4J_PASSWORD))
 
-        # self._create_index()
 
-    def update_statistic_credit(self, statistic_credit):
-        pass
 
-    def get_wallets_paging(self):
-        return []

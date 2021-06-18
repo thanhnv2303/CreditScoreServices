@@ -2,7 +2,7 @@ import logging
 import threading
 import time
 
-from data_aggregation.database.aggregate_database import Database
+from data_aggregation.database.intermediary_database import IntermediaryDatabase
 from database_common.memory_storage import MemoryStorage
 from services.credit_score_service_v_0_2_0 import CreditScoreServiceV020
 
@@ -10,7 +10,7 @@ logger = logging.getLogger("--Extractor--")
 
 
 class Extractor:
-    def __init__(self, start_block, end_block, checkpoint, database=Database()):
+    def __init__(self, start_block, end_block, checkpoint, database=IntermediaryDatabase()):
         self.database = database
         self.start_block = start_block
         self.end_block = end_block

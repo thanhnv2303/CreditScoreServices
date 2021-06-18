@@ -1,6 +1,6 @@
 import logging
 
-from data_aggregation.database.aggregate_database import Database
+from data_aggregation.database.intermediary_database import IntermediaryDatabase
 from data_aggregation.jobs.extractor.extractor import Extractor
 from utils.to_number import to_int
 
@@ -10,7 +10,7 @@ logger = logging.getLogger("Calculate total asset")
 class TotalAssetExtractor(Extractor):
     num_wallet = 0
 
-    def __init__(self, start_block, end_block, checkpoint, web3, database=Database()):
+    def __init__(self, start_block, end_block, checkpoint, web3, database=IntermediaryDatabase()):
         super(TotalAssetExtractor, self).__init__(start_block, end_block, checkpoint, web3, database)
         self.statistic_credit["total_asset_list"] = {}
         self.statistic_credit_lock = False

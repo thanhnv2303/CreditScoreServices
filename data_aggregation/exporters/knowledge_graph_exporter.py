@@ -22,7 +22,7 @@
 import logging
 import time
 
-from data_aggregation.database.aggregate_database import Database
+from data_aggregation.database.intermediary_database import IntermediaryDatabase
 from config.constant import BlockConstant, TransactionConstant, TokenConstant, TokenTypeConstant, WalletConstant, \
     ExportItemConstant, ExportItemTypeConstant, LoggerConstant
 
@@ -39,7 +39,7 @@ class KnowledgeGraphExporter:
             ExportItemTypeConstant.event: self._event_handler,
             ExportItemTypeConstant.token: self._token_handler
         }
-        self.data_base = Database()
+        self.data_base = IntermediaryDatabase()
 
     def open(self):
         pass

@@ -2,7 +2,8 @@ import logging
 import os
 from time import time
 
-from data_aggregation.database.aggregate_database import Database
+from data_aggregation.database.intermediary_database import IntermediaryDatabase
+from data_aggregation.database.klg_database import KlgDatabase
 from exporter.console_item_exporter import ConsoleItemExporter
 from services.eth_item_id_calculator import EthItemIdCalculator
 from services.eth_item_timestamp_calculator import EthItemTimestampCalculator
@@ -14,7 +15,8 @@ class KLGLendingStreamerAdapter:
     def __init__(
             self,
             item_exporter=ConsoleItemExporter(),
-            database=Database(),
+            intermediary_database=IntermediaryDatabase(),
+            klg_database=KlgDatabase(),
             batch_size=100,
             max_workers=5,
             tokens_filter_file="artifacts/token_filter",
@@ -28,7 +30,8 @@ class KLGLendingStreamerAdapter:
         self.max_workers = max_workers
         self.item_id_calculator = EthItemIdCalculator()
         self.item_timestamp_calculator = EthItemTimestampCalculator()
-        self.database = database
+        self.intermediary_database = intermediary_database
+        self.klg_database = klg_database
         cur_path = os.path.dirname(os.path.realpath(__file__)) + "/../../"
         self.tokens_filter_file = cur_path + tokens_filter_file
         self.v_tokens_filter_file = cur_path + v_tokens_filter_file
