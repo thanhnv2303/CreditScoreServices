@@ -27,7 +27,7 @@ from config.data_aggregation_constant import MemoryStorageKeyConstant
 from data_aggregation.database.intermediary_database import IntermediaryDatabase
 from data_aggregation.database.klg_database import KlgDatabase
 from data_aggregation.jobs.aggregate_event_job import AggregateEventJob
-from data_aggregation.services.credit_score_service_v_0_3_0 import PriceService
+from data_aggregation.services.price_service import PriceService
 from database_common.memory_storage import MemoryStorage
 from executors.batch_work_executor import BatchWorkExecutor
 from jobs.base_job import BaseJob

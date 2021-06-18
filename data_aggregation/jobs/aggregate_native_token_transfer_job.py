@@ -26,7 +26,7 @@ from config.constant import LoggerConstant, TransactionConstant, WalletConstant
 from config.data_aggregation_constant import MemoryStorageKeyConstant
 from data_aggregation.database.intermediary_database import IntermediaryDatabase
 from data_aggregation.database.klg_database import KlgDatabase
-from data_aggregation.services.credit_score_service_v_0_3_0 import PriceService
+from data_aggregation.services.price_service import PriceService
 from data_aggregation.services.time_service import round_timestamp_to_date
 from database_common.memory_storage import MemoryStorage
 from executors.batch_work_executor import BatchWorkExecutor
@@ -96,3 +96,7 @@ class AggregateNativeTokenTransferJob(BaseJob):
                     balance_100[timestamp_day] += balance_value
 
                 self.klg_database.update_balance_100(wallet_address, balance_100)
+
+                """
+                Cập nhật quan hệ lên knowledge graph
+                """

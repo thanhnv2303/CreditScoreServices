@@ -6,7 +6,7 @@ from config.constant import EthKnowledgeGraphStreamerAdapterConstant
 from data_aggregation.database.intermediary_database import IntermediaryDatabase
 from data_aggregation.database.klg_database import KlgDatabase
 from data_aggregation.jobs.aggregation_data import aggregate
-from data_aggregation.services.credit_score_service_v_0_3_0 import PriceService
+from data_aggregation.services.price_service import PriceService
 from exporter.console_item_exporter import ConsoleItemExporter
 from services.eth_item_id_calculator import EthItemIdCalculator
 from services.eth_item_timestamp_calculator import EthItemTimestampCalculator

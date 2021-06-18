@@ -23,11 +23,10 @@ class IntermediaryDatabase(object):
         self.mongo_token_collection_dict = {}
         # self._create_index()
 
-    def update_statistic_credit(self, statistic_credit):
-        pass
-
-    def get_wallets_paging(self):
-        return []
+    def block_number_to_time_stamp(self, block_number):
+        key = {BlockConstant.number: block_number}
+        block = self.mongo_blocks.find_one(key)
+        return block.get(BlockConstant.block_timestamp)
 
     def get_latest_block_update(self):
         latest_block = self.mongo_blocks.find_one(sort=[(BlockConstant.number, -1)])

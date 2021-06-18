@@ -14,7 +14,7 @@ class KlgDatabase(object):
         bolt = f"bolt://{Neo4jConfig.HOST}:{Neo4jConfig.BOTH_PORT}"
         self._graph = Graph(bolt, auth=(Neo4jConfig.NEO4J_USERNAME, Neo4jConfig.NEO4J_PASSWORD))
 
-    def update_wallet_token(self, token_map={}, balance=0):
+    def update_wallet_token(self,wallet_address, token_map={}, balance=0):
         """
         cập nhật  trường
         Token:[map trong neo4j] ghi lại các loại token và số lượng từng loại có trong wallet.
@@ -24,7 +24,7 @@ class KlgDatabase(object):
         """
         pass
 
-    def update_wallet_token_deposit_and_borrow(self, token_deposit_map={}, token_borrow_map={}, deposit=0, borrow=0):
+    def update_wallet_token_deposit_and_borrow(self,wallet_address, token_deposit_map={}, token_borrow_map={}, deposit=0, borrow=0):
         """
         cập nhật các trường
 

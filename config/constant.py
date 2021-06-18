@@ -2,7 +2,7 @@ class BlockConstant:
     gas_limit = "gas_limit"
     gas_used = "gas_used"
     number = "number"
-
+    block_timestamp = "block_timestamp"
 
 class TransactionConstant:
     gas = "gas"

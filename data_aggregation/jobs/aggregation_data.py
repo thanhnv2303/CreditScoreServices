@@ -9,7 +9,7 @@ from data_aggregation.database.klg_database import KlgDatabase
 from data_aggregation.jobs.aggregate_native_token_transfer_job import AggregateNativeTokenTransferJob
 from data_aggregation.jobs.aggregate_smart_contract_job import AggregateSmartContractJob
 from data_aggregation.jobs.aggregate_wallet_job import AggregateWalletJob
-from data_aggregation.services.credit_score_service_v_0_3_0 import PriceService
+from data_aggregation.services.price_service import PriceService
 from database_common.memory_storage import MemoryStorage
 
 logger = logging.getLogger('Aggregation data')
