@@ -10,7 +10,6 @@ from services.log_services import config_log
 from config.config import CreditScoreConfig
 from streaming.streaming_utils import configure_signals, configure_logging
 
-from providers.auto import pick_random_provider_uri
 from calculate_credit_score.streaming.credit_score_streamer import CreditScoreStreamer
 from calculate_credit_score.streaming.credit_score_streamer_adapter import CreditScoreStreamerAdapter
 
