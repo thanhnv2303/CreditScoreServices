@@ -129,3 +129,24 @@ class KlgDatabase(object):
         :return:
         """
         return
+
+    def create_transfer_relationship(self, from_address,to_address,tx_id,timestamp,token,value):
+        """
+        Relationship này xảy ra giữa node:
+        wallet -> wallet
+        Các thông số của Relationship
+        transactionID: đặc trưng của relationship
+        timestamp: thời điểm thực hiện transfer
+        fromWallet: address của wallet gửi tiền
+        toWallet: address của wallet nhận tiền
+        token: Token được transfer
+        value: số lượng token được transfer
+
+        :param from_address:
+        :param to_address:
+        :param tx_id:
+        :param timestamp:
+        :param token:
+        :param value:
+        :return:
+        """

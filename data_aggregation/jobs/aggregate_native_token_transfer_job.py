@@ -22,7 +22,7 @@
 # import asyncio
 import logging
 
-from config.constant import LoggerConstant, TransactionConstant, WalletConstant
+from config.constant import LoggerConstant, TransactionConstant, WalletConstant, TokenConstant
 from config.data_aggregation_constant import MemoryStorageKeyConstant
 from data_aggregation.database.intermediary_database import IntermediaryDatabase
 from data_aggregation.database.klg_database import KlgDatabase
@@ -97,6 +97,17 @@ class AggregateNativeTokenTransferJob(BaseJob):
 
                 self.klg_database.update_balance_100(wallet_address, balance_100)
 
-                """
-                Cập nhật quan hệ lên knowledge graph
-                """
+            """
+            Cập nhật quan hệ lên knowledge graph
+            
+            Cập nhật quan hệ transfer
+            """
+
+            from_address = tx.get(TransactionConstant.from_address)
+            to_address = tx.get(TransactionConstant.to_address)
+            tx_id = tx.get(TransactionConstant.transaction_hash)
+            timestamp = timestamp
+            token = TokenConstant.native_token
+            value = tx.get(TransactionConstant.value)
+
+            self.klg_database.create_transfer_relationship(from_address, to_address, tx_id, timestamp, token, value)
