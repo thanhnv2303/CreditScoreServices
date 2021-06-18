@@ -22,11 +22,12 @@
 # import asyncio
 import logging
 
-from config.constant import LoggerConstant, TransactionConstant
+from config.constant import LoggerConstant, TransactionConstant, WalletConstant
 from config.data_aggregation_constant import MemoryStorageKeyConstant
 from data_aggregation.database.intermediary_database import IntermediaryDatabase
 from data_aggregation.database.klg_database import KlgDatabase
 from data_aggregation.services.credit_score_service_v_0_3_0 import PriceService
+from data_aggregation.services.time_service import round_timestamp_to_date
 from database_common.memory_storage import MemoryStorage
 from executors.batch_work_executor import BatchWorkExecutor
 from jobs.base_job import BaseJob
@@ -40,7 +41,7 @@ class AggregateNativeTokenTransferJob(BaseJob):
             self,
             start_block,
             end_block,
-            credit_score_service=PriceService(),
+            price_service=PriceService(),
             batch_size=128,
             max_workers=8,
             intermediary_database=IntermediaryDatabase(),
@@ -53,7 +54,7 @@ class AggregateNativeTokenTransferJob(BaseJob):
         self.klg_database = klg_database
         self.end_block = end_block
         self.start_block = start_block
-        self.credit_score_service = credit_score_service
+        self.price_service = price_service
 
     def _start(self):
         local_storage = MemoryStorage.getInstance()
@@ -73,14 +74,25 @@ class AggregateNativeTokenTransferJob(BaseJob):
         txs = self.intermediary_database.get_transfer_native_token_tx_in_block(block)
 
         for tx in txs:
-            """
-            thêm thông tin địa chỉ ví vào kho để update sau cho các thông tin không cần lịch sử.
-            """
-            from_address = tx.get(TransactionConstant.from_address)
-            to_address = tx.get(TransactionConstant.to_address)
-            self.update_wallet_storage.add(from_address)
-            self.update_wallet_storage.add(to_address)
+            related_wallets = tx.get(TransactionConstant.wallets)
+            timestamp = tx.get(TransactionConstant.block_timestamp)
+            timestamp_day = round_timestamp_to_date(timestamp)
+            for wallet in related_wallets:
+                """
+                 thêm thông tin địa chỉ ví vào kho để update sau cho các thông tin không cần lịch sử.
+                """
+                wallet_address = wallet.get(WalletConstant.address)
+                self.update_wallet_storage.add(wallet_address)
 
-            """
-            thêm dữ liệu biến động số dư vào trong node wallet trong knowledge graph
-            """
+                """
+                thêm dữ liệu biến động số dư vào trong node wallet trong knowledge graph
+                """
+                balance = wallet.get(WalletConstant.balance)
+                balance_value = self.price_service.get_total_value(balance)
+                balance_100 = self.klg_database.get_balance_100(wallet_address)
+                if not balance_100.get(timestamp_day):
+                    balance_100[timestamp_day] = balance_value
+                else:
+                    balance_100[timestamp_day] += balance_value
+
+                self.klg_database.update_balance_100(wallet_address, balance_100)

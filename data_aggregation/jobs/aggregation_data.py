@@ -54,7 +54,7 @@ def aggregate(start_block, end_block, max_workers, batch_size,
     """
     job = AggregateNativeTokenTransferJob(start_block,
                                           end_block,
-                                          credit_score_service=credit_score_service,
+                                          price_service=credit_score_service,
                                           batch_size=batch_size,
                                           max_workers=max_workers,
                                           intermediary_database=intermediary_database,

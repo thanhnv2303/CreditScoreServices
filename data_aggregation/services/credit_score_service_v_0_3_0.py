@@ -81,6 +81,7 @@ class PriceService:
             value = token_dict_value[token_address]
             total_value += self.token_amount_to_usd(token_address, value)
         return total_value
+
     def update_token_market_info(self, fileInput='artifacts/token_credit_info/listToken.txt',
                                  fileOutput='artifacts/token_credit_info/infoToken.json'):
         update_token_credit_score(fileInput=fileInput, fileOutput=fileOutput, database=self.database)
