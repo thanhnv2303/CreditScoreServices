@@ -1,6 +1,7 @@
 class BlockConstant:
     gas_limit = "gas_limit"
     gas_used = "gas_used"
+    number = "number"
 
 
 class TransactionConstant:
@@ -14,6 +15,7 @@ class TransactionConstant:
     block_number = "block_number"
     from_address = "from_address"
     to_address = "to_address"
+    block_timestamp = "block_timestamp"
 
 
 class TokenConstant:
