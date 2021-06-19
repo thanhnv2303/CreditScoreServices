@@ -143,3 +143,102 @@ class RelationshipConstant:
     amount = "amount"
     token = "token"
     label = "label"
+class Neo4jWalletConstant:
+    address = "address"
+    lastUpdatedAt = "lastUpdatedAt"
+    creditScore = "creditScore"
+    tokens = "tokens"
+    tokenBalances = "tokenBalances"
+    balanceInUSD = "balanceInUSD" 
+    balanceChangeLogTimestamps = "balanceChangeLogTimestamps"
+    balanceChangeLogValues = "balanceChangeLogValues"
+    createdAt = "createdAt"
+    depositTokens = "depositTokens"
+    depositTokenBalances = "depositTokenBalances"
+    depositInUSD = "depositInUSD"
+    depositChangeLogTimestamps = "depositChangeLogTimestamps"
+    depositChangeLogValues = "depositChangeLogValues"
+    borrowTokens  = "borrowTokens"
+    borrowTokenBalances = "borrowTokenBalances"
+    borrowInUSD = "borrowInUSD" 
+    borrowChangeLogTimestamps = "borrowChangeLogTimestamps"
+    borrowChangeLogValues = "borrowChangeLogValues"
+    numberOfLiquidation = "numberOfLiquidation"
+    totalAmountOfLiquidation = "totalAmountOfLiquidation" 
+    dailyTransactionAmounts = "dailyTransactionAmounts"
+    dailyFrequencyOfTransactions = "dailyFrequencyOfTransactions" 
+
+class Neo4jTokenConstant:
+    address = "address"
+    totalSupply = "totalSupply"
+    symbol = "symbol"
+    name = "name"
+    decimal ="decimal"
+    dailyFrequencyOfTransactions ="dailyFrequencyOfTransactions" 
+    creditScore = "creditScore"
+    price = "price"
+    highestPrice = "highestPrice" 
+    marketCap = "marketCap"
+    tradingVolume24 = "tradingVolume24" 
+    lastUpdatedAt = "lastUpdatedAt"
+
+class Neo4jLendingPoolConstant:
+    address = "address"
+    tokens = "tokens"
+    supply = "supply"
+    borrow = "borrow"
+
+class Neo4jTransferConstant:
+    transactionID = "transactionID"
+    timestamp = "timestamp"
+    fromWallet = "fromWallet"
+    toWallet = "toWallet"
+    token = "token"
+    value = "value"
+
+class Neo4jDepositConstant:
+    transactionID = "transactionID"
+    timestamp = "timestamp"
+    fromWallet = "fromWallet"
+    toAddress = "toAddress"
+    token = "token"
+    value = "value"
+
+
+class Neo4jBorrowConstant:
+    transactionID = "transactionID"
+    timestamp = "timestamp"
+    fromWallet = "fromWallet"
+    toAddress = "toAddress"
+    token = "token"
+    value = "value"
+
+
+class Neo4jRepayConstant:
+    transactionID = "transactionID"
+    timestamp = "timestamp"
+    fromWallet = "fromWallet"
+    toAddress = "toAddress"
+    token = "token"
+    value = "value"
+
+class Neo4jWithdrawConstant:
+    transactionID = "transactionID"
+    timestamp = "timestamp"
+    fromWallet = "fromWallet"
+    toAddress = "toAddress"
+    token = "token"
+    value = "value"
+
+
+class Neo4jLiquidateConstant:
+    transactionID = "transactionID"
+    timestamp = "timestamp"
+    protocol = "protocol"
+    fromWallet = "fromWallet"
+    toWallet = "toWallet"
+    fromBalance = "fromBalance"
+    fromAmount = "fromAmount"
+    toBalance = "toBalance"
+    toAmount = "toAmount"
+
