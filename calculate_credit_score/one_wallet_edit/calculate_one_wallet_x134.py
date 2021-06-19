@@ -5,7 +5,10 @@ import time
 
 from calculate_credit_score.one_wallet_edit.get_wallet_info import GetWalletInfo
 
-with open(os.path.join(sys.path[0], "statisticreport.csv")) as file:
+cur_path = os.path.dirname(os.path.realpath(__file__)) + "/../../"
+file_input = "calculate_credit_score/one_wallet_edit/statisticreport.csv"
+path = cur_path + file_input
+with open(os.path.join(sys.path[0], path)) as file:
     statistic_report = list(csv.reader(file))
 
 wallet = GetWalletInfo()
