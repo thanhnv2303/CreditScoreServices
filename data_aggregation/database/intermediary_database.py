@@ -26,7 +26,7 @@ class IntermediaryDatabase(object):
     def block_number_to_time_stamp(self, block_number):
         key = {BlockConstant.number: block_number}
         block = self.mongo_blocks.find_one(key)
-        return block.get(BlockConstant.block_timestamp)
+        return block.get(BlockConstant.timestamp)
 
     def get_latest_block_update(self):
         latest_block = self.mongo_blocks.find_one(sort=[(BlockConstant.number, -1)])

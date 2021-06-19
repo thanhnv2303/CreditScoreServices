@@ -2,9 +2,11 @@ import os
 import sys
 from os import path
 
+
 TOP_DIR = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 sys.path.insert(0, os.path.join(TOP_DIR, '../'))
 
+from data_aggregation.database.intermediary_database import IntermediaryDatabase
 from services.log_services import config_log
 from data_aggregation.streaming.aggregate_streamer import Klg_Streamer
 from data_aggregation.streaming.aggregate_streamer_adapter import KLGLendingStreamerAdapter
@@ -43,12 +45,12 @@ if __name__ == '__main__':
 
     # check provider is can connect
     output = "knowledge_graph"
-
+    intermediary_database = IntermediaryDatabase()
     last_synced_block_file = cur_path + "data/lending_last_synced_block.txt"
     if path.exists(last_synced_block_file):
         start_block = None
     elif not start_block:
-        start_block = 0
+        start_block = intermediary_database.get_oldest_block_update()
 
     # memory_storage = MemoryStorage()
     streamer_adapter = KLGLendingStreamerAdapter(

@@ -31,7 +31,7 @@ from database_common.memory_storage import MemoryStorage
 from executors.batch_work_executor import BatchWorkExecutor
 from jobs.base_job import BaseJob
 
-logger = logging.getLogger(LoggerConstant.ExportBlocksJob)
+logger = logging.getLogger(LoggerConstant.AggregateWalletJob)
 
 
 # Exports blocks and transactions
@@ -55,7 +55,7 @@ class AggregateWalletJob(BaseJob):
 
     def _start(self):
         local_storage = MemoryStorage.getInstance()
-        self.update_wallet_storage: set = local_storage.get_element(MemoryStorageKeyConstant.update_wallet)
+        self.update_wallet_storage: dict = local_storage.get_element(MemoryStorageKeyConstant.update_wallet)
 
     def _export(self):
         self.batch_work_executor.execute(
@@ -64,22 +64,23 @@ class AggregateWalletJob(BaseJob):
             total_items=len(self.wallet_addresses)
         )
 
-    def _export_batch(self, wallet_address):
-        self._export_data_wallet(wallet_address)
+    def _export_batch(self, wallet_addresses):
+        for wallet_address in wallet_addresses:
+
+            self._export_data_wallet(wallet_address)
 
     def _export_data_wallet(self, wallet_address):
         try:
-            wallet = self.intermediary_database.get_wallet(wallet_address)
-
+            # wallet = self.intermediary_database.get_wallet(wallet_address)
+            wallet = self.update_wallet_storage.get(wallet_address)
             """
             update thông tin ví lên knowledge graph 
             """
             wallet_token = wallet.get(WalletConstant.balance)
-
             ### update wallet_token vao truong Token cua vi trong klg
             if wallet_token:
                 total_balance = self.price_service.get_total_value(wallet_token)
-                self.klg_database.update_wallet_token(wallet_address,wallet_token, total_balance)
+                self.klg_database.update_wallet_token(wallet_address, wallet_token, total_balance)
 
             wallet_token_deposit = wallet.get(WalletConstant.supply)
             wallet_token_borrow = wallet.get(WalletConstant.borrow)

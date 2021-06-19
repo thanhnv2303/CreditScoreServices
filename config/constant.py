@@ -3,6 +3,8 @@ class BlockConstant:
     gas_used = "gas_used"
     number = "number"
     block_timestamp = "block_timestamp"
+    timestamp = "timestamp"
+
 
 class TransactionConstant:
     gas = "gas"
@@ -65,6 +67,10 @@ class ExportItemTypeConstant:
 class LoggerConstant:
     KnowledgeGraphExporter = "KnowledgeGraphExporter"
     ExportBlocksJob = "ExportBlocksJob"
+    AggregateNativeTokenTransferJob = "AggregateNativeTokenTransferJob"
+    AggregateEventJob = "AggregateEventJob"
+    AggregateSmartContractJob = "AggregateSmartContractJob"
+    AggregateWalletJob = "AggregateWalletJob"
     EthService = "EthService"
     EthLendingService = "EthLendingService"
 

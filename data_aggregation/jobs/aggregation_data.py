@@ -48,10 +48,13 @@ def aggregate(start_block, end_block, max_workers, batch_size,
     """
     start_time = time()
     local_storage = MemoryStorage.getInstance()
-    local_storage.add_element(key=MemoryStorageKeyConstant.update_wallet, value=set())
+    local_storage.set_element(key=MemoryStorageKeyConstant.update_wallet, value=dict())
     """
     Tổng hợp thông tin theo từng transaction chuyển native token
     """
+    logger.info("""
+    Tổng hợp thông tin theo từng transaction chuyển native token
+    """)
     job = AggregateNativeTokenTransferJob(start_block,
                                           end_block,
                                           price_service=credit_score_service,
@@ -64,7 +67,9 @@ def aggregate(start_block, end_block, max_workers, batch_size,
     """
     Tổng hợp thông tin theo từng event của các smart contract
     """
-
+    logger.info("""
+    Tổng hợp thông tin theo từng event của các smart contract
+    """)
     job = AggregateSmartContractJob(start_block,
                                     end_block,
                                     smart_contracts=smart_contracts,
@@ -78,6 +83,9 @@ def aggregate(start_block, end_block, max_workers, batch_size,
     """
     Tổng hợp thông tin của các ví có thay đổi dữ liệu đến thời điểm hiện tại
     """
+    logger.info("""
+    Tổng hợp thông tin của các ví có thay đổi dữ liệu đến thời điểm hiện tại
+    """)
     wallets_updated = local_storage.get_element(key=MemoryStorageKeyConstant.update_wallet)
     job = AggregateWalletJob(wallets_updated,
                              price_service=credit_score_service,

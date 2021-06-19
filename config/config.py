@@ -18,7 +18,7 @@ class Config:
 class MongoDBConfig:
     NAME = os.environ.get("MONGO_USERNAME") or "just_for_dev"
     PASSWORD = os.environ.get("MONGO_PASSWORD") or "password_for_dev"
-    HOST = os.environ.get("MONGO_HOST") or "localhost"
+    HOST = os.environ.get("MONGO_HOST") or "25.39.155.190"
     # HOST = "25.19.185.225"
     PORT = os.environ.get("MONGO_PORT") or "27027"
     DATABASE = "extract_data_knowledge_graph"
@@ -60,7 +60,7 @@ class CreditScoreConfig:
 
 
 class KLGLendingStreamerAdapterConfig:
-    LOG_FILE = os.environ.get("KNOWLEDGE_GRAPH_LENDING_LOG_FILE")
+    LOG_FILE = os.environ.get("KNOWLEDGE_GRAPH_LENDING_LOG_FILE") or None
     LAG = os.environ.get("KNOWLEDGE_GRAPH_LENDING_LAG") or 0
     BATCH_SIZE = os.environ.get("KNOWLEDGE_GRAPH_LENDING_BATCH_SIZE") or 64
     MAX_WORKERS = os.environ.get("KNOWLEDGE_GRAPH_LENDING_MAX_WORKERS") or 8

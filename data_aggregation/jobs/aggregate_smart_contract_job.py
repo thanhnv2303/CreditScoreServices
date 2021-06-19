@@ -32,7 +32,7 @@ from database_common.memory_storage import MemoryStorage
 from executors.batch_work_executor import BatchWorkExecutor
 from jobs.base_job import BaseJob
 
-logger = logging.getLogger(LoggerConstant.ExportBlocksJob)
+logger = logging.getLogger(LoggerConstant.AggregateSmartContractJob)
 
 
 # Exports blocks and transactions
@@ -69,8 +69,9 @@ class AggregateSmartContractJob(BaseJob):
             total_items=self.end_block - self.start_block + 1
         )
 
-    def _export_batch(self, smart_contract):
-        self._export_data_in_smart_contract_collection(smart_contract)
+    def _export_batch(self, smart_contracts):
+        for smart_contract in smart_contracts:
+            self._export_data_in_smart_contract_collection(smart_contract)
 
     def _export_data_in_smart_contract_collection(self, smart_contract):
         job = AggregateEventJob(self.start_block,

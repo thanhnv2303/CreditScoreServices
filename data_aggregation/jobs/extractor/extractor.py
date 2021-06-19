@@ -33,7 +33,7 @@ class Extractor:
 
         list_value = self.local_storage.get_element(list_name)
         if not list_value:
-            self.local_storage.add_element(list_name, [value])
+            self.local_storage.set_element(list_name, [value])
         else:
             list_value.append(value)
         self.amount += 1

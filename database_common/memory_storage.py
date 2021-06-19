@@ -16,7 +16,7 @@ class MemoryStorage:
             MemoryStorage.__instance = self
         self.storage = {}
 
-    def add_element(self, key, value):
+    def set_element(self, key, value):
         self.storage[key] = value
 
     def get_element(self, key):

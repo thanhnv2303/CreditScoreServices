@@ -32,7 +32,7 @@ from database_common.memory_storage import MemoryStorage
 from executors.batch_work_executor import BatchWorkExecutor
 from jobs.base_job import BaseJob
 
-logger = logging.getLogger(LoggerConstant.ExportBlocksJob)
+logger = logging.getLogger(LoggerConstant.AggregateNativeTokenTransferJob)
 
 
 # Exports blocks and transactions
@@ -42,7 +42,7 @@ class AggregateNativeTokenTransferJob(BaseJob):
             start_block,
             end_block,
             price_service=PriceService(),
-            batch_size=128,
+            batch_size=4,
             max_workers=8,
             intermediary_database=IntermediaryDatabase(),
             klg_database=KlgDatabase()
@@ -58,9 +58,11 @@ class AggregateNativeTokenTransferJob(BaseJob):
 
     def _start(self):
         local_storage = MemoryStorage.getInstance()
-        self.update_wallet_storage: set = local_storage.get_element(MemoryStorageKeyConstant.update_wallet)
+        self.update_wallet_storage = local_storage
 
     def _export(self):
+        logger.info(
+            "_export_export_export_export_export_export_export_export_export_export_export_export_export_export_export")
         self.batch_work_executor.execute(
             range(self.start_block, self.end_block + 1),
             self._export_batch,
@@ -68,12 +70,15 @@ class AggregateNativeTokenTransferJob(BaseJob):
         )
 
     def _export_batch(self, block_number_batch):
-        self._export_data_in_transaction_transfer_native_token(block_number_batch)
+        for block_number in block_number_batch:
+            self._export_data_in_transaction_transfer_native_token(block_number)
 
     def _export_data_in_transaction_transfer_native_token(self, block):
         txs = self.intermediary_database.get_transfer_native_token_tx_in_block(block)
 
         for tx in txs:
+            logger.info("tx--------------------------------------------")
+            logger.info(tx)
             related_wallets = tx.get(TransactionConstant.related_wallets)
             timestamp = tx.get(TransactionConstant.block_timestamp)
             timestamp_day = round_timestamp_to_date(timestamp)
@@ -82,7 +87,12 @@ class AggregateNativeTokenTransferJob(BaseJob):
                  thêm thông tin địa chỉ ví vào kho để update sau cho các thông tin không cần lịch sử.
                 """
                 wallet_address = wallet.get(WalletConstant.address)
-                self.update_wallet_storage.add(wallet_address)
+                wallet_in_storage = self.update_wallet_storage.get(wallet_address)
+                if wallet_in_storage and wallet_in_storage.get(TransactionConstant.block_number) > wallet.get(
+                        TransactionConstant.block_number):
+                    pass
+                else:
+                    self.update_wallet_storage[wallet_address] = wallet
 
                 """
                 thêm dữ liệu biến động số dư vào trong node wallet trong knowledge graph
@@ -96,7 +106,6 @@ class AggregateNativeTokenTransferJob(BaseJob):
                     balance_100[timestamp_day] += balance_value
 
                 self.klg_database.update_balance_100(wallet_address, balance_100)
-
             """
             Cập nhật quan hệ lên knowledge graph
             

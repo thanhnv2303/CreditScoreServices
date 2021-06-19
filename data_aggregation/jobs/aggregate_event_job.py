@@ -35,7 +35,7 @@ from executors.batch_work_executor import BatchWorkExecutor
 from jobs.base_job import BaseJob
 from services.zip_service import dict_to_two_list
 
-logger = logging.getLogger(LoggerConstant.ExportBlocksJob)
+logger = logging.getLogger(LoggerConstant.AggregateEventJob)
 
 
 # Exports blocks and transactions
@@ -76,7 +76,7 @@ class AggregateEventJob(BaseJob):
 
     def _start(self):
         local_storage = MemoryStorage.getInstance()
-        self.update_wallet_storage: set = local_storage.get_element(MemoryStorageKeyConstant.update_wallet)
+        self.update_wallet_storage: dict = local_storage.get_element(MemoryStorageKeyConstant.update_wallet)
 
     def _export(self):
         self.batch_work_executor.execute(
@@ -86,10 +86,12 @@ class AggregateEventJob(BaseJob):
         )
 
     def _export_batch(self, block_number_batch):
-        self._export_data_events(block_number_batch)
+        for block_number in block_number_batch:
+            self._export_data_events(block_number)
 
     def _export_data_events(self, block):
-        events = self.intermediary_database.get_transfer_native_token_tx_in_block(block)
+        events = self.intermediary_database.get_events_at_of_smart_contract(block,
+                                                                            smart_contract_address=self.smart_contract)
 
         for event in events:
             try:
@@ -107,7 +109,12 @@ class AggregateEventJob(BaseJob):
                      thêm thông tin địa chỉ ví vào kho để update sau cho các thông tin không cần lịch sử.
                     """
                     wallet_address = wallet.get(WalletConstant.address)
-                    self.update_wallet_storage.add(wallet_address)
+                    wallet_in_storage = self.update_wallet_storage.get(wallet_address)
+                    if wallet_in_storage and wallet_in_storage.get(TransactionConstant.block_number) > wallet.get(
+                            TransactionConstant.block_number):
+                        pass
+                    else:
+                        self.update_wallet_storage[wallet_address] = wallet
 
                     """
                     thêm dữ liệu biến động số dư vào trong node wallet trong knowledge graph
@@ -223,6 +230,7 @@ class AggregateEventJob(BaseJob):
         else:
             token = event.get(EventConstant.contract_address)
             value = event.get(BorrowEventVTokenConstant.borrowAmount)
+
         self.klg_database.create_borrow_relationship(tx_id, timestamp, from_address, to_address, token, value)
 
     def _redeem_handler(self, event, timestamp):
@@ -236,6 +244,7 @@ class AggregateEventJob(BaseJob):
         from_address = event.get(RedeemEventConstant.redeemer)
         token = event.get(EventConstant.contract_address)
         value = event.get(RedeemEventConstant.redeemAmount)
+
         self.klg_database.create_withdraw_relationship(tx_id, timestamp, from_address, to_address, token, value)
 
     def _withdraw_handler(self, event, timestamp):
