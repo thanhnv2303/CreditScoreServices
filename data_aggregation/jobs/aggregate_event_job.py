@@ -127,7 +127,7 @@ class AggregateEventJob(BaseJob):
                     balance = wallet.get(WalletConstant.balance)
                     balance_value = self.price_service.get_total_value(balance)
                     balance_100 = self.klg_database.get_balance_100(wallet_address)
-                    balance_100[timestamp_day] += balance_value
+                    balance_100[timestamp_day] = balance_value
 
                     self.klg_database.update_balance_100(wallet_address, balance_100)
 
