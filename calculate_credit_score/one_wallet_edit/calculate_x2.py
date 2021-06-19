@@ -1,6 +1,12 @@
 import csv
 import time
 
+import os
+import sys
+from os import path
+
+TOP_DIR = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
+sys.path.insert(0, os.path.join(TOP_DIR, '../'))
 from py2neo import Graph
 
 from calculate_credit_score.one_wallet_edit.config import Neo4jConfig
