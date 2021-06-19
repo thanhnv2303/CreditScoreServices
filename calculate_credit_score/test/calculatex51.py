@@ -1,5 +1,5 @@
 import re
-from config import Neo4jConfig
+from config.config import Neo4jConfig
 from py2neo import Graph
 
 graph = Graph(Neo4jConfig.BOLT, auth=(Neo4jConfig.NEO4J_USERNAME, Neo4jConfig.NEO4J_PASSWORD))

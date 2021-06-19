@@ -12,8 +12,8 @@ logging.basicConfig(
     level=logging.INFO,
     datefmt='%Y-%m-%d %H:%M:%S')
 
-from calculate_credit_score.streaming.credit_score_streamer import CreditScoreStreamer
-from calculate_credit_score.streaming.credit_score_streamer_adapter import CreditScoreStreamerAdapter
+from calculate_credit_score_test.streaming.credit_score_streamer import CreditScoreStreamer
+from calculate_credit_score_test.streaming.credit_score_streamer_adapter import CreditScoreStreamerAdapter
 
 streamer_adapter = CreditScoreStreamerAdapter()
 streamer = CreditScoreStreamer(

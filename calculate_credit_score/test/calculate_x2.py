@@ -1,7 +1,7 @@
 import time
-from config import Neo4jConfig
+from config.config import Neo4jConfig
 from py2neo import Graph
-from standardized_score_services import get_standardized_score_info
+from calculate_credit_score.test.standardized_score_services import get_standardized_score_info
 
 graph = Graph(Neo4jConfig.BOLT, auth=(Neo4jConfig.NEO4J_USERNAME, Neo4jConfig.NEO4J_PASSWORD))
 

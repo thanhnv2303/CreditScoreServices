@@ -1,5 +1,5 @@
 from py2neo import Graph
-from config import Neo4jConfig
+from config.config import Neo4jConfig
 
 class GetTransferInfo():
     def __init__(self):

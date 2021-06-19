@@ -58,12 +58,12 @@ class AggregateWalletJob(BaseJob):
         self.update_wallet_storage: dict = local_storage.get_element(MemoryStorageKeyConstant.update_wallet)
 
     def _export(self):
-        self.batch_work_executor.execute(
-            self.wallet_addresses,
-            self._export_batch,
-            total_items=len(self.wallet_addresses)
-        )
-        # self._export_batch(self.wallet_addresses)
+        # self.batch_work_executor.execute(
+        #     self.wallet_addresses,
+        #     self._export_batch,
+        #     total_items=len(self.wallet_addresses)
+        # )
+        self._export_batch(self.wallet_addresses)
 
     def _export_batch(self, wallet_addresses):
         for wallet_address in wallet_addresses:
