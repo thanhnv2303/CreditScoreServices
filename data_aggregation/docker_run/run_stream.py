@@ -2,11 +2,12 @@ import os
 import sys
 from os import path
 
-from config.data_aggregation_constant import RunOnConstant
-from data_aggregation.services.init_graph import init_graph_testnet, init_graph_mainnet
 
 TOP_DIR = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 sys.path.insert(0, os.path.join(TOP_DIR, '../'))
+
+from config.data_aggregation_constant import RunOnConstant
+from data_aggregation.services.init_graph import init_graph_testnet, init_graph_mainnet
 
 from data_aggregation.database.intermediary_database import IntermediaryDatabase
 from services.log_services import config_log
