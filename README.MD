@@ -47,3 +47,21 @@ Các thư mục còn lại chứa những thư viện dùng chung, các file ti�
 Hiện tại các module data_aggregation và calculate_credit_score đang được đặt trong code mẫu xử lý theo streaming
 và có thể sử dụng cấu trúc xử lý dữ liệu đa luồng (code mẫu nằm trong thư mục jobs).
 Các nhà phát triển có thể tùy biến lại theo cách triển khai của mình.
+
+## Triển khai thử nghiệm
+
+######neo4j database
+    1. mainnet bsc
+
+        NEO4J_HOST=25.29.164.152
+        NEO4J_BOTH_PORT=7687    
+        NEO4J_HTTP_PORT=7474    
+ 
+
+    2. tesnet bsc
+        NEO4J_HOST=25.29.164.152
+        NEO4J_BOTH_PORT=6687   
+        NEO4J_HTTP_PORT=6474
+
+    
+
