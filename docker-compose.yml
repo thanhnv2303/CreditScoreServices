@@ -67,6 +67,8 @@ services:
       - ./.env
     environment:
       - HOST
+      - NEO4J_HOST=neo4j-klg
+      - NEO4J_BOTH_PORT=7687
 
   neo4j-klg:
     image: neo4j:4.0.3
