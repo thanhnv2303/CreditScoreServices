@@ -6,6 +6,7 @@ from json.decoder import JSONDecodeError
 import aiohttp_cors as aiohttp_cors
 from aiohttp.web import json_response
 
+from calculate_credit_score.one_wallet_edit.calculate_credit_score_final import CalculateCreditScoreOneWallet
 from config.config import RestApiServer
 from config.rest_api_constant import RouteApiConstant
 from errors import ApiBadRequest
@@ -20,6 +21,11 @@ class RouteHandler(object):
 
     async def get_credit_score(self, request):
         address = request.match_info.get('address', '')
+        try:
+            CalculateCreditScoreOneWallet(address)
+        except Exception as e:
+            LOGGER.info(e)
+
         credit_score = self._database.get_credit_score(address)
         return json_response(
             {
