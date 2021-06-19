@@ -61,6 +61,8 @@ class AggregateSmartContractJob(BaseJob):
     def _start(self):
         local_storage = MemoryStorage.getInstance()
         self.update_wallet_storage: set = local_storage.get_element(MemoryStorageKeyConstant.update_wallet)
+    def _end(self):
+        self.batch_work_executor.shutdown()
 
     def _export(self):
         self.batch_work_executor.execute(

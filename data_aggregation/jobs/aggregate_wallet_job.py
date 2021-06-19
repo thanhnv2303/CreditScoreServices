@@ -56,14 +56,16 @@ class AggregateWalletJob(BaseJob):
     def _start(self):
         local_storage = MemoryStorage.getInstance()
         self.update_wallet_storage: dict = local_storage.get_element(MemoryStorageKeyConstant.update_wallet)
+    def _end(self):
+        self.batch_work_executor.shutdown()
 
     def _export(self):
-        # self.batch_work_executor.execute(
-        #     self.wallet_addresses,
-        #     self._export_batch,
-        #     total_items=len(self.wallet_addresses)
-        # )
-        self._export_batch(self.wallet_addresses)
+        self.batch_work_executor.execute(
+            self.wallet_addresses,
+            self._export_batch,
+            total_items=len(self.wallet_addresses)
+        )
+        # self._export_batch(self.wallet_addresses)
 
     def _export_batch(self, wallet_addresses):
         for wallet_address in wallet_addresses:
@@ -100,7 +102,7 @@ class AggregateWalletJob(BaseJob):
             cập nhật thông tin về ngày xuất hiện giao dịch đầu tiên trên hệ thống
             """
 
-            create_at = self.intermediary_database.get_first_create_wallet(wallet_address)
+            create_at = self.intermediary_database.get_first_create_wallet(wallet_address.lower())
             self.klg_database.update_wallet_created_at(wallet_address, create_at)
             ###
         except Exception as e:
