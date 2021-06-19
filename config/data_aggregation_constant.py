@@ -80,3 +80,8 @@ class LiquidationCallEventConstant:
     debtToCover = "debtToCover"
     liquidatedCollateralAmount = "liquidatedCollateralAmount"
     liquidator = "liquidator"
+
+
+class RunOnConstant:
+    BSC_MAINNET = "BSC_MAINNET"
+    BSC_TESTNET = "BSC_TESTNET"

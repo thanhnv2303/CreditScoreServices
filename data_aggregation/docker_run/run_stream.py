@@ -2,6 +2,9 @@ import os
 import sys
 from os import path
 
+from config.data_aggregation_constant import RunOnConstant
+from data_aggregation.services.init_graph import init_graph_testnet, init_graph_mainnet
+
 TOP_DIR = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 sys.path.insert(0, os.path.join(TOP_DIR, '../'))
 
@@ -32,7 +35,7 @@ if __name__ == '__main__':
     v_tokens_filter_file = str(KLGLendingStreamerAdapterConfig.V_TOKENS_FILTER_FILE)
     list_token_filter = "artifacts/token_credit_info/listToken.txt"
     token_info = "artifacts/token_credit_info/infoToken.json"
-
+    run_on = str(KLGLendingStreamerAdapterConfig.RUN_ON)
     # configure_logging(log_file)
     configure_signals()
     if log_file:
@@ -51,6 +54,12 @@ if __name__ == '__main__':
         start_block = intermediary_database.get_oldest_block_update()
 
     # memory_storage = MemoryStorage()
+    if run_on == RunOnConstant.BSC_MAINNET:
+        init_graph_mainnet()
+    elif run_on == RunOnConstant.BSC_TESTNET:
+        init_graph_testnet()
+
+
     streamer_adapter = KLGLendingStreamerAdapter(
         item_exporter=create_item_exporter(output),
         intermediary_database=intermediary_database,
