@@ -51,7 +51,7 @@ services:
       context: .
       dockerfile: ./Dockerfile
     image: credit-score
-    container_name: credit-score-rest-api-server
+    container_name: credit-score-rest-api-server-testnet
     ports:
       - 9000:8000
     volumes:
