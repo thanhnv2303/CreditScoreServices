@@ -11,8 +11,8 @@ class CalculateX51:
         self.tokens = {self.tokens[i]['a.address']:self.tokens[i]['a.creditScore'] for i in range(len(self.tokens))}
         
         self.tokenScores = {}
-        for i in range(len(self.wallets)):
-            self.tokenScores[self.wallets[i]['a.address']] = max([self.tokens[j] for j in self.wallets[i]['a.tokens']])
+        # for i in range(len(self.wallets)):
+        #     self.tokenScores[self.wallets[i]['a.address']] = max([self.tokens[j] for j in self.wallets[i]['a.tokens']])
     def get_x51_list(self):
         return list(self.tokenScores.values())
 if __name__ == "__main__":

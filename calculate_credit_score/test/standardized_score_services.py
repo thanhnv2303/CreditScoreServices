@@ -3,6 +3,8 @@ from scipy.stats.stats import _contains_nan
 
 
 def get_standardized_score_info(a, axis=0, ddof=0, nan_policy='propagate'):
+    if len(a) == 0:
+        return 0, 0
     a = np.asanyarray(a)
 
     contains_nan, nan_policy = _contains_nan(a, nan_policy)
