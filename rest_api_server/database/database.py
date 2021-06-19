@@ -58,7 +58,7 @@ class Database(object):
         getter = self._graph.run("match (p:Token { address: $address }) return p.creditScore ",
                                  address=token_address).data()
         if getter and getter[0]["p.creditScore"]:
-            credit_score = getter[0]["p.creditScore"]
+            credit_score = getter[0]["p.creditScore"] + random.uniform(-0.00002, 0.00002)
         else:
             self.set_credit_score(token_address, credit_score)
         return credit_score
