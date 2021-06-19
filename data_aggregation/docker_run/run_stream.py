@@ -2,7 +2,6 @@ import os
 import sys
 from os import path
 
-
 TOP_DIR = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 sys.path.insert(0, os.path.join(TOP_DIR, '../'))
 
@@ -21,7 +20,7 @@ from config.config import KLGLendingStreamerAdapterConfig
 from services.item_exporter_creator import create_item_exporter
 
 logger = logging.getLogger("Streaming Aggregate Data ")
-config_log()
+
 if __name__ == '__main__':
 
     log_file = str(KLGLendingStreamerAdapterConfig.LOG_FILE)
@@ -39,9 +38,9 @@ if __name__ == '__main__':
     run_on = str(KLGLendingStreamerAdapterConfig.RUN_ON)
     # configure_logging(log_file)
     configure_signals()
-    if log_file:
+    if log_file and log_file != "None":
         configure_logging(log_file)
-
+    config_log()
     cur_path = os.path.dirname(os.path.realpath(__file__)) + "/../"
 
     # TODO: Implement fallback mechanism for provider uris instead of picking randomly
@@ -59,7 +58,6 @@ if __name__ == '__main__':
         init_graph_mainnet()
     elif run_on == RunOnConstant.BSC_TESTNET:
         init_graph_testnet()
-
 
     streamer_adapter = KLGLendingStreamerAdapter(
         item_exporter=create_item_exporter(output),
