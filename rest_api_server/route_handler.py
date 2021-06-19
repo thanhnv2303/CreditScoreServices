@@ -21,6 +21,7 @@ class RouteHandler(object):
 
     async def get_credit_score(self, request):
         address = request.match_info.get('address', '')
+        address = str(address).lower()
         try:
             CalculateCreditScoreOneWallet(address)
         except Exception as e:

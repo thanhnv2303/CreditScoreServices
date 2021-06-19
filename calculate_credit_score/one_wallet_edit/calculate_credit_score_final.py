@@ -29,5 +29,5 @@ class CalculateCreditScoreOneWallet:
 
 
 # if __name__ == "__main__":
-#     calc = CalculateCreditScoreOneWallet("0x0db996196b2fa1a72e33cb268461ac9fd1095929")
+#     calc = CalculateCreditScoreOneWallet("0x19dc1238669a0dd01c25f81ec4972428eed41c00")
 #     pass

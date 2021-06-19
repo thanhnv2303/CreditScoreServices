@@ -22,7 +22,7 @@ class Database(object):
         pass
 
     def get_credit_score(self, wallet_address):
-        credit_score = random.uniform(50.0, 299.9)
+        credit_score = random.uniform(50.0, 99.9)
         getter = self._graph.run("match (p:Wallet { address: $address }) return p.creditScore ",
                                  address=wallet_address).data()
         if getter and getter[0]["p.creditScore"]:
@@ -47,7 +47,7 @@ class Database(object):
         return create[0]["p"]
 
     def update_credit_score(self, wallet_address):
-        change = random.uniform(-10.5, 10.5)
+        change = random.uniform(-5.5, 5.5)
         credit_score = self.get_credit_score(wallet_address)
         credit_score += change
         self.set_credit_score(wallet_address, credit_score)
