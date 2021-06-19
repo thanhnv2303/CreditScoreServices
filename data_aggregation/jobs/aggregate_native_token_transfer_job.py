@@ -73,7 +73,6 @@ class AggregateNativeTokenTransferJob(BaseJob):
 
     def _export_data_in_transaction_transfer_native_token(self, block):
         txs = self.intermediary_database.get_transfer_native_token_tx_in_block(block)
-        print("export transfer nativeexport transfer native")
         for tx in txs:
             related_wallets = tx.get(TransactionConstant.related_wallets)
             timestamp = tx.get(TransactionConstant.block_timestamp)
