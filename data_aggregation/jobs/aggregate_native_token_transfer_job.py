@@ -26,8 +26,8 @@ from config.constant import LoggerConstant, TransactionConstant, WalletConstant,
 from config.data_aggregation_constant import MemoryStorageKeyConstant
 from data_aggregation.database.intermediary_database import IntermediaryDatabase
 from data_aggregation.database.klg_database import KlgDatabase
+from data_aggregation.database.relationships_model import Transfer
 from data_aggregation.services.price_service import PriceService
-from data_aggregation.services.time_service import round_timestamp_to_date
 from database_common.memory_storage import MemoryStorage
 from executors.batch_work_executor import BatchWorkExecutor
 from jobs.base_job import BaseJob
@@ -58,11 +58,9 @@ class AggregateNativeTokenTransferJob(BaseJob):
 
     def _start(self):
         local_storage = MemoryStorage.getInstance()
-        self.update_wallet_storage = local_storage
+        self.update_wallet_storage: dict = local_storage.get_element(MemoryStorageKeyConstant.update_wallet)
 
     def _export(self):
-        logger.info(
-            "_export_export_export_export_export_export_export_export_export_export_export_export_export_export_export")
         self.batch_work_executor.execute(
             range(self.start_block, self.end_block + 1),
             self._export_batch,
@@ -75,13 +73,12 @@ class AggregateNativeTokenTransferJob(BaseJob):
 
     def _export_data_in_transaction_transfer_native_token(self, block):
         txs = self.intermediary_database.get_transfer_native_token_tx_in_block(block)
-
+        print("export transfer nativeexport transfer native")
         for tx in txs:
-            logger.info("tx--------------------------------------------")
-            logger.info(tx)
             related_wallets = tx.get(TransactionConstant.related_wallets)
             timestamp = tx.get(TransactionConstant.block_timestamp)
-            timestamp_day = round_timestamp_to_date(timestamp)
+            # timestamp_day = round_timestamp_to_date(timestamp)
+            timestamp_day = timestamp
             for wallet in related_wallets:
                 """
                  thêm thông tin địa chỉ ví vào kho để update sau cho các thông tin không cần lịch sử.
@@ -119,4 +116,5 @@ class AggregateNativeTokenTransferJob(BaseJob):
             token = TokenConstant.native_token
             value = tx.get(TransactionConstant.value)
 
-            self.klg_database.create_transfer_relationship(from_address, to_address, tx_id, timestamp, token, value)
+            transfer = Transfer(tx_id, timestamp, from_address, to_address, token, value)
+            self.klg_database.create_transfer_relationship(transfer)

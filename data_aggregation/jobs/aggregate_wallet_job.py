@@ -63,10 +63,10 @@ class AggregateWalletJob(BaseJob):
             self._export_batch,
             total_items=len(self.wallet_addresses)
         )
+        # self._export_batch(self.wallet_addresses)
 
     def _export_batch(self, wallet_addresses):
         for wallet_address in wallet_addresses:
-
             self._export_data_wallet(wallet_address)
 
     def _export_data_wallet(self, wallet_address):

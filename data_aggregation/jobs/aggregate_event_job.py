@@ -28,8 +28,8 @@ from config.data_aggregation_constant import MemoryStorageKeyConstant, EventType
     RepayEventConstant, RepayBorrowEventConstant, LiquidateBorrowEventConstant, LiquidationCallEventConstant
 from data_aggregation.database.intermediary_database import IntermediaryDatabase
 from data_aggregation.database.klg_database import KlgDatabase
+from data_aggregation.database.relationships_model import Transfer, Deposit, Borrow, Withdraw, Repay, Liquidate
 from data_aggregation.services.price_service import PriceService
-from data_aggregation.services.time_service import round_timestamp_to_date
 from database_common.memory_storage import MemoryStorage
 from executors.batch_work_executor import BatchWorkExecutor
 from jobs.base_job import BaseJob
@@ -102,7 +102,8 @@ class AggregateEventJob(BaseJob):
                     block_number = event.get(TransactionConstant.block_number)
                     timestamp = self.intermediary_database.block_number_to_time_stamp(block_number)
 
-                timestamp_day = round_timestamp_to_date(timestamp)
+                # timestamp_day = round_timestamp_to_date(timestamp)
+                timestamp_day = timestamp
                 related_wallets = event.get(TransactionConstant.related_wallets)
                 for wallet in related_wallets:
                     """
@@ -184,7 +185,9 @@ class AggregateEventJob(BaseJob):
         token = event.get(EventConstant.contract_address)
         value = event.get(TransactionConstant.value)
 
-        self.klg_database.create_transfer_relationship(tx_id, timestamp, from_address, to_address, token, value)
+        transfer = Transfer(tx_id, timestamp, from_address, to_address, token, value)
+
+        self.klg_database.create_transfer_relationship(transfer)
 
     def _deposit_handler(self, event, timestamp):
         """
@@ -197,8 +200,8 @@ class AggregateEventJob(BaseJob):
         timestamp = timestamp
         token = event.get(DepositEventConstant.reserve)
         value = event.get(DepositEventConstant.amount)
-
-        self.klg_database.create_deposit_relationship(tx_id, timestamp, from_address, to_address, token, value)
+        deposit = Deposit(tx_id, timestamp, from_address, to_address, token, value)
+        self.klg_database.create_deposit_relationship(deposit)
 
     def _mint_handler(self, event, timestamp):
         """
@@ -211,8 +214,8 @@ class AggregateEventJob(BaseJob):
         timestamp = timestamp
         token = event.get(EventConstant.contract_address)
         value = event.get(MintEventConstant.mintAmount)
-
-        self.klg_database.create_deposit_relationship(tx_id, timestamp, from_address, to_address, token, value)
+        deposit = Deposit(tx_id, timestamp, from_address, to_address, token, value)
+        self.klg_database.create_deposit_relationship(deposit)
 
     def _borrow_handler(self, event, timestamp):
         """
@@ -230,8 +233,8 @@ class AggregateEventJob(BaseJob):
         else:
             token = event.get(EventConstant.contract_address)
             value = event.get(BorrowEventVTokenConstant.borrowAmount)
-
-        self.klg_database.create_borrow_relationship(tx_id, timestamp, from_address, to_address, token, value)
+        borrow = Borrow(tx_id, timestamp, from_address, to_address, token, value)
+        self.klg_database.create_borrow_relationship(borrow)
 
     def _redeem_handler(self, event, timestamp):
         """
@@ -244,8 +247,8 @@ class AggregateEventJob(BaseJob):
         from_address = event.get(RedeemEventConstant.redeemer)
         token = event.get(EventConstant.contract_address)
         value = event.get(RedeemEventConstant.redeemAmount)
-
-        self.klg_database.create_withdraw_relationship(tx_id, timestamp, from_address, to_address, token, value)
+        withdraw = Withdraw(tx_id, timestamp, from_address, to_address, token, value)
+        self.klg_database.create_withdraw_relationship(withdraw)
 
     def _withdraw_handler(self, event, timestamp):
         """
@@ -258,7 +261,8 @@ class AggregateEventJob(BaseJob):
         from_address = event.get(WithdrawEventConstant.user)
         token = event.get(WithdrawEventConstant.reserve)
         value = event.get(WithdrawEventConstant.amount)
-        self.klg_database.create_withdraw_relationship(tx_id, timestamp, from_address, to_address, token, value)
+        withdraw = Withdraw(tx_id, timestamp, from_address, to_address, token, value)
+        self.klg_database.create_withdraw_relationship(withdraw)
 
     def _repay_handler(self, event, timestamp):
         """
@@ -271,7 +275,9 @@ class AggregateEventJob(BaseJob):
         from_address = event.get(RepayEventConstant.user)
         token = event.get(RepayEventConstant.reserve)
         value = event.get(RepayEventConstant.amount)
-        self.klg_database.create_repay_relationship(tx_id, timestamp, from_address, to_address, token, value)
+
+        repay = Repay(tx_id, timestamp, from_address, to_address, token, value)
+        self.klg_database.create_repay_relationship(repay)
 
     def _repay_borrow_handler(self, event, timestamp):
         """
@@ -284,7 +290,9 @@ class AggregateEventJob(BaseJob):
         from_address = event.get(RepayBorrowEventConstant.borrower)
         token = event.get(EventConstant.contract_address)
         value = event.get(RepayBorrowEventConstant.repayAmount)
-        self.klg_database.create_repay_relationship(tx_id, timestamp, from_address, to_address, token, value)
+
+        repay = Repay(tx_id, timestamp, from_address, to_address, token, value)
+        self.klg_database.create_repay_relationship(repay)
 
     def _liquidate_borrow_handler(self, event, timestamp):
         """
@@ -293,6 +301,7 @@ class AggregateEventJob(BaseJob):
         """
         tx_id = event.get(TransactionConstant.transaction_hash)
         timestamp = timestamp
+        protocol = event.get(EventConstant.contract_address)
 
         from_wallet = event.get(LiquidateBorrowEventConstant.liquidator)
         to_wallet = event.get(LiquidateBorrowEventConstant.borrower)
@@ -305,10 +314,17 @@ class AggregateEventJob(BaseJob):
             if to_wallet == wallet.get(WalletConstant.address):
                 balance = wallet.get(WalletConstant.balance)
                 to_balance, to_amount = dict_to_two_list(balance)
-
-        self.klg_database.create_liquidate_relationship(tx_id, timestamp, from_wallet, to_wallet, from_balance,
-                                                        from_amount,
-                                                        to_balance, to_amount)
+        liquidate = Liquidate(
+            transactionID=tx_id,
+            timestamp=timestamp,
+            protocol=protocol,
+            fromWallet=from_wallet,
+            toWallet=to_wallet,
+            fromBalance=from_balance,
+            fromAmount=from_amount,
+            toBalance=to_balance,
+            toAmount=to_amount)
+        self.klg_database.create_liquidate_relationship(liquidate)
 
     def liquidate_call_handler(self, event, timestamp):
         """
@@ -317,6 +333,7 @@ class AggregateEventJob(BaseJob):
         """
         tx_id = event.get(TransactionConstant.transaction_hash)
         timestamp = timestamp
+        protocol = event.get(EventConstant.contract_address)
 
         from_wallet = event.get(LiquidationCallEventConstant.liquidator)
         to_wallet = event.get(LiquidationCallEventConstant.user)
@@ -330,6 +347,14 @@ class AggregateEventJob(BaseJob):
                 balance = wallet.get(WalletConstant.balance)
                 to_balance, to_amount = dict_to_two_list(balance)
 
-        self.klg_database.create_liquidate_relationship(tx_id, timestamp, from_wallet, to_wallet, from_balance,
-                                                        from_amount,
-                                                        to_balance, to_amount)
+        liquidate = Liquidate(
+            transactionID=tx_id,
+            timestamp=timestamp,
+            protocol=protocol,
+            fromWallet=from_wallet,
+            toWallet=to_wallet,
+            fromBalance=from_balance,
+            fromAmount=from_amount,
+            toBalance=to_balance,
+            toAmount=to_amount)
+        self.klg_database.create_liquidate_relationship(liquidate)

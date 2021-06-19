@@ -41,8 +41,8 @@ def aggregate(start_block, end_block, max_workers, batch_size,
     Cập nhật giá của các đồng vào một thời điểm cố định trong ngày
     """
     now = datetime.now()
-    if now.hour == 3 and now.minute < 5:
-        credit_score_service.update_token_info()
+    if now.hour == 3 and now.minute:
+        credit_score_service.update_token_market_info()
     """
     Tạo kho dữ liệu tạm để có thể lưu trữ các ví được update trong batch này
     """

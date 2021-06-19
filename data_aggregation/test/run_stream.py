@@ -6,6 +6,7 @@ from os import path
 TOP_DIR = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 sys.path.insert(0, os.path.join(TOP_DIR, '../'))
 
+from data_aggregation.services.init_graph import init_graph_mainnet
 from data_aggregation.database.intermediary_database import IntermediaryDatabase
 from services.log_services import config_log
 from data_aggregation.streaming.aggregate_streamer import Klg_Streamer
@@ -53,6 +54,9 @@ if __name__ == '__main__':
         start_block = intermediary_database.get_oldest_block_update()
 
     # memory_storage = MemoryStorage()
+
+    init_graph_mainnet()
+
     streamer_adapter = KLGLendingStreamerAdapter(
         item_exporter=create_item_exporter(output),
         batch_size=batch_size,

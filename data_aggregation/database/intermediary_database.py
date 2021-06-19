@@ -1,7 +1,7 @@
 from pymongo import MongoClient
 
 from config.config import MongoDBConfig
-from config.constant import TransactionConstant, BlockConstant, WalletConstant
+from config.constant import TransactionConstant, BlockConstant, WalletConstant, TokenConstant
 
 
 class IntermediaryDatabase(object):
@@ -60,3 +60,7 @@ class IntermediaryDatabase(object):
     def get_wallet(self, wallet_address):
         key = {WalletConstant.address: wallet_address}
         return self.mongo_wallet.find_one(key)
+
+    def get_token(self, token_address):
+        key = {TokenConstant.address: token_address}
+        return self.mongo_tokens.find_one(key)

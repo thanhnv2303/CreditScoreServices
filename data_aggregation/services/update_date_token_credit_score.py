@@ -5,10 +5,10 @@ import os
 import numpy as np
 from pycoingecko import CoinGeckoAPI
 
-from calculate_credit_score.database.credit_score_database import Database
+from data_aggregation.database.intermediary_database import IntermediaryDatabase
 
 
-def update_token_credit_score(fileInput='listToken.txt', fileOutput='infoToken.json', database=Database()):
+def update_token_credit_score(fileInput='listToken.txt', fileOutput='infoToken.json', database=IntermediaryDatabase()):
     logger = logging.getLogger('UpdateTokenCreditScore')
     cg = CoinGeckoAPI()
     # Const
@@ -92,8 +92,8 @@ def update_token_credit_score(fileInput='listToken.txt', fileOutput='infoToken.j
                 token["credit_score"] = str(creditScore[i])
                 token["market_cap"] = str(market_cap[i])
                 token["market_rank"] = str(marketRank[i])
-                database.update_token(token)
-                database.neo4j_update_token(token)
+                # database.update_token(token)
+                # database.neo4j_update_token(token)
                 tokens_dict[addr[i]]["decimals"] = token.get("decimals")
                 # print(token)
 
