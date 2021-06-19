@@ -4,7 +4,7 @@ import time
 from py2neo import Graph
 
 from calculate_credit_score.one_wallet_edit.config import Neo4jConfig
-from standardized_score_services import get_standardized_score_info
+from calculate_credit_score.one_wallet_edit.standardized_score_services import get_standardized_score_info
 
 graph = Graph(Neo4jConfig.BOLT, auth=(Neo4jConfig.NEO4J_USERNAME, Neo4jConfig.NEO4J_PASSWORD))
 wallets_data = graph.run(" MATCH (a:Wallet) return a.address, a.createdAt, "
