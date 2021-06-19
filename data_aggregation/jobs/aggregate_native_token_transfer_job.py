@@ -98,10 +98,7 @@ class AggregateNativeTokenTransferJob(BaseJob):
                 balance = wallet.get(WalletConstant.balance)
                 balance_value = self.price_service.get_total_value(balance)
                 balance_100 = self.klg_database.get_balance_100(wallet_address)
-                if not balance_100.get(timestamp_day):
-                    balance_100[timestamp_day] = balance_value
-                else:
-                    balance_100[timestamp_day] += balance_value
+                balance_100[timestamp_day] = balance_value
 
                 self.klg_database.update_balance_100(wallet_address, balance_100)
             """

@@ -1,7 +1,11 @@
+import logging
+
 from pymongo import MongoClient
 
 from config.config import MongoDBConfig
 from config.constant import TransactionConstant, BlockConstant, WalletConstant, TokenConstant
+
+logger = logging.getLogger("IntermediaryDatabase")
 
 
 class IntermediaryDatabase(object):
@@ -11,6 +15,8 @@ class IntermediaryDatabase(object):
     def __init__(self):
         self._conn = None
         url = f"mongodb://{MongoDBConfig.NAME}:{MongoDBConfig.PASSWORD}@{MongoDBConfig.HOST}:{MongoDBConfig.PORT}"
+        logger.info("IntermediaryDatabase")
+        logger.info(url)
         self.mongo = MongoClient(url)
         self.mongo_db = self.mongo[MongoDBConfig.DATABASE]
         self.mongo_db = self.mongo[MongoDBConfig.DATABASE]
@@ -51,7 +57,7 @@ class IntermediaryDatabase(object):
         return self.mongo_transactions_transfer.find(key)
 
     def get_events_at_of_smart_contract(self, block, smart_contract_address):
-        str(smart_contract_address).lower()
+        smart_contract_address = str(smart_contract_address).lower()
         if not self.mongo_token_collection_dict.get(smart_contract_address):
             self.mongo_token_collection_dict[smart_contract_address] = self.mongo_db[smart_contract_address]
         key = {TransactionConstant.block_number: block}

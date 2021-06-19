@@ -101,8 +101,10 @@ class AggregateWalletJob(BaseJob):
             """
             cập nhật thông tin về ngày xuất hiện giao dịch đầu tiên trên hệ thống
             """
-
-            create_at = self.intermediary_database.get_first_create_wallet(wallet_address.lower())
+            try:
+                create_at = self.intermediary_database.get_first_create_wallet(wallet_address.lower())
+            except :
+                create_at = self.intermediary_database.block_number_to_time_stamp(wallet.get("block_number"))
             self.klg_database.update_wallet_created_at(wallet_address, create_at)
             ###
         except Exception as e:

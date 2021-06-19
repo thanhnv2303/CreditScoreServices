@@ -39,7 +39,8 @@ class KLGLendingStreamerAdapter:
         self.tokens_filter_file = cur_path + tokens_filter_file
         self.v_tokens_filter_file = cur_path + v_tokens_filter_file
 
-        self.credit_score_service = PriceService(intermediary_database, list_token_filter, token_info)
+        self.price_service = PriceService(intermediary_database, list_token_filter, token_info)
+        self.price_service.update_token_info()
         self.list_token_filter = list_token_filter
         self.token_info = token_info
 
@@ -85,7 +86,7 @@ class KLGLendingStreamerAdapter:
         aggregate(start_block, end_block, self.max_workers, self.batch_size,
                   event_abi_dir=EthKnowledgeGraphStreamerAdapterConstant.event_abi_dir_default,
                   smart_contracts=smart_contracts,
-                  credit_score_service=self.credit_score_service,
+                  credit_score_service=self.price_service,
                   intermediary_database=self.intermediary_database,
                   klg_database=self.klg_database
                   )

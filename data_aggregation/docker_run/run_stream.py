@@ -33,7 +33,7 @@ if __name__ == '__main__':
     block_batch_size = int(KLGLendingStreamerAdapterConfig.BLOCK_BATCH_SIZE)
     tokens_filter_file = str(KLGLendingStreamerAdapterConfig.TOKENS_FILTER_FILE)
     v_tokens_filter_file = str(KLGLendingStreamerAdapterConfig.V_TOKENS_FILTER_FILE)
-    list_token_filter = "artifacts/token_credit_info/listToken.txt"
+    list_token_filter = str(KLGLendingStreamerAdapterConfig.LIST_TOKEN_FILTER)
     token_info = "artifacts/token_credit_info/infoToken.json"
     run_on = str(KLGLendingStreamerAdapterConfig.RUN_ON)
     # configure_logging(log_file)

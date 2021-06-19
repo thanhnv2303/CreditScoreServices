@@ -2,11 +2,10 @@ import os
 import sys
 from os import path
 
-
 TOP_DIR = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 sys.path.insert(0, os.path.join(TOP_DIR, '../'))
 
-from data_aggregation.services.init_graph import init_graph_mainnet
+from data_aggregation.services.init_graph import init_graph_testnet
 from data_aggregation.database.intermediary_database import IntermediaryDatabase
 from services.log_services import config_log
 from data_aggregation.streaming.aggregate_streamer import Klg_Streamer
@@ -32,7 +31,7 @@ if __name__ == '__main__':
     block_batch_size = int(KLGLendingStreamerAdapterConfig.BLOCK_BATCH_SIZE)
     tokens_filter_file = str(KLGLendingStreamerAdapterConfig.TOKENS_FILTER_FILE)
     v_tokens_filter_file = str(KLGLendingStreamerAdapterConfig.V_TOKENS_FILTER_FILE)
-    list_token_filter = "artifacts/token_credit_info/listToken.txt"
+    list_token_filter = "artifacts/token_credit_info/listToken_testnetbnb.txt"
     token_info = "artifacts/token_credit_info/infoToken.json"
     # configure_logging(log_file)
     configure_signals()
@@ -55,7 +54,8 @@ if __name__ == '__main__':
 
     # memory_storage = MemoryStorage()
 
-    init_graph_mainnet()
+    # init_graph_mainnet()
+    init_graph_testnet()
 
     streamer_adapter = KLGLendingStreamerAdapter(
         item_exporter=create_item_exporter(output),

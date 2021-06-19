@@ -27,6 +27,8 @@ def update_token_credit_score(fileInput='listToken.txt', fileOutput='infoToken.j
     id = list()
 
     for x in f:
+        print("""""""""""""""""""""""""x""""""""""""""""""""""""")
+        print(x)
         data = x.split(" ")
         coin.append(data[0])
         addr.append(data[1])

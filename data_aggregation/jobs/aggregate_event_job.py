@@ -77,6 +77,7 @@ class AggregateEventJob(BaseJob):
     def _start(self):
         local_storage = MemoryStorage.getInstance()
         self.update_wallet_storage: dict = local_storage.get_element(MemoryStorageKeyConstant.update_wallet)
+
     def _end(self):
         self.batch_work_executor.shutdown()
 
@@ -94,9 +95,10 @@ class AggregateEventJob(BaseJob):
     def _export_data_events(self, block):
         events = self.intermediary_database.get_events_at_of_smart_contract(block,
                                                                             smart_contract_address=self.smart_contract)
-
         for event in events:
             try:
+                logger.info("eventttttttttttttttttttttttttttttttttttttt")
+                logger.info(event)
                 event_type = event.get(EventConstant.type)
 
                 timestamp = event.get(TransactionConstant.block_timestamp)
@@ -125,10 +127,7 @@ class AggregateEventJob(BaseJob):
                     balance = wallet.get(WalletConstant.balance)
                     balance_value = self.price_service.get_total_value(balance)
                     balance_100 = self.klg_database.get_balance_100(wallet_address)
-                    if not balance_100.get(timestamp_day):
-                        balance_100[timestamp_day] = balance_value
-                    else:
-                        balance_100[timestamp_day] += balance_value
+                    balance_100[timestamp_day] += balance_value
 
                     self.klg_database.update_balance_100(wallet_address, balance_100)
 
@@ -139,20 +138,14 @@ class AggregateEventJob(BaseJob):
                         deposit = wallet.get(WalletConstant.supply)
                         deposit_value = self.price_service.get_total_value(deposit)
                         deposit_100 = self.klg_database.get_deposit_100(wallet_address)
-                        if not deposit_100.get(timestamp_day):
-                            deposit_100[timestamp_day] = deposit_value
-                        else:
-                            deposit_100[timestamp_day] += deposit_value
+                        deposit_100[timestamp_day] = deposit_value
 
                         self.klg_database.update_deposit_100(wallet_address, deposit_100)
 
                         borrow = wallet.get(WalletConstant.borrow)
                         borrow_value = self.price_service.get_total_value(borrow)
                         borrow_100 = self.klg_database.get_borrow_100(wallet_address)
-                        if not borrow_100.get(timestamp_day):
-                            borrow_100[timestamp_day] = borrow_value
-                        else:
-                            borrow_100[timestamp_day] += borrow_value
+                        borrow_100[timestamp_day] = borrow_value
 
                         self.klg_database.update_borrow_100(wallet_address, borrow_100)
                 """

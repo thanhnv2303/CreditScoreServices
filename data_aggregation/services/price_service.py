@@ -53,6 +53,8 @@ class PriceService:
         if not token:
             return 0
         decimals = to_int(token.get(TokenConstant.decimals))
+        if not decimals:
+            decimals = 18
         price = to_float(token.get(TokenConstant.price))
 
         return to_int(amount) * price / 10 ** decimals
