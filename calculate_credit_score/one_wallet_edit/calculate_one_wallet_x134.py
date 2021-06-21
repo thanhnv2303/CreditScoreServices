@@ -309,6 +309,23 @@ class CalculateOneWallet:
 
     def get_x3(self):
         return self.get_x31() * 0.6 + self.get_x32() * 0.4
+    def get_x12(self):
+        deposit = wallet.neo4j_get_wallet_depositInUSD(self.address)
+        if deposit is None:
+            deposit = 0 
+        borrow = wallet.neo4j_get_wallet_borrowInUSD(self.address)
+        if borrow is None:
+            borrow = 0
+        balance = wallet.neo4j_get_wallet_balanceInUSD(self.address)
+        if (balance is None):
+            balance = 0
+        asset_current = balance + deposit - borrow;
+        if assset_current < 1000:
+            return 0
+        if asset_current < 10000:
+            return asset_current/10
+        if asset_current > 10000:
+            return 1000 
 
 # cal= CalculateOneWallet("0x1ca3Ac3686071be692be7f1FBeCd6686414sada")
 # print (cal.get_x4())
