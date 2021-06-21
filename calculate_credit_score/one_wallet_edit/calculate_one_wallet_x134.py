@@ -320,7 +320,7 @@ class CalculateOneWallet:
         if (balance is None):
             balance = 0
         asset_current = balance + deposit - borrow;
-        if assset_current < 1000:
+        if asset_current < 1000:
             return 0
         if asset_current < 10000:
             return asset_current/10
