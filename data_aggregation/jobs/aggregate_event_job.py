@@ -97,8 +97,8 @@ class AggregateEventJob(BaseJob):
                                                                             smart_contract_address=self.smart_contract)
         for event in events:
             try:
-                logger.info("eventttttttttttttttttttttttttttttttttttttt")
-                logger.info(event)
+                # logger.info("eventttttttttttttttttttttttttttttttttttttt")
+                # logger.info(event)
                 event_type = event.get(EventConstant.type)
 
                 timestamp = event.get(TransactionConstant.block_timestamp)
@@ -109,6 +109,8 @@ class AggregateEventJob(BaseJob):
                 # timestamp_day = round_timestamp_to_date(timestamp)
                 timestamp_day = timestamp
                 related_wallets = event.get(TransactionConstant.related_wallets)
+                if not related_wallets:
+                    return
                 for wallet in related_wallets:
                     """
                      thêm thông tin địa chỉ ví vào kho để update sau cho các thông tin không cần lịch sử.

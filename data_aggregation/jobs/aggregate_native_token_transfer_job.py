@@ -59,6 +59,7 @@ class AggregateNativeTokenTransferJob(BaseJob):
     def _start(self):
         local_storage = MemoryStorage.getInstance()
         self.update_wallet_storage: dict = local_storage.get_element(MemoryStorageKeyConstant.update_wallet)
+
     def _end(self):
         self.batch_work_executor.shutdown()
 
@@ -80,6 +81,8 @@ class AggregateNativeTokenTransferJob(BaseJob):
             timestamp = tx.get(TransactionConstant.block_timestamp)
             # timestamp_day = round_timestamp_to_date(timestamp)
             timestamp_day = timestamp
+            if not related_wallets:
+                return
             for wallet in related_wallets:
                 """
                  thêm thông tin địa chỉ ví vào kho để update sau cho các thông tin không cần lịch sử.

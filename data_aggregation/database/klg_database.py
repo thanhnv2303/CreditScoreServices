@@ -303,7 +303,7 @@ class KlgDatabase(object):
         return merge
 
     def create_deposit_relationship(self, deposit: Deposit):
-        merge = self._graph.run("MATCH (a { address: $fromWallet }), (b { address: $toAddress}) "
+        merge = self._graph.run("MATCH (a :Wallet { address: $fromWallet }), (b :LendingPool { address: $toAddress}) "
                                 "MERGE (a)-[r:DEPOSIT { transactionID: $transactionID,"
                                 "timestamp: $timestamp,"
                                 "fromWallet: $fromWallet,"
@@ -319,7 +319,7 @@ class KlgDatabase(object):
         return merge
 
     def create_borrow_relationship(self, borrow: Borrow):
-        merge = self._graph.run("MATCH (a { address: $fromWallet }), (b {address: $toAddress}) "
+        merge = self._graph.run("MATCH (a :Wallet { address: $fromWallet }), (b :LendingPool {address: $toAddress}) "
                                 "MERGE (a)-[r:BORROW { transactionID: $transactionID,"
                                 "timestamp: $timestamp,"
                                 "fromWallet: $fromWallet,"
@@ -335,7 +335,7 @@ class KlgDatabase(object):
         return merge
 
     def create_repay_relationship(self, repay: Repay):
-        merge = self._graph.run("MATCH (a { address: $fromWallet }), (b {address: $toAddress}) "
+        merge = self._graph.run("MATCH (a :Wallet { address: $fromWallet }), (b :LendingPool {address: $toAddress}) "
                                 "MERGE (a)-[r:REPAY { transactionID: $transactionID,"
                                 "timestamp: $timestamp,"
                                 "fromWallet: $fromWallet,"
@@ -351,7 +351,7 @@ class KlgDatabase(object):
         return merge
 
     def create_withdraw_relationship(self, withdraw: Withdraw):
-        merge = self._graph.run("MATCH (a { address: $fromWallet }), (b {address: $toAddress}) "
+        merge = self._graph.run("MATCH (a :Wallet { address: $fromWallet }), (b :LendingPool {address: $toAddress}) "
                                 "MERGE (a)-[r:WITHDRAW { transactionID: $transactionID,"
                                 "timestamp: $timestamp,"
                                 "fromWallet: $fromWallet,"
@@ -367,7 +367,7 @@ class KlgDatabase(object):
         return merge
 
     def create_liquidate_relationship(self, liquidate: Liquidate):
-        merge = self._graph.run("MATCH (a { address: $fromWallet }), (b {address: $toWallet}) "
+        merge = self._graph.run("MATCH (a:Wallet { address: $fromWallet }), (b :Wallet {address: $toWallet}) "
                                 "MERGE (a)-[r:LIQUIDATE { transactionID: $transactionID,"
                                 "timestamp: $timestamp,"
                                 "protocol: $protocol,"

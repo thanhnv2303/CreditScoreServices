@@ -80,7 +80,7 @@ def update_token_credit_score(fileInput='listToken.txt', fileOutput='infoToken.j
             line = addr[i] + ' ' + coin[i] + ' ' + priceStr[i] + ' ' + str(creditScore[i]) + ' ' + str(
                 market_cap[i])
             # print(line)
-            logger.info(line)
+            # logger.info(line)
             tokens_dict[addr[i]] = {
                 "symbol": coin[i],
                 "price": priceStr[i],
