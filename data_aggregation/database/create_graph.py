@@ -14,7 +14,7 @@ class CreateGraph:
         bolt = f"bolt://{Neo4jConfig.HOST}:{Neo4jConfig.BOTH_PORT}"
         self._graph = Graph(bolt, auth=(Neo4jConfig.NEO4J_USERNAME, Neo4jConfig.NEO4J_PASSWORD))
 
-        self._create_index()
+        # self._create_index()
 
     def _create_index(self):
         self._graph.run(INDEX_ADDRESS_WALLET)
