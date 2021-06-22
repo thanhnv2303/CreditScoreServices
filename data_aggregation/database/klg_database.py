@@ -165,7 +165,7 @@ class KlgDatabase(object):
         # :param wallet_address:
         # :return:
         # """
-        if not balance_100:
+        if not wallet_address or not balance_100:
             return
         keys, values = dict_to_two_list(balance_100)
         keys = list(keys)
@@ -219,7 +219,7 @@ class KlgDatabase(object):
         # :param wallet_address:
         # :return:
         # """
-        if not deposit_100:
+        if not wallet_address or not deposit_100:
             return
         keys, values = dict_to_two_list(deposit_100)
         keys = list(keys)
@@ -273,7 +273,7 @@ class KlgDatabase(object):
         # :param wallet_address:
         # :return:
         # """
-        if not borrow_100:
+        if not wallet_address or not wallet_address:
             return
         keys, values = dict_to_two_list(borrow_100)
         keys = list(keys)
