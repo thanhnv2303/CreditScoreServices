@@ -1,7 +1,11 @@
 from py2neo import Graph
+
+from config.config import Neo4jConfig
+from data_aggregation.database.neo4j_services_db.cypher import INDEX_ADDRESS_WALLET, INDEX_ADDRESS_TOKEN, \
+    INDEX_ADDRESS_LENDING_POOL
 from data_aggregation.database.nodes_model import Wallet, Token, LendingPool
 from data_aggregation.database.relationships_model import *
-from config.config import Neo4jConfig
+
 
 class CreateGraph:
     def __init__(self):
@@ -9,6 +13,13 @@ class CreateGraph:
 
         bolt = f"bolt://{Neo4jConfig.HOST}:{Neo4jConfig.BOTH_PORT}"
         self._graph = Graph(bolt, auth=(Neo4jConfig.NEO4J_USERNAME, Neo4jConfig.NEO4J_PASSWORD))
+
+        self._create_index()
+
+    def _create_index(self):
+        self._graph.run(INDEX_ADDRESS_WALLET)
+        self._graph.run(INDEX_ADDRESS_TOKEN)
+        self._graph.run(INDEX_ADDRESS_LENDING_POOL)
 
     # ==================
     # CREATE NODE
@@ -18,8 +29,8 @@ class CreateGraph:
         match = self._graph.run("MATCH (p:Wallet { address : $address}) return p ", address=wallet_address).data()
         if not match:
             create = self._graph.run("MERGE (p:Wallet { address: $address }) "
-                                "RETURN p",
-                                address = wallet_address).data()
+                                     "RETURN p",
+                                     address=wallet_address).data()
             return create[0]["p"]
         return match[0]["p"]
 
@@ -27,108 +38,108 @@ class CreateGraph:
         match = self._graph.run("MATCH (p:Wallet { address : $address}) return p ", address=wallet.address).data()
         if not match:
             create = self._graph.run("MERGE (p:Wallet { address: $address }) "
-                                    "SET p.lastUpdatedAt = $lastUpdatedAt,"
-                                    "p.creditScore = $creditScore, "
-                                    "p.tokens = $tokens, "
-                                    "p.tokenBalances = $tokenBalances,"
-                                    "p.balanceInUSD = $balanceInUSD, "
-                                    "p.balanceChangeLogTimestamps = $balanceChangeLogTimestamps, "
-                                    "p.balanceChangeLogValues = $balanceChangeLogValues, "
-                                    "p.createdAt = $createdAt, "
-                                    "p.depositTokens = $depositTokens, "
-                                    "p.depositTokenBalances = $depositTokenBalances, "
-                                    "p.depositInUSD = $depositInUSD, "
-                                    "p.depositChangeLogTimestamps =$depositChangeLogTimestamps, "
-                                    "p.depositChangeLogValues = $depositChangeLogValues, "
-                                    "p.borrowTokens = $borrowTokens, "
-                                    "p.borrowTokenBalances = $borrowTokenBalances, "
-                                    "p.borrowInUSD = $borrowInUSD, "
-                                    "p.borrowChangeLogTimestamps = $borrowChangeLogTimestamps, "
-                                    "p.borrowChangeLogValues = $borrowChangeLogValues, "
-                                    "p.numberOfLiquidation = $numberOfLiquidation, "
-                                    "p.totalAmountOfLiquidation = $totalAmountOfLiquidation, "
-                                    "p.dailyTransactionAmounts = $dailyTransactionAmounts, "
-                                    "p.dailyFrequencyOfTransactions  = $dailyFrequencyOfTransactions "
-                                    "RETURN p",
-                                    address=wallet.address,
-                                    lastUpdatedAt=wallet.lastUpdatedAt,
-                                    creditScore=wallet.creditScore,
-                                    tokens=wallet.tokens,
-                                    tokenBalances=wallet.tokenBalances,
-                                    balanceInUSD=wallet.balanceInUSD,
-                                    balanceChangeLogTimestamps=wallet.balanceChangeLogTimestamps,
-                                    balanceChangeLogValues=wallet.balanceChangeLogValues,
-                                    createdAt=wallet.createdAt,
-                                    depositTokens=wallet.depositTokens,
-                                    depositTokenBalances=wallet.depositTokenBalances,
-                                    depositInUSD=wallet.depositInUSD,
-                                    depositChangeLogTimestamps=wallet.depositChangeLogTimestamps,
-                                    depositChangeLogValues=wallet.depositChangeLogValues,
-                                    borrowTokens=wallet.borrowTokens,
-                                    borrowTokenBalances=wallet.borrowTokenBalances,
-                                    borrowInUSD=wallet.borrowInUSD,
-                                    borrowChangeLogTimestamps=wallet.borrowChangeLogTimestamps,
-                                    borrowChangeLogValues=wallet.borrowChangeLogValues,
-                                    numberOfLiquidation=wallet.numberOfLiquidation,
-                                    totalAmountOfLiquidation=wallet.totalAmountOfLiquidation,
-                                    dailyTransactionAmounts=wallet.dailyTransactionAmounts,
-                                    dailyFrequencyOfTransactions=wallet.dailyFrequencyOfTransactions).data()
+                                     "SET p.lastUpdatedAt = $lastUpdatedAt,"
+                                     "p.creditScore = $creditScore, "
+                                     "p.tokens = $tokens, "
+                                     "p.tokenBalances = $tokenBalances,"
+                                     "p.balanceInUSD = $balanceInUSD, "
+                                     "p.balanceChangeLogTimestamps = $balanceChangeLogTimestamps, "
+                                     "p.balanceChangeLogValues = $balanceChangeLogValues, "
+                                     "p.createdAt = $createdAt, "
+                                     "p.depositTokens = $depositTokens, "
+                                     "p.depositTokenBalances = $depositTokenBalances, "
+                                     "p.depositInUSD = $depositInUSD, "
+                                     "p.depositChangeLogTimestamps =$depositChangeLogTimestamps, "
+                                     "p.depositChangeLogValues = $depositChangeLogValues, "
+                                     "p.borrowTokens = $borrowTokens, "
+                                     "p.borrowTokenBalances = $borrowTokenBalances, "
+                                     "p.borrowInUSD = $borrowInUSD, "
+                                     "p.borrowChangeLogTimestamps = $borrowChangeLogTimestamps, "
+                                     "p.borrowChangeLogValues = $borrowChangeLogValues, "
+                                     "p.numberOfLiquidation = $numberOfLiquidation, "
+                                     "p.totalAmountOfLiquidation = $totalAmountOfLiquidation, "
+                                     "p.dailyTransactionAmounts = $dailyTransactionAmounts, "
+                                     "p.dailyFrequencyOfTransactions  = $dailyFrequencyOfTransactions "
+                                     "RETURN p",
+                                     address=wallet.address,
+                                     lastUpdatedAt=wallet.lastUpdatedAt,
+                                     creditScore=wallet.creditScore,
+                                     tokens=wallet.tokens,
+                                     tokenBalances=wallet.tokenBalances,
+                                     balanceInUSD=wallet.balanceInUSD,
+                                     balanceChangeLogTimestamps=wallet.balanceChangeLogTimestamps,
+                                     balanceChangeLogValues=wallet.balanceChangeLogValues,
+                                     createdAt=wallet.createdAt,
+                                     depositTokens=wallet.depositTokens,
+                                     depositTokenBalances=wallet.depositTokenBalances,
+                                     depositInUSD=wallet.depositInUSD,
+                                     depositChangeLogTimestamps=wallet.depositChangeLogTimestamps,
+                                     depositChangeLogValues=wallet.depositChangeLogValues,
+                                     borrowTokens=wallet.borrowTokens,
+                                     borrowTokenBalances=wallet.borrowTokenBalances,
+                                     borrowInUSD=wallet.borrowInUSD,
+                                     borrowChangeLogTimestamps=wallet.borrowChangeLogTimestamps,
+                                     borrowChangeLogValues=wallet.borrowChangeLogValues,
+                                     numberOfLiquidation=wallet.numberOfLiquidation,
+                                     totalAmountOfLiquidation=wallet.totalAmountOfLiquidation,
+                                     dailyTransactionAmounts=wallet.dailyTransactionAmounts,
+                                     dailyFrequencyOfTransactions=wallet.dailyFrequencyOfTransactions).data()
         else:
             create = self._graph.run("MATCH (p:Wallet { address: $address }) "
-                                    "SET p.lastUpdatedAt = $lastUpdatedAt,"
-                                    "p.creditScore = $creditScore, "
-                                    "p.tokens = $tokens, "
-                                    "p.tokenBalances = $tokenBalances,"
-                                    "p.balanceInUSD = $balanceInUSD, "
-                                    "p.balanceChangeLogTimestamps = $balanceChangeLogTimestamps, "
-                                    "p.balanceChangeLogValues = $balanceChangeLogValues, "
-                                    "p.createdAt = $createdAt, "
-                                    "p.depositTokens = $depositTokens, "
-                                    "p.depositTokenBalances = $depositTokenBalances, "
-                                    "p.depositInUSD = $depositInUSD, "
-                                    "p.depositChangeLogTimestamps =$depositChangeLogTimestamps, "
-                                    "p.depositChangeLogValues = $depositChangeLogValues, "
-                                    "p.borrowTokens = $borrowTokens, "
-                                    "p.borrowTokenBalances = $borrowTokenBalances, "
-                                    "p.borrowInUSD = $borrowInUSD, "
-                                    "p.borrowChangeLogTimestamps = $borrowChangeLogTimestamps, "
-                                    "p.borrowChangeLogValues = $borrowChangeLogValues, "
-                                    "p.numberOfLiquidation = $numberOfLiquidation, "
-                                    "p.totalAmountOfLiquidation = $totalAmountOfLiquidation, "
-                                    "p.dailyTransactionAmounts = $dailyTransactionAmounts, "
-                                    "p.dailyFrequencyOfTransactions  = $dailyFrequencyOfTransactions "
-                                    "RETURN p",
-                                    address=wallet.address,
-                                    lastUpdatedAt=wallet.lastUpdatedAt,
-                                    creditScore=wallet.creditScore,
-                                    tokens=wallet.tokens,
-                                    tokenBalances=wallet.tokenBalances,
-                                    balanceInUSD=wallet.balanceInUSD,
-                                    balanceChangeLogTimestamps=wallet.balanceChangeLogTimestamps,
-                                    balanceChangeLogValues=wallet.balanceChangeLogValues,
-                                    createdAt=wallet.createdAt,
-                                    depositTokens=wallet.depositTokens,
-                                    depositTokenBalances=wallet.depositTokenBalances,
-                                    depositInUSD=wallet.depositInUSD,
-                                    depositChangeLogTimestamps=wallet.depositChangeLogTimestamps,
-                                    depositChangeLogValues=wallet.depositChangeLogValues,
-                                    borrowTokens=wallet.borrowTokens,
-                                    borrowTokenBalances=wallet.borrowTokenBalances,
-                                    borrowInUSD=wallet.borrowInUSD,
-                                    borrowChangeLogTimestamps=wallet.borrowChangeLogTimestamps,
-                                    borrowChangeLogValues=wallet.borrowChangeLogValues,
-                                    numberOfLiquidation=wallet.numberOfLiquidation,
-                                    totalAmountOfLiquidation=wallet.totalAmountOfLiquidation,
-                                    dailyTransactionAmounts=wallet.dailyTransactionAmounts,
-                                    dailyFrequencyOfTransactions=wallet.dailyFrequencyOfTransactions).data()
+                                     "SET p.lastUpdatedAt = $lastUpdatedAt,"
+                                     "p.creditScore = $creditScore, "
+                                     "p.tokens = $tokens, "
+                                     "p.tokenBalances = $tokenBalances,"
+                                     "p.balanceInUSD = $balanceInUSD, "
+                                     "p.balanceChangeLogTimestamps = $balanceChangeLogTimestamps, "
+                                     "p.balanceChangeLogValues = $balanceChangeLogValues, "
+                                     "p.createdAt = $createdAt, "
+                                     "p.depositTokens = $depositTokens, "
+                                     "p.depositTokenBalances = $depositTokenBalances, "
+                                     "p.depositInUSD = $depositInUSD, "
+                                     "p.depositChangeLogTimestamps =$depositChangeLogTimestamps, "
+                                     "p.depositChangeLogValues = $depositChangeLogValues, "
+                                     "p.borrowTokens = $borrowTokens, "
+                                     "p.borrowTokenBalances = $borrowTokenBalances, "
+                                     "p.borrowInUSD = $borrowInUSD, "
+                                     "p.borrowChangeLogTimestamps = $borrowChangeLogTimestamps, "
+                                     "p.borrowChangeLogValues = $borrowChangeLogValues, "
+                                     "p.numberOfLiquidation = $numberOfLiquidation, "
+                                     "p.totalAmountOfLiquidation = $totalAmountOfLiquidation, "
+                                     "p.dailyTransactionAmounts = $dailyTransactionAmounts, "
+                                     "p.dailyFrequencyOfTransactions  = $dailyFrequencyOfTransactions "
+                                     "RETURN p",
+                                     address=wallet.address,
+                                     lastUpdatedAt=wallet.lastUpdatedAt,
+                                     creditScore=wallet.creditScore,
+                                     tokens=wallet.tokens,
+                                     tokenBalances=wallet.tokenBalances,
+                                     balanceInUSD=wallet.balanceInUSD,
+                                     balanceChangeLogTimestamps=wallet.balanceChangeLogTimestamps,
+                                     balanceChangeLogValues=wallet.balanceChangeLogValues,
+                                     createdAt=wallet.createdAt,
+                                     depositTokens=wallet.depositTokens,
+                                     depositTokenBalances=wallet.depositTokenBalances,
+                                     depositInUSD=wallet.depositInUSD,
+                                     depositChangeLogTimestamps=wallet.depositChangeLogTimestamps,
+                                     depositChangeLogValues=wallet.depositChangeLogValues,
+                                     borrowTokens=wallet.borrowTokens,
+                                     borrowTokenBalances=wallet.borrowTokenBalances,
+                                     borrowInUSD=wallet.borrowInUSD,
+                                     borrowChangeLogTimestamps=wallet.borrowChangeLogTimestamps,
+                                     borrowChangeLogValues=wallet.borrowChangeLogValues,
+                                     numberOfLiquidation=wallet.numberOfLiquidation,
+                                     totalAmountOfLiquidation=wallet.totalAmountOfLiquidation,
+                                     dailyTransactionAmounts=wallet.dailyTransactionAmounts,
+                                     dailyFrequencyOfTransactions=wallet.dailyFrequencyOfTransactions).data()
         return create[0]["p"]
 
     def neo4j_create_token_node(self, token_address):
         match = self._graph.run("MATCH (p:Token { address : $address}) return p ", address=token_address).data()
         if not match:
             create = self._graph.run("MERGE (p:Token { address: $address }) "
-                                "RETURN p",
-                                address = token_address).data()
+                                     "RETURN p",
+                                     address=token_address).data()
             return create[0]["p"]
         return match[0]["p"]
 
@@ -136,89 +147,91 @@ class CreateGraph:
         match = self._graph.run("MATCH (a:Token { address: $address }) RETURN a", address=token.address).data()
         if not match:
             create = self._graph.run("MERGE (a: Token { address: $address })"
-                                    "SET a.totalSupply = $totalSupply,"
-                                    "a.symbol = $symbol,"
-                                    "a.name = $name,"
-                                    "a.decimal = $decimal,"
-                                    "a.dailyFrequencyOfTransactions = $dailyFrequencyOfTransactions, "
-                                    "a.creditScore = $creditScore, "
-                                    "a.price = $price,"
-                                    "a.highestPrice = $highestPrice, "
-                                    "a.marketCap = $marketCap,"
-                                    "a.tradingVolume24 = $tradingVolume24, "
-                                    "a.lastUpdatedAt = $lastUpdatedAt "
-                                    "RETURN a",
-                                    address=token.address,
-                                    totalSupply=token.totalSupply,
-                                    symbol=token.symbol,
-                                    name=token.name,
-                                    decimal=token.decimal,
-                                    dailyFrequencyOfTransactions=token.dailyFrequencyOfTransactions,
-                                    creditScore=token.creditScore,
-                                    price=token.price,
-                                    highestPrice=token.highestPrice,
-                                    marketCap=token.marketCap,
-                                    tradingVolume24=token.tradingVolume24,
-                                    lastUpdatedAt=token.lastUpdatedAt).data()
+                                     "SET a.totalSupply = $totalSupply,"
+                                     "a.symbol = $symbol,"
+                                     "a.name = $name,"
+                                     "a.decimal = $decimal,"
+                                     "a.dailyFrequencyOfTransactions = $dailyFrequencyOfTransactions, "
+                                     "a.creditScore = $creditScore, "
+                                     "a.price = $price,"
+                                     "a.highestPrice = $highestPrice, "
+                                     "a.marketCap = $marketCap,"
+                                     "a.tradingVolume24 = $tradingVolume24, "
+                                     "a.lastUpdatedAt = $lastUpdatedAt "
+                                     "RETURN a",
+                                     address=token.address,
+                                     totalSupply=token.totalSupply,
+                                     symbol=token.symbol,
+                                     name=token.name,
+                                     decimal=token.decimal,
+                                     dailyFrequencyOfTransactions=token.dailyFrequencyOfTransactions,
+                                     creditScore=token.creditScore,
+                                     price=token.price,
+                                     highestPrice=token.highestPrice,
+                                     marketCap=token.marketCap,
+                                     tradingVolume24=token.tradingVolume24,
+                                     lastUpdatedAt=token.lastUpdatedAt).data()
         else:
             create = self._graph.run("MATCH (a: Token { address: $address })"
-                                    "SET a.totalSupply = $totalSupply,"
-                                    "a.symbol = $symbol,"
-                                    "a.name = $name,"
-                                    "a.decimal = $decimal,"
-                                    "a.dailyFrequencyOfTransactions = $dailyFrequencyOfTransactions, "
-                                    "a.creditScore = $creditScore, "
-                                    "a.price = $price,"
-                                    "a.highestPrice = $highestPrice, "
-                                    "a.marketCap = $marketCap,"
-                                    "a.tradingVolume24 = $tradingVolume24, "
-                                    "a.lastUpdatedAt = $lastUpdatedAt "
-                                    "RETURN a",
-                                    address=token.address,
-                                    totalSupply=token.totalSupply,
-                                    symbol=token.symbol,
-                                    name=token.name,
-                                    decimal=token.decimal,
-                                    dailyFrequencyOfTransactions=token.dailyFrequencyOfTransactions,
-                                    creditScore=token.creditScore,
-                                    price=token.price,
-                                    highestPrice=token.highestPrice,
-                                    marketCap=token.marketCap,
-                                    tradingVolume24=token.tradingVolume24,
-                                    lastUpdatedAt=token.lastUpdatedAt).data()
+                                     "SET a.totalSupply = $totalSupply,"
+                                     "a.symbol = $symbol,"
+                                     "a.name = $name,"
+                                     "a.decimal = $decimal,"
+                                     "a.dailyFrequencyOfTransactions = $dailyFrequencyOfTransactions, "
+                                     "a.creditScore = $creditScore, "
+                                     "a.price = $price,"
+                                     "a.highestPrice = $highestPrice, "
+                                     "a.marketCap = $marketCap,"
+                                     "a.tradingVolume24 = $tradingVolume24, "
+                                     "a.lastUpdatedAt = $lastUpdatedAt "
+                                     "RETURN a",
+                                     address=token.address,
+                                     totalSupply=token.totalSupply,
+                                     symbol=token.symbol,
+                                     name=token.name,
+                                     decimal=token.decimal,
+                                     dailyFrequencyOfTransactions=token.dailyFrequencyOfTransactions,
+                                     creditScore=token.creditScore,
+                                     price=token.price,
+                                     highestPrice=token.highestPrice,
+                                     marketCap=token.marketCap,
+                                     tradingVolume24=token.tradingVolume24,
+                                     lastUpdatedAt=token.lastUpdatedAt).data()
             return create[0]['a']
 
     def neo4j_create_lending_pool_node(self, lending_pool_address):
-        match = self._graph.run("MATCH (p:LendingPool { address : $address}) return p ", address=lending_pool_address).data()
+        match = self._graph.run("MATCH (p:LendingPool { address : $address}) return p ",
+                                address=lending_pool_address).data()
         if not match:
             create = self._graph.run("MERGE (p:LendingPool { address: $address }) "
-                                "RETURN p",
-                                address = lending_pool_address).data()
+                                     "RETURN p",
+                                     address=lending_pool_address).data()
             return create[0]["p"]
         return match[0]["p"]
 
     def neo4j_update_lending_pool_node(self, lendingPool: LendingPool):
-        match = self._graph.run("MATCH (a:LendingPool { address: $address }) RETURN a", address=lendingPool.address).data()
+        match = self._graph.run("MATCH (a:LendingPool { address: $address }) RETURN a",
+                                address=lendingPool.address).data()
         if not match:
             create = self._graph.run("MERGE (a:LendingPool { address: $address })"
-                                    "SET a.tokens=$tokens,"
-                                    "a.supply=$supply,"
-                                    "a.borrow=$borrow "
-                                    "RETURN a",
-                                    address=lendingPool.address,
-                                    tokens=lendingPool.tokens,
-                                    supply=lendingPool.supply,
-                                    borrow=lendingPool.borrow).data()
+                                     "SET a.tokens=$tokens,"
+                                     "a.supply=$supply,"
+                                     "a.borrow=$borrow "
+                                     "RETURN a",
+                                     address=lendingPool.address,
+                                     tokens=lendingPool.tokens,
+                                     supply=lendingPool.supply,
+                                     borrow=lendingPool.borrow).data()
         else:
             create = self._graph.run("MATCH (a:LendingPool { address: $address })"
-                                    "SET a.tokens=$tokens,"
-                                    "a.supply=$supply,"
-                                    "a.borrow=$borrow "
-                                    "RETURN a",
-                                    address=lendingPool.address,
-                                    tokens=lendingPool.tokens,
-                                    supply=lendingPool.supply,
-                                    borrow=lendingPool.borrow).data()
+                                     "SET a.tokens=$tokens,"
+                                     "a.supply=$supply,"
+                                     "a.borrow=$borrow "
+                                     "RETURN a",
+                                     address=lendingPool.address,
+                                     tokens=lendingPool.tokens,
+                                     supply=lendingPool.supply,
+                                     borrow=lendingPool.borrow).data()
         return create[0]['a']
 
     def neo4j_update_user_node(self):
