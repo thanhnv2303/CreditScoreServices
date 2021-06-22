@@ -22,8 +22,8 @@ class KLGLendingStreamerAdapter:
             klg_database=KlgDatabase(),
             batch_size=100,
             max_workers=5,
-            tokens_filter_file="artifacts/token_filter",
-            v_tokens_filter_file="artifacts/vToken_filter",
+            tokens_filter_file="artifacts/smart_contract_filter/token_filter",
+            v_tokens_filter_file="artifacts/smart_contract_filter/vToken_filter",
             list_token_filter="artifacts/token_credit_info/listToken.txt",
             token_info="artifacts/token_credit_info/infoToken.json"
     ):

@@ -11,7 +11,7 @@ class Database(object):
     def __init__(self):
         self._conn = None
         """
-        connect database_common neo4j
+        connect database_common neo4j_services_db
         """
         bolt = f"bolt://{Neo4jConfig.HOST}:{Neo4jConfig.BOTH_PORT}"
         self._graph = Graph(bolt, auth=(Neo4jConfig.NEO4J_USERNAME, Neo4jConfig.NEO4J_PASSWORD))

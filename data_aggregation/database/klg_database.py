@@ -15,10 +15,13 @@ class KlgDatabase(object):
         bolt = f"bolt://{Neo4jConfig.HOST}:{Neo4jConfig.BOTH_PORT}"
         self._graph = Graph(bolt, auth=(Neo4jConfig.NEO4J_USERNAME, Neo4jConfig.NEO4J_PASSWORD))
 
+    def _create_index(self):
+        self._graph.run("")
+
     def update_wallet_token(self, wallet_address, token_map={}, balance=0):
         # """
         # cập nhật  trường
-        # Token:[map trong neo4j] ghi lại các loại token và số lượng từng loại có trong wallet.
+        # Token:[map trong neo4j_services_db] ghi lại các loại token và số lượng từng loại có trong wallet.
         # Key: token address - value: số lượng token mà wallet đang giữ
         # Balance:Giá trị tài khoản = Σ(value_token*token_price)(USD)
         # :return:
@@ -55,11 +58,11 @@ class KlgDatabase(object):
         # """
         # cập nhật các trường
 
-        # Token_Deposit: [map trong neo4j] ghi lại các loại token và số lượng từng loại mà wallet deposit.
+        # Token_Deposit: [map trong neo4j_services_db] ghi lại các loại token và số lượng từng loại mà wallet deposit.
         # Key: token address - value: số lượng token mà wallet đang deposit
 
         # &&
-        # Token_Borrow: [map trong neo4j] ghi lại các loại token và số lượng từng loại mà wallet borrow.
+        # Token_Borrow: [map trong neo4j_services_db] ghi lại các loại token và số lượng từng loại mà wallet borrow.
         # Key: token address - value: số lượng token mà wallet đang borrow
 
         # &&
@@ -184,7 +187,7 @@ class KlgDatabase(object):
     def get_deposit_100(self, wallet_address):
         # """
         # Lấy ra
-        # deposit100: [map trong neo4j] ghi lại các lần lượng deposit thay đổi trong 100 ngày qua -
+        # deposit100: [map trong neo4j_services_db] ghi lại các lần lượng deposit thay đổi trong 100 ngày qua -
         # key: timestamp(các timestamp thay đổi deposit) - value: giá trị deposit tại timestamp đó
 
         # :param wallet_address:
@@ -208,7 +211,7 @@ class KlgDatabase(object):
     def update_deposit_100(self, wallet_address, deposit_100):
         # """
         # cập nhật
-        # deposit100: [map trong neo4j] ghi lại các lần lượng deposit thay đổi trong 100 ngày qua -
+        # deposit100: [map trong neo4j_services_db] ghi lại các lần lượng deposit thay đổi trong 100 ngày qua -
         # key: timestamp(các timestamp thay đổi deposit) - value: giá trị deposit tại timestamp đó
 
         # :param wallet_address:
@@ -236,7 +239,7 @@ class KlgDatabase(object):
     def get_borrow_100(self, wallet_address):
         # """
         # Lấy ra
-        # balance100 : [map trong neo4j] ghi lại các lần balance thay đổi trong 100 ngày qua -
+        # balance100 : [map trong neo4j_services_db] ghi lại các lần balance thay đổi trong 100 ngày qua -
         # key: timestamp(các timestamp thay đổi balance) - value: giá trị tại balance timestamp đó
 
         # :param wallet_address:
@@ -260,7 +263,7 @@ class KlgDatabase(object):
     def update_borrow_100(self, wallet_address, borrow_100):
         # """
         # cập nhật
-        # borrow100: [map trong neo4j] ghi lại các lần lượng borrow thay đổi trong 100 ngày qua -
+        # borrow100: [map trong neo4j_services_db] ghi lại các lần lượng borrow thay đổi trong 100 ngày qua -
         # key: timestamp(các timestamp thay đổi borrow) - value: giá trị borrow tại timestamp đó
 
         # :param wallet_address:
