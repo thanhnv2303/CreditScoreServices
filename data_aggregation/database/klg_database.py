@@ -231,7 +231,7 @@ class KlgDatabase(object):
         if not wallet_address or not transaction_amount:
             return
         create = self._graph.run("MERGE (p:Wallet { address: $address }) "
-                                 "SET p.dailyTransactionAmounts = coalesce(n.dailyTransactionAmounts, []) + $dailyTransactionAmounts"
+                                 "SET p.dailyTransactionAmounts = coalesce(n.dailyTransactionAmounts, []) + $dailyTransactionAmounts "
                                  "RETURN p",
                                  address=wallet_address, dailyTransactionAmounts=transaction_amount).data()
         return create[0]["p"]
@@ -248,7 +248,7 @@ class KlgDatabase(object):
         if not wallet_address or not transaction_id:
             return
         create = self._graph.run("MERGE (p:Wallet { address: $address }) "
-                                 "SET p.dailyFrequencyOfTransactions = coalesce(n.dailyFrequencyOfTransactions, []) + $dailyFrequencyOfTransactions"
+                                 "SET p.dailyFrequencyOfTransactions = coalesce(n.dailyFrequencyOfTransactions, []) + $dailyFrequencyOfTransactions "
                                  "RETURN p",
                                  address=wallet_address, dailyFrequencyOfTransactions=transaction_id).data()
         return create[0]["p"]
@@ -283,7 +283,7 @@ class KlgDatabase(object):
             return
         create = self._graph.run("MERGE (p:Wallet { address: $address }) "
                                  "ON CREATE SET p.numberOfLiquidation = 1 "
-                                 "ON MATCH SET p.numberOfLiquidation = p.numberOfLiquidation + $numberOfLiquidation"
+                                 "ON MATCH SET p.numberOfLiquidation = p.numberOfLiquidation + $numberOfLiquidation "
                                  "RETURN p",
                                  address=wallet_address, numberOfLiquidation=number).data()
         return create[0]["p"]
@@ -318,7 +318,7 @@ class KlgDatabase(object):
             return
         create = self._graph.run("MERGE (p:Wallet { address: $address }) "
                                  "ON CREATE SET p.totalAmountOfLiquidation = 0 "
-                                 "ON MATCH SET p.totalAmountOfLiquidation = p.totalAmountOfLiquidation + $totalAmountOfLiquidation"
+                                 "ON MATCH SET p.totalAmountOfLiquidation = p.totalAmountOfLiquidation + $totalAmountOfLiquidation "
                                  "RETURN p",
                                  address=wallet_address, totalAmountOfLiquidation=number).data()
         return create[0]["p"]
