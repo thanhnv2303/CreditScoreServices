@@ -21,6 +21,7 @@
 # SOFTWARE.
 # import asyncio
 import logging
+import time
 
 from config.constant import LoggerConstant, TransactionConstant, WalletConstant, EventConstant
 from config.data_aggregation_constant import MemoryStorageKeyConstant, EventTypeAggregateConstant, DepositEventConstant, \
@@ -93,8 +94,13 @@ class AggregateEventJob(BaseJob):
             self._export_data_events(block_number)
 
     def _export_data_events(self, block):
+        start = time.time()
         events = self.intermediary_database.get_events_at_of_smart_contract(block,
                                                                             smart_contract_address=self.smart_contract)
+        logger.info(f" Time to gets events from db {time.time() - start}")
+        start = time.time()
+        events = list(events)
+        logger.info(f"Time go get {len(events)} events to list {time.time() - start} ")
         for event in events:
             try:
                 # logger.info("eventttttttttttttttttttttttttttttttttttttt")
