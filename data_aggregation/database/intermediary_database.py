@@ -35,7 +35,7 @@ class IntermediaryDatabase(object):
         if MongoIndexConstant.tx_from_address not in self.mongo_transactions.index_information():
             self.mongo_transactions.create_index([("from_address", "hashed")], name=MongoIndexConstant.tx_from_address)
         if MongoIndexConstant.blocks_number not in self.mongo_blocks.index_information():
-            self.mongo_blocks.create_index([("number", "hashed")], name=MongoIndexConstant.transfer_tx_id)
+            self.mongo_blocks.create_index([("number", "hashed")], name=MongoIndexConstant.blocks_number)
 
     def block_number_to_time_stamp(self, block_number):
         key = {BlockConstant.number: block_number}
