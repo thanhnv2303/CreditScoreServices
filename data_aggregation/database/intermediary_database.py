@@ -27,7 +27,10 @@ class IntermediaryDatabase(object):
         self.mongo_blocks = self.mongo_db[MongoDBConfig.BLOCKS]
 
         self.mongo_token_collection_dict = {}
-        self._create_index()
+        try:
+            self._create_index()
+        except Exception as e:
+            logger.info(e)
 
     def _create_index(self):
         if MongoIndexConstant.tx_to_address not in self.mongo_transactions.index_information():
