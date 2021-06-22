@@ -118,6 +118,10 @@ class MongoIndexConstant:
     transfer_tx_id = "transfer_tx_id"
     transfer_block_number = "transfer_block_number"
     wallet_address = "wallet_address"
+    tx_to_address = "tx_to_address"
+    tx_from_address ="tx_from_address"
+    blocks_number = "block_number"
+    native_transfer_block_number = "native_transfer_block_number"
 
 
 class LendingTypeConstant:

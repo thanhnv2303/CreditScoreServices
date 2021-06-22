@@ -3,7 +3,7 @@ import logging
 from pymongo import MongoClient
 
 from config.config import MongoDBConfig
-from config.constant import TransactionConstant, BlockConstant, WalletConstant, TokenConstant
+from config.constant import TransactionConstant, BlockConstant, WalletConstant, TokenConstant, MongoIndexConstant
 
 logger = logging.getLogger("IntermediaryDatabase")
 
@@ -27,7 +27,15 @@ class IntermediaryDatabase(object):
         self.mongo_blocks = self.mongo_db[MongoDBConfig.BLOCKS]
 
         self.mongo_token_collection_dict = {}
-        # self._create_index()
+        self._create_index()
+
+    def _create_index(self):
+        if MongoIndexConstant.tx_to_address not in self.mongo_transactions.index_information():
+            self.mongo_transactions.create_index([("to_address", "hashed")], name=MongoIndexConstant.tx_to_address)
+        if MongoIndexConstant.tx_from_address not in self.mongo_transactions.index_information():
+            self.mongo_transactions.create_index([("from_address", "hashed")], name=MongoIndexConstant.tx_from_address)
+        if MongoIndexConstant.blocks_number not in self.mongo_blocks.index_information():
+            self.mongo_blocks.create_index([("number", "hashed")], name=MongoIndexConstant.transfer_tx_id)
 
     def block_number_to_time_stamp(self, block_number):
         key = {BlockConstant.number: block_number}
