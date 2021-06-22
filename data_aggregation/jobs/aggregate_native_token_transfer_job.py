@@ -90,6 +90,7 @@ class AggregateNativeTokenTransferJob(BaseJob):
                 logger.info("wallet--------------------")
                 logger.info(wallet)
                 wallet_address = wallet.get(WalletConstant.address)
+
                 wallet_in_storage = self.update_wallet_storage.get(wallet_address)
                 if wallet_in_storage and wallet_in_storage.get(TransactionConstant.block_number) > wallet.get(
                         TransactionConstant.block_number):
