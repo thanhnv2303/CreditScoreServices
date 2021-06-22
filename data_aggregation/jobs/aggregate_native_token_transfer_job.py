@@ -79,6 +79,7 @@ class AggregateNativeTokenTransferJob(BaseJob):
         for tx in txs:
             related_wallets = tx.get(TransactionConstant.related_wallets)
             timestamp = tx.get(TransactionConstant.block_timestamp)
+            tx_id = tx.get(TransactionConstant.transaction_hash)
             # timestamp_day = round_timestamp_to_date(timestamp)
             timestamp_day = timestamp
             if not related_wallets:
@@ -107,6 +108,19 @@ class AggregateNativeTokenTransferJob(BaseJob):
                 balance_100[timestamp_day] = balance_value
 
                 self.klg_database.update_balance_100(wallet_address, balance_100)
+
+                """
+                dailyFrequencyOfTransactions  - trong credit score(non standardized): số giao dịch của wallet trong k ngày, mảng gồm 100 ngày
+                """
+                self.klg_database.update_daly_frequency_of_transaction(wallet_address, tx_id)
+            """
+            dailyTransactionAmounts: Tổng giá trị giao dịch của wallet trong 100 ngày, mảng gồm 100 ngày - lưu ý chỉ tính giao dịch chuyển tiền tới tài khoản này
+            """
+            to_address = tx.get(TransactionConstant.to_address)
+            value = tx.get(TransactionConstant.value)
+            value_usd = self.price_service.token_amount_to_usd(TokenConstant.native_token, value)
+            self.klg_database.update_daly_transaction_amount_100(to_address, value_usd)
+
             """
             Cập nhật quan hệ lên knowledge graph
             

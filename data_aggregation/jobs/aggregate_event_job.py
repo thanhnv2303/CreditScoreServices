@@ -184,6 +184,18 @@ class AggregateEventJob(BaseJob):
 
         transfer = Transfer(tx_id, timestamp, from_address, to_address, token, value)
 
+        """
+        dailyFrequencyOfTransactions  - trong credit score(non standardized): số giao dịch của wallet trong k ngày, mảng gồm 100 ngày
+        """
+        self.klg_database.update_daly_frequency_of_transaction(from_address, tx_id)
+        self.klg_database.update_daly_frequency_of_transaction(to_address, tx_id)
+
+        """
+        dailyTransactionAmounts: Tổng giá trị giao dịch của wallet trong 100 ngày, mảng gồm 100 ngày - lưu ý chỉ tính giao dịch chuyển tiền tới tài khoản này
+        """
+        value_usd = self.price_service.token_amount_to_usd(token, value)
+        self.klg_database.update_daly_transaction_amount_100(to_address, value_usd)
+
         self.klg_database.create_transfer_relationship(transfer)
 
     def _deposit_handler(self, event, timestamp):

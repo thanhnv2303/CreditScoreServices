@@ -29,28 +29,36 @@ class KlgDatabase(object):
 
         tokens, tokenBalances = dict_to_two_list(token_map)
 
-        match = self._graph.run("MATCH (p:Wallet { address : $address}) return p ", address=wallet_address).data()
-        if not match:
-            create = self._graph.run("MERGE (p:Wallet { address: $address }) "
-                                     "SET p.tokens = $tokens, "
-                                     "p.tokenBalances = $tokenBalances, "
-                                     "p.balanceInUSD = $balanceInUSD "
-                                     "RETURN p",
-                                     address=wallet_address,
-                                     tokens=tokens,
-                                     tokenBalances=tokenBalances,
-                                     balanceInUSD=balance).data()
-        else:
-            create = self._graph.run("MATCH (p:Wallet { address: $address }) "
-                                     "SET p.tokens = $tokens, "
-                                     "p.tokenBalances = $tokenBalances, "
-                                     "p.balanceInUSD = $balanceInUSD "
-                                     "RETURN p",
-                                     address=wallet_address,
-                                     tokens=tokens,
-                                     tokenBalances=tokenBalances,
-                                     balanceInUSD=balance).data()
-
+        # match = self._graph.run("MATCH (p:Wallet { address : $address}) return p ", address=wallet_address).data()
+        # if not match:
+        #     create = self._graph.run("MERGE (p:Wallet { address: $address }) "
+        #                              "SET p.tokens = $tokens, "
+        #                              "p.tokenBalances = $tokenBalances, "
+        #                              "p.balanceInUSD = $balanceInUSD "
+        #                              "RETURN p",
+        #                              address=wallet_address,
+        #                              tokens=tokens,
+        #                              tokenBalances=tokenBalances,
+        #                              balanceInUSD=balance).data()
+        # else:
+        #     create = self._graph.run("MATCH (p:Wallet { address: $address }) "
+        #                              "SET p.tokens = $tokens, "
+        #                              "p.tokenBalances = $tokenBalances, "
+        #                              "p.balanceInUSD = $balanceInUSD "
+        #                              "RETURN p",
+        #                              address=wallet_address,
+        #                              tokens=tokens,
+        #                              tokenBalances=tokenBalances,
+        #                              balanceInUSD=balance).data()
+        create = self._graph.run("MERGE (p:Wallet { address: $address }) "
+                                 "SET p.tokens = $tokens, "
+                                 "p.tokenBalances = $tokenBalances, "
+                                 "p.balanceInUSD = $balanceInUSD "
+                                 "RETURN p",
+                                 address=wallet_address,
+                                 tokens=tokens,
+                                 tokenBalances=tokenBalances,
+                                 balanceInUSD=balance).data()
         return create[0]["p"]
 
     def update_wallet_token_deposit_and_borrow(self, wallet_address, token_deposit_map={}, token_borrow_map={},
@@ -75,39 +83,55 @@ class KlgDatabase(object):
         depositTokens, depositTokenBalances = dict_to_two_list(token_deposit_map)
         borrowTokens, borrowTokenBalances = dict_to_two_list(token_borrow_map)
 
-        match = self._graph.run("MATCH (p:Wallet { address : $address}) return p ", address=wallet_address).data()
-        if not match:
-            create = self._graph.run("MERGE (p:Wallet { address: $address }) "
-                                     "SET p.depositTokens = $depositTokens, "
-                                     "p.depositTokenBalances = $depositTokenBalances, "
-                                     "p.borrowTokens = $borrowTokens, "
-                                     "p.borrowTokenBalances = $borrowTokenBalances, "
-                                     "p.depositInUSD = $depositInUSD, "
-                                     "p.borrowInUSD = $borrowInUSD "
-                                     "RETURN p",
-                                     address=wallet_address,
-                                     depositTokens=depositTokens,
-                                     depositTokenBalances=depositTokenBalances,
-                                     borrowTokens=borrowTokens,
-                                     borrowTokenBalances=borrowTokenBalances,
-                                     depositInUSD=deposit,
-                                     borrowInUSD=borrow).data()
-        else:
-            create = self._graph.run("MATCH (p:Wallet { address: $address }) "
-                                     "SET p.depositTokens = $depositTokens, "
-                                     "p.depositTokenBalances = $depositTokenBalances, "
-                                     "p.borrowTokens = $borrowTokens, "
-                                     "p.borrowTokenBalances = $borrowTokenBalances, "
-                                     "p.depositInUSD = $depositInUSD, "
-                                     "p.borrowInUSD = $borrowInUSD "
-                                     "RETURN p",
-                                     address=wallet_address,
-                                     depositTokens=depositTokens,
-                                     depositTokenBalances=depositTokenBalances,
-                                     borrowTokens=borrowTokens,
-                                     borrowTokenBalances=borrowTokenBalances,
-                                     depositInUSD=deposit,
-                                     borrowInUSD=borrow).data()
+        # match = self._graph.run("MATCH (p:Wallet { address : $address}) return p ", address=wallet_address).data()
+        # if not match:
+        #     create = self._graph.run("MERGE (p:Wallet { address: $address }) "
+        #                              "SET p.depositTokens = $depositTokens, "
+        #                              "p.depositTokenBalances = $depositTokenBalances, "
+        #                              "p.borrowTokens = $borrowTokens, "
+        #                              "p.borrowTokenBalances = $borrowTokenBalances, "
+        #                              "p.depositInUSD = $depositInUSD, "
+        #                              "p.borrowInUSD = $borrowInUSD "
+        #                              "RETURN p",
+        #                              address=wallet_address,
+        #                              depositTokens=depositTokens,
+        #                              depositTokenBalances=depositTokenBalances,
+        #                              borrowTokens=borrowTokens,
+        #                              borrowTokenBalances=borrowTokenBalances,
+        #                              depositInUSD=deposit,
+        #                              borrowInUSD=borrow).data()
+        # else:
+        #     create = self._graph.run("MATCH (p:Wallet { address: $address }) "
+        #                              "SET p.depositTokens = $depositTokens, "
+        #                              "p.depositTokenBalances = $depositTokenBalances, "
+        #                              "p.borrowTokens = $borrowTokens, "
+        #                              "p.borrowTokenBalances = $borrowTokenBalances, "
+        #                              "p.depositInUSD = $depositInUSD, "
+        #                              "p.borrowInUSD = $borrowInUSD "
+        #                              "RETURN p",
+        #                              address=wallet_address,
+        #                              depositTokens=depositTokens,
+        #                              depositTokenBalances=depositTokenBalances,
+        #                              borrowTokens=borrowTokens,
+        #                              borrowTokenBalances=borrowTokenBalances,
+        #                              depositInUSD=deposit,
+        #                              borrowInUSD=borrow).data()
+
+        create = self._graph.run("MERGE (p:Wallet { address: $address }) "
+                                 "SET p.depositTokens = $depositTokens, "
+                                 "p.depositTokenBalances = $depositTokenBalances, "
+                                 "p.borrowTokens = $borrowTokens, "
+                                 "p.borrowTokenBalances = $borrowTokenBalances, "
+                                 "p.depositInUSD = $depositInUSD, "
+                                 "p.borrowInUSD = $borrowInUSD "
+                                 "RETURN p",
+                                 address=wallet_address,
+                                 depositTokens=depositTokens,
+                                 depositTokenBalances=depositTokenBalances,
+                                 borrowTokens=borrowTokens,
+                                 borrowTokenBalances=borrowTokenBalances,
+                                 depositInUSD=deposit,
+                                 borrowInUSD=borrow).data()
 
         return create[0]["p"]
 
@@ -119,17 +143,22 @@ class KlgDatabase(object):
         # :return:
         # """
         # pass
-        match = self._graph.run("MATCH (p:Wallet { address : $address}) return p ", address=wallet_address).data()
-        if not match:
-            create = self._graph.run("MERGE (p:Wallet { address: $address }) "
-                                     "SET p.createdAt = $createdAt "
-                                     "RETURN p",
-                                     address=wallet_address, createdAt=created_at).data()
-        else:
-            create = self._graph.run("MATCH (p:Wallet { address: $address }) "
-                                     "SET p.createdAt = $createdAt "
-                                     "RETURN p",
-                                     address=wallet_address, createdAt=created_at).data()
+        # match = self._graph.run("MATCH (p:Wallet { address : $address}) return p ", address=wallet_address).data()
+        # if not match:
+        #     create = self._graph.run("MERGE (p:Wallet { address: $address }) "
+        #                              "SET p.createdAt = $createdAt "
+        #                              "RETURN p",
+        #                              address=wallet_address, createdAt=created_at).data()
+        # else:
+        #     create = self._graph.run("MATCH (p:Wallet { address: $address }) "
+        #                              "SET p.createdAt = $createdAt "
+        #                              "RETURN p",
+        #                              address=wallet_address, createdAt=created_at).data()
+
+        create = self._graph.run("MERGE (p:Wallet { address: $address }) "
+                                 "SET p.createdAt = $createdAt "
+                                 "RETURN p",
+                                 address=wallet_address, createdAt=created_at).data()
 
         return create[0]["p"]
 
@@ -170,20 +199,58 @@ class KlgDatabase(object):
         keys, values = dict_to_two_list(balance_100)
         keys = list(keys)
         values = list(values)
-        match = self._graph.run("MATCH (p:Wallet { address : $address}) return p ", address=wallet_address).data()
-        if not match:
-            create = self._graph.run("MERGE (p:Wallet { address: $address }) "
-                                     "SET p.balanceChangeLogTimestamps = $balance100, "
-                                     "p.balanceChangeLogValues = $balance100value "
-                                     "RETURN p",
-                                     address=wallet_address, balance100=keys, balance100value=values).data()
-        else:
-            create = self._graph.run("MATCH (p:Wallet { address: $address }) "
-                                     "SET p.balanceChangeLogTimestamps = $balance100, "
-                                     "p.balanceChangeLogValues = $balance100value "
-                                     "RETURN p",
-                                     address=wallet_address, balance100=keys, balance100value=values).data()
+        # match = self._graph.run("MATCH (p:Wallet { address : $address}) return p ", address=wallet_address).data()
+        # if not match:
+        #     create = self._graph.run("MERGE (p:Wallet { address: $address }) "
+        #                              "SET p.balanceChangeLogTimestamps = $balance100, "
+        #                              "p.balanceChangeLogValues = $balance100value "
+        #                              "RETURN p",
+        #                              address=wallet_address, balance100=keys, balance100value=values).data()
+        # else:
+        #     create = self._graph.run("MATCH (p:Wallet { address: $address }) "
+        #                              "SET p.balanceChangeLogTimestamps = $balance100, "
+        #                              "p.balanceChangeLogValues = $balance100value "
+        #                              "RETURN p",
+        #                              address=wallet_address, balance100=keys, balance100value=values).data()
+        create = self._graph.run("MERGE (p:Wallet { address: $address }) "
+                                 "SET p.balanceChangeLogTimestamps = $balance100, "
+                                 "p.balanceChangeLogValues = $balance100value "
+                                 "RETURN p",
+                                 address=wallet_address, balance100=keys, balance100value=values).data()
+        return create[0]["p"]
 
+    def update_daly_transaction_amount_100(self, wallet_address, transaction_amount):
+        # """
+        # cập nhật
+        # dailyTransactionAmounts: Tổng giá trị giao dịch của wallet trong 100 ngày, mảng gồm 100 ngày - lưu ý chỉ tính giao dịch chuyển tiền tới tài khoản này
+        #
+
+        # :param wallet_address:
+        # :return:
+        # """
+        if not wallet_address or not transaction_amount:
+            return
+        create = self._graph.run("MERGE (p:Wallet { address: $address }) "
+                                 "SET p.dailyTransactionAmounts = coalesce(n.dailyTransactionAmounts, []) + $dailyTransactionAmounts"
+                                 "RETURN p",
+                                 address=wallet_address, dailyTransactionAmounts=transaction_amount).data()
+        return create[0]["p"]
+
+    def update_daly_frequency_of_transaction(self, wallet_address, transaction_id):
+        # """
+        # cập nhật
+        # dailyTransactionAmounts: Tổng giá trị giao dịch của wallet trong 100 ngày, mảng gồm 100 ngày - lưu ý chỉ tính giao dịch chuyển tiền tới tài khoản này
+        #
+
+        # :param wallet_address:
+        # :return:
+        # """
+        if not wallet_address or not transaction_id:
+            return
+        create = self._graph.run("MERGE (p:Wallet { address: $address }) "
+                                 "SET p.dailyFrequencyOfTransactions = coalesce(n.dailyFrequencyOfTransactions, []) + $dailyFrequencyOfTransactions"
+                                 "RETURN p",
+                                 address=wallet_address, dailyFrequencyOfTransactions=transaction_id).data()
         return create[0]["p"]
 
     def get_deposit_100(self, wallet_address):
@@ -224,20 +291,24 @@ class KlgDatabase(object):
         keys, values = dict_to_two_list(deposit_100)
         keys = list(keys)
         values = list(values)
-        match = self._graph.run("MATCH (p:Wallet { address : $address}) return p ", address=wallet_address).data()
-        if not match:
-            create = self._graph.run("MERGE (p:Wallet { address: $address }) "
-                                     "SET p.depositChangeLogTimestamps = $deposit100, "
-                                     "p.depositChangeLogValues = $deposit100value "
-                                     "RETURN p",
-                                     address=wallet_address, deposit100=keys, deposit100value=values).data()
-        else:
-            create = self._graph.run("MATCH (p:Wallet { address: $address }) "
-                                     "SET p.depositChangeLogTimestamps = $deposit100, "
-                                     "p.depositChangeLogValues = $deposit100value "
-                                     "RETURN p",
-                                     address=wallet_address, deposit100=keys, deposit100value=values).data()
-
+        # match = self._graph.run("MATCH (p:Wallet { address : $address}) return p ", address=wallet_address).data()
+        # if not match:
+        #     create = self._graph.run("MERGE (p:Wallet { address: $address }) "
+        #                              "SET p.depositChangeLogTimestamps = $deposit100, "
+        #                              "p.depositChangeLogValues = $deposit100value "
+        #                              "RETURN p",
+        #                              address=wallet_address, deposit100=keys, deposit100value=values).data()
+        # else:
+        #     create = self._graph.run("MATCH (p:Wallet { address: $address }) "
+        #                              "SET p.depositChangeLogTimestamps = $deposit100, "
+        #                              "p.depositChangeLogValues = $deposit100value "
+        #                              "RETURN p",
+        #                              address=wallet_address, deposit100=keys, deposit100value=values).data()
+        create = self._graph.run("MERGE (p:Wallet { address: $address }) "
+                                 "SET p.depositChangeLogTimestamps = $deposit100, "
+                                 "p.depositChangeLogValues = $deposit100value "
+                                 "RETURN p",
+                                 address=wallet_address, deposit100=keys, deposit100value=values).data()
         return create[0]["p"]
 
     def get_borrow_100(self, wallet_address):
@@ -279,20 +350,24 @@ class KlgDatabase(object):
         keys = list(keys)
         values = list(values)
 
-        match = self._graph.run("MATCH (p:Wallet { address : $address}) return p ", address=wallet_address).data()
-        if not match:
-            create = self._graph.run("MERGE (p:Wallet { address: $address }) "
-                                     "SET p.borrowChangeLogTimestamps = $borrow100, "
-                                     "p.borrowChangeLogValues = $borrow100value "
-                                     "RETURN p",
-                                     address=wallet_address, borrow100=keys, borrow100value=values).data()
-        else:
-            create = self._graph.run("MATCH (p:Wallet { address: $address }) "
-                                     "SET p.borrowChangeLogTimestamps = $borrow100, "
-                                     "p.borrowChangeLogValues = $borrow100value "
-                                     "RETURN p",
-                                     address=wallet_address, borrow100=keys, borrow100value=values).data()
-
+        # match = self._graph.run("MATCH (p:Wallet { address : $address}) return p ", address=wallet_address).data()
+        # if not match:
+        #     create = self._graph.run("MERGE (p:Wallet { address: $address }) "
+        #                              "SET p.borrowChangeLogTimestamps = $borrow100, "
+        #                              "p.borrowChangeLogValues = $borrow100value "
+        #                              "RETURN p",
+        #                              address=wallet_address, borrow100=keys, borrow100value=values).data()
+        # else:
+        #     create = self._graph.run("MATCH (p:Wallet { address: $address }) "
+        #                              "SET p.borrowChangeLogTimestamps = $borrow100, "
+        #                              "p.borrowChangeLogValues = $borrow100value "
+        #                              "RETURN p",
+        #                              address=wallet_address, borrow100=keys, borrow100value=values).data()
+        create = self._graph.run("MERGE (p:Wallet { address: $address }) "
+                                 "SET p.borrowChangeLogTimestamps = $borrow100, "
+                                 "p.borrowChangeLogValues = $borrow100value "
+                                 "RETURN p",
+                                 address=wallet_address, borrow100=keys, borrow100value=values).data()
         return create[0]["p"]
 
     def create_transfer_relationship(self, transfer: Transfer):
