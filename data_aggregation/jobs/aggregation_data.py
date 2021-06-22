@@ -55,6 +55,7 @@ def aggregate(start_block, end_block, max_workers, batch_size,
     logger.info("""
     Tổng hợp thông tin theo từng transaction chuyển native token
     """)
+    start1 = time()
     job = AggregateNativeTokenTransferJob(start_block,
                                           end_block,
                                           price_service=credit_score_service,
@@ -64,12 +65,16 @@ def aggregate(start_block, end_block, max_workers, batch_size,
                                           klg_database=klg_database)
 
     job.run()
+
+    logger.info(f"time to aggreegate token transfer native {time() - start1}")
     """
     Tổng hợp thông tin theo từng event của các smart contract
     """
     logger.info("""
     Tổng hợp thông tin theo từng event của các smart contract
     """)
+
+    start2 = time()
     job = AggregateSmartContractJob(start_block,
                                     end_block,
                                     smart_contracts=smart_contracts,
@@ -80,12 +85,15 @@ def aggregate(start_block, end_block, max_workers, batch_size,
                                     klg_database=klg_database)
 
     job.run()
+
+    logger.info(f"AggregateSmartContractJob {time() - start2} ")
     """
     Tổng hợp thông tin của các ví có thay đổi dữ liệu đến thời điểm hiện tại
     """
     logger.info("""
     Tổng hợp thông tin của các ví có thay đổi dữ liệu đến thời điểm hiện tại
     """)
+    start3 = time()
     wallets_updated = local_storage.get_element(key=MemoryStorageKeyConstant.update_wallet)
     job = AggregateWalletJob(wallets_updated,
                              price_service=credit_score_service,
@@ -94,6 +102,8 @@ def aggregate(start_block, end_block, max_workers, batch_size,
                              intermediary_database=intermediary_database,
                              klg_database=klg_database)
     job.run()
+
+    logger.info(f"Time to AggregateWalletJob {time() - start3}")
 
     end_time = time()
     time_diff = round(end_time - start_time, 5)
