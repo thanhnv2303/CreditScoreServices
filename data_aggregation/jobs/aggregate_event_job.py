@@ -323,6 +323,18 @@ class AggregateEventJob(BaseJob):
             if to_wallet == wallet.get(WalletConstant.address):
                 balance = wallet.get(WalletConstant.balance)
                 to_balance, to_amount = dict_to_two_list(balance)
+
+        """
+        Cập nhật
+        numberOfLiquidation: số lần bị thanh lý khoản vay
+        totalAmountOfLiquidation: tổng số tiền bị thanh lý khoản vay từ trước đến nay
+        """
+        self.klg_database.update_num_of_liquidation_100(to_wallet, 1)
+
+        seizeTokens = event.get(LiquidateBorrowEventConstant.seizeTokens)
+        token_address = protocol
+        value_usd = self.price_service.token_amount_to_usd(token_address, seizeTokens)
+        self.klg_database.update_total_amount_liquidation_100(to_wallet, value_usd)
         liquidate = Liquidate(
             transactionID=tx_id,
             timestamp=timestamp,
@@ -355,6 +367,17 @@ class AggregateEventJob(BaseJob):
             if to_wallet == wallet.get(WalletConstant.address):
                 balance = wallet.get(WalletConstant.balance)
                 to_balance, to_amount = dict_to_two_list(balance)
+
+        """
+        Cập nhật
+        numberOfLiquidation: số lần bị thanh lý khoản vay
+        totalAmountOfLiquidation: tổng số tiền bị thanh lý khoản vay từ trước đến nay
+        """
+        self.klg_database.update_num_of_liquidation_100(to_wallet, 1)
+        token_address = event.get(LiquidationCallEventConstant.debtAsset)
+        amount = event.get(LiquidationCallEventConstant.liquidatedCollateralAmount)
+        value_usd = self.price_service.token_amount_to_usd(token_address, amount)
+        self.klg_database.update_total_amount_liquidation_100(to_wallet, value_usd)
 
         liquidate = Liquidate(
             transactionID=tx_id,

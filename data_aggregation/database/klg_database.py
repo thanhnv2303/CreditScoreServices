@@ -253,6 +253,76 @@ class KlgDatabase(object):
                                  address=wallet_address, dailyFrequencyOfTransactions=transaction_id).data()
         return create[0]["p"]
 
+    def get_num_of_liquidation_100(self, wallet_address):
+        # """
+        # Lấy ra
+        # numberOfLiquidation: số lần bị thanh lý khoản vay
+
+        # :param wallet_address:
+        # :return:
+        # """
+        number = 0
+
+        getter = self._graph.run("match (p:Wallet { address: $address }) return p.numberOfLiquidation ",
+                                 address=wallet_address).data()
+        if getter and getter[0]["p.numberOfLiquidation"]:
+            number = getter[0]["p.numberOfLiquidation"]
+
+        return number
+
+    def update_num_of_liquidation_100(self, wallet_address, number):
+        # """
+        # cập nhật
+        # numberOfLiquidation: số lần bị thanh lý khoản vay
+        #
+
+        # :param wallet_address:
+        # :return:
+        # """
+        if not wallet_address or not number:
+            return
+        create = self._graph.run("MERGE (p:Wallet { address: $address }) "
+                                 "ON CREATE SET p.numberOfLiquidation = 1 "
+                                 "ON MATCH SET p.numberOfLiquidation = p.numberOfLiquidation + $numberOfLiquidation"
+                                 "RETURN p",
+                                 address=wallet_address, numberOfLiquidation=number).data()
+        return create[0]["p"]
+
+    def get_total_amount_liquidation_100(self, wallet_address):
+        # """
+        # Lấy ra
+        # numberOfLiquidation: số lần bị thanh lý khoản vay
+
+        # :param wallet_address:
+        # :return:
+        # """
+        number = 0
+
+        getter = self._graph.run("match (p:Wallet { address: $address }) return p.totalAmountOfLiquidation ",
+                                 address=wallet_address).data()
+        if getter and getter[0]["p.totalAmountOfLiquidation"]:
+            number = getter[0]["p.totalAmountOfLiquidation"]
+
+        return number
+
+    def update_total_amount_liquidation_100(self, wallet_address, number):
+        # """
+        # cập nhật
+        # numberOfLiquidation: số lần bị thanh lý khoản vay
+        #
+
+        # :param wallet_address:
+        # :return:
+        # """
+        if not wallet_address or not number:
+            return
+        create = self._graph.run("MERGE (p:Wallet { address: $address }) "
+                                 "ON CREATE SET p.totalAmountOfLiquidation = 0 "
+                                 "ON MATCH SET p.totalAmountOfLiquidation = p.totalAmountOfLiquidation + $totalAmountOfLiquidation"
+                                 "RETURN p",
+                                 address=wallet_address, totalAmountOfLiquidation=number).data()
+        return create[0]["p"]
+
     def get_deposit_100(self, wallet_address):
         # """
         # Lấy ra
