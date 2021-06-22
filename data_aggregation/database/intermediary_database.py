@@ -1,4 +1,5 @@
 import logging
+import time
 
 from pymongo import MongoClient
 
@@ -15,8 +16,8 @@ class IntermediaryDatabase(object):
     def __init__(self):
         self._conn = None
         url = f"mongodb://{MongoDBConfig.NAME}:{MongoDBConfig.PASSWORD}@{MongoDBConfig.HOST}:{MongoDBConfig.PORT}"
-        logger.info("IntermediaryDatabase")
-        logger.info(url)
+        # logger.info("IntermediaryDatabase")
+        # logger.info(url)
         self.mongo = MongoClient(url)
         self.mongo_db = self.mongo[MongoDBConfig.DATABASE]
         self.mongo_db = self.mongo[MongoDBConfig.DATABASE]
@@ -46,11 +47,15 @@ class IntermediaryDatabase(object):
         return block.get(BlockConstant.timestamp)
 
     def get_latest_block_update(self):
+        start = time.time()
         latest_block = self.mongo_blocks.find_one(sort=[(BlockConstant.number, -1)])
+        logger.info(f"Time to get latest block {time.time() - start}")
         return latest_block.get(BlockConstant.number) - 1
 
     def get_oldest_block_update(self):
+        start = time.time()
         latest_block = self.mongo_blocks.find_one(sort=[(BlockConstant.number, 1)])
+        logger.info(f"time to get oldest block {time.time() - start}")
         return latest_block.get(BlockConstant.number) - 1
 
     def get_first_create_wallet(self, wallet_address):
@@ -58,26 +63,39 @@ class IntermediaryDatabase(object):
             {TransactionConstant.from_address: wallet_address},
             {TransactionConstant.to_address: wallet_address}
         ]}
-
+        start = time.time()
         transaction = self.mongo_transactions.find_one(key, sort=[(TransactionConstant.block_timestamp, 1)])
-
+        logger.info(f"time to get first create wallet {time.time() - start}")
         return transaction.get(TransactionConstant.block_timestamp)
 
     def get_transfer_native_token_tx_in_block(self, block):
         key = {TransactionConstant.block_number: block}
-        return self.mongo_transactions_transfer.find(key)
+        start = time.time()
+        result = self.mongo_transactions_transfer.find(key)
+        logger.info(f"tme to get_transfer_native_token_tx_in_block {time.time() - start} ")
+        return result
 
     def get_events_at_of_smart_contract(self, block, smart_contract_address):
         smart_contract_address = str(smart_contract_address).lower()
+        start = time.time()
         if not self.mongo_token_collection_dict.get(smart_contract_address):
             self.mongo_token_collection_dict[smart_contract_address] = self.mongo_db[smart_contract_address]
         key = {TransactionConstant.block_number: block}
-        return self.mongo_token_collection_dict.get(smart_contract_address).find(key)
+        result = self.mongo_token_collection_dict.get(smart_contract_address).find(key)
+        logger.info(f"time to get_events_at_of_smart_contract {time.time() - start} ")
+        return result
 
     def get_wallet(self, wallet_address):
         key = {WalletConstant.address: wallet_address}
-        return self.mongo_wallet.find_one(key)
+        start = time.time()
+        result = self.mongo_wallet.find_one(key)
+        logger.info(f"Time to get wallet {time.time() - start}")
+        return result
 
     def get_token(self, token_address):
         key = {TokenConstant.address: token_address}
-        return self.mongo_tokens.find_one(key)
+        start = time.time()
+        result = self.mongo_tokens.find_one(key)
+
+        logger.info(f"get_token {time.time() - start} ")
+        return result
