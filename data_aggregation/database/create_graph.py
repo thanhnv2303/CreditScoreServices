@@ -1,3 +1,5 @@
+import logging
+
 from py2neo import Graph
 
 from config.config import Neo4jConfig
@@ -5,6 +7,8 @@ from data_aggregation.database.neo4j_services_db.cypher import INDEX_ADDRESS_WAL
     INDEX_ADDRESS_LENDING_POOL
 from data_aggregation.database.nodes_model import Wallet, Token, LendingPool
 from data_aggregation.database.relationships_model import *
+
+logger = logging.getLogger("CreateGraph")
 
 
 class CreateGraph:
@@ -14,12 +18,21 @@ class CreateGraph:
         bolt = f"bolt://{Neo4jConfig.HOST}:{Neo4jConfig.BOTH_PORT}"
         self._graph = Graph(bolt, auth=(Neo4jConfig.NEO4J_USERNAME, Neo4jConfig.NEO4J_PASSWORD))
 
-        # self._create_index()
+        self._create_index()
 
     def _create_index(self):
-        self._graph.run(INDEX_ADDRESS_WALLET)
-        self._graph.run(INDEX_ADDRESS_TOKEN)
-        self._graph.run(INDEX_ADDRESS_LENDING_POOL)
+        try:
+            self._graph.run(INDEX_ADDRESS_WALLET)
+        except Exception as e:
+            logger.warning(e)
+        try:
+            self._graph.run(INDEX_ADDRESS_TOKEN)
+        except Exception as e:
+            logger.warning(e)
+        try:
+            self._graph.run(INDEX_ADDRESS_LENDING_POOL)
+        except Exception as e:
+            logger.warning(e)
 
     # ==================
     # CREATE NODE
