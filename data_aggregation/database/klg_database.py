@@ -1,8 +1,13 @@
+import logging
+import time
+
 from py2neo import Graph
 
 from config.config import Neo4jConfig
 from data_aggregation.database.relationships_model import Liquidate, Withdraw, Repay, Borrow, Deposit, Transfer
 from services.zip_service import two_list_to_dict, dict_to_two_list
+
+logger = logging.getLogger("KlgDatabase")
 
 
 class KlgDatabase(object):
@@ -116,7 +121,7 @@ class KlgDatabase(object):
         #                              borrowTokenBalances=borrowTokenBalances,
         #                              depositInUSD=deposit,
         #                              borrowInUSD=borrow).data()
-
+        start_time = time.time()
         create = self._graph.run("MERGE (p:Wallet { address: $address }) "
                                  "SET p.depositTokens = $depositTokens, "
                                  "p.depositTokenBalances = $depositTokenBalances, "
@@ -132,7 +137,7 @@ class KlgDatabase(object):
                                  borrowTokenBalances=borrowTokenBalances,
                                  depositInUSD=deposit,
                                  borrowInUSD=borrow).data()
-
+        logger.info(f"Time to update deposit token and deposit token balances is {time.time() - start_time}")
         return create[0]["p"]
 
     def update_wallet_created_at(self, wallet_address, created_at):
@@ -154,12 +159,12 @@ class KlgDatabase(object):
         #                              "SET p.createdAt = $createdAt "
         #                              "RETURN p",
         #                              address=wallet_address, createdAt=created_at).data()
-
+        start_time = time.time()
         create = self._graph.run("MERGE (p:Wallet { address: $address }) "
                                  "SET p.createdAt = $createdAt "
                                  "RETURN p",
                                  address=wallet_address, createdAt=created_at).data()
-
+        logger.info(f"Time time to update create at {time.time() - start_time}")
         return create[0]["p"]
 
     def get_balance_100(self, wallet_address):
@@ -173,7 +178,7 @@ class KlgDatabase(object):
         # """
         keys_list = []  # timestamp_balance_100 list
         values_list = []  # balance_100 list
-
+        start_time = time.time()
         getter = self._graph.run("match (p:Wallet { address: $address }) return p.balanceChangeLogTimestamps ",
                                  address=wallet_address).data()
         if getter and getter[0]["p.balanceChangeLogTimestamps"]:
@@ -183,6 +188,7 @@ class KlgDatabase(object):
                                  address=wallet_address).data()
         if getter and getter[0]["p.balanceChangeLogValues"]:
             values_list = values_list + getter[0]["p.balanceChangeLogValues"]
+        logger.info(f"time to get balance 100 {time.time() - start_time}")
         return two_list_to_dict(keys_list, values_list)
 
     def update_balance_100(self, wallet_address, balance_100):
@@ -194,6 +200,7 @@ class KlgDatabase(object):
         # :param wallet_address:
         # :return:
         # """
+        start_time = time.time()
         if not wallet_address or not balance_100:
             return
         keys, values = dict_to_two_list(balance_100)
@@ -217,6 +224,7 @@ class KlgDatabase(object):
                                  "p.balanceChangeLogValues = $balance100value "
                                  "RETURN p",
                                  address=wallet_address, balance100=keys, balance100value=values).data()
+        logger.info(f"Time to update balance 100 {time.time() - start_time}")
         return create[0]["p"]
 
     def update_daly_transaction_amount_100(self, wallet_address, transaction_amount):
@@ -247,10 +255,12 @@ class KlgDatabase(object):
         # """
         if not wallet_address or not transaction_id:
             return
+        start_time = time.time()
         create = self._graph.run("MERGE (p:Wallet { address: $address }) "
                                  "SET p.dailyFrequencyOfTransactions = coalesce(p.dailyFrequencyOfTransactions, []) + $dailyFrequencyOfTransactions "
                                  "RETURN p",
                                  address=wallet_address, dailyFrequencyOfTransactions=transaction_id).data()
+        logger.info(f"Time to update update_daly_frequency_of_transaction {time.time() - start_time}")
         return create[0]["p"]
 
     def get_num_of_liquidation_100(self, wallet_address):
