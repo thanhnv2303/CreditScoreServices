@@ -28,9 +28,11 @@ from data_aggregation.database.intermediary_database import IntermediaryDatabase
 from data_aggregation.database.klg_database import KlgDatabase
 from data_aggregation.database.relationships_model import Transfer
 from data_aggregation.services.price_service import PriceService
+from data_aggregation.services.time_service import round_timestamp_to_date
 from database_common.memory_storage import MemoryStorage
 from executors.batch_work_executor import BatchWorkExecutor
 from jobs.base_job import BaseJob
+from utils.to_number import to_float, to_int
 
 logger = logging.getLogger(LoggerConstant.AggregateNativeTokenTransferJob)
 
@@ -80,16 +82,16 @@ class AggregateNativeTokenTransferJob(BaseJob):
             related_wallets = tx.get(TransactionConstant.related_wallets)
             timestamp = tx.get(TransactionConstant.block_timestamp)
             tx_id = tx.get(TransactionConstant.transaction_hash)
-            # timestamp_day = round_timestamp_to_date(timestamp)
             timestamp_day = timestamp
+            daily_timestamp = round_timestamp_to_date(timestamp)
             if not related_wallets:
                 return
             for wallet in related_wallets:
                 """
                  thêm thông tin địa chỉ ví vào kho để update sau cho các thông tin không cần lịch sử.
                 """
-                logger.info("wallet--------------------")
-                logger.info(wallet)
+                # logger.info("wallet--------------------")
+                # logger.info(wallet)
                 wallet_address = wallet.get(WalletConstant.address)
 
                 wallet_in_storage = self.update_wallet_storage.get(wallet_address)
@@ -112,14 +114,23 @@ class AggregateNativeTokenTransferJob(BaseJob):
                 """
                 dailyFrequencyOfTransactions  - trong credit score(non standardized): số giao dịch của wallet trong k ngày, mảng gồm 100 ngày
                 """
-                self.klg_database.update_daly_frequency_of_transaction(wallet_address, tx_id)
+
+                dict_timestamp = self.klg_database.get_daily_daily_frequency_of_transaction(wallet_address)
+                current_value_timestamp = to_int(dict_timestamp.get(daily_timestamp))
+                dict_timestamp[daily_timestamp] = current_value_timestamp + 1
+                self.klg_database.update_daily_frequency_of_transaction(wallet_address, dict_timestamp)
             """
             dailyTransactionAmounts: Tổng giá trị giao dịch của wallet trong 100 ngày, mảng gồm 100 ngày - lưu ý chỉ tính giao dịch chuyển tiền tới tài khoản này
             """
+
+            token = TokenConstant.native_token
             to_address = tx.get(TransactionConstant.to_address)
             value = tx.get(TransactionConstant.value)
-            value_usd = self.price_service.token_amount_to_usd(TokenConstant.native_token, value)
-            self.klg_database.update_daly_transaction_amount_100(to_address, value_usd)
+            daily_transaction_amount = self.klg_database.get_daily_transaction_amount_100(to_address)
+            current_value_timestamp = to_float(daily_transaction_amount.get(daily_timestamp))
+            value_usd = self.price_service.token_amount_to_usd(token, value)
+            daily_transaction_amount[daily_timestamp] = current_value_timestamp + value_usd
+            self.klg_database.update_daily_transaction_amount_100(to_address, daily_transaction_amount)
 
             """
             Cập nhật quan hệ lên knowledge graph

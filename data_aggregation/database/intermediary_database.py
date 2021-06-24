@@ -49,13 +49,13 @@ class IntermediaryDatabase(object):
     def get_latest_block_update(self):
         start = time.time()
         latest_block = self.mongo_blocks.find_one(sort=[(BlockConstant.number, -1)])
-        logger.info(f"Time to get latest block {time.time() - start}")
+        # logger.info(f"Time to get latest block {time.time() - start}")
         return latest_block.get(BlockConstant.number) - 1
 
     def get_oldest_block_update(self):
         start = time.time()
         latest_block = self.mongo_blocks.find_one(sort=[(BlockConstant.number, 1)])
-        logger.info(f"time to get oldest block {time.time() - start}")
+        # logger.info(f"time to get oldest block {time.time() - start}")
         return latest_block.get(BlockConstant.number) - 1
 
     def get_first_create_wallet(self, wallet_address):
@@ -65,14 +65,14 @@ class IntermediaryDatabase(object):
         ]}
         start = time.time()
         transaction = self.mongo_transactions.find_one(key, sort=[(TransactionConstant.block_timestamp, 1)])
-        logger.info(f"time to get first create wallet {time.time() - start}")
+        # logger.info(f"time to get first create wallet {time.time() - start}")
         return transaction.get(TransactionConstant.block_timestamp)
 
     def get_transfer_native_token_tx_in_block(self, block):
         key = {TransactionConstant.block_number: block}
         start = time.time()
         result = self.mongo_transactions_transfer.find(key)
-        logger.info(f"tme to get_transfer_native_token_tx_in_block {time.time() - start} ")
+        # logger.info(f"tme to get_transfer_native_token_tx_in_block {time.time() - start} ")
         return result
 
     def get_events_at_of_smart_contract(self, block, smart_contract_address):
@@ -82,14 +82,14 @@ class IntermediaryDatabase(object):
             self.mongo_token_collection_dict[smart_contract_address] = self.mongo_db[smart_contract_address]
         key = {TransactionConstant.block_number: block}
         result = self.mongo_token_collection_dict.get(smart_contract_address).find(key)
-        logger.info(f"time to get_events_at_of_smart_contract {time.time() - start} ")
+        # logger.info(f"time to get_events_at_of_smart_contract {smart_contract_address} {time.time() - start} ")
         return result
 
     def get_wallet(self, wallet_address):
         key = {WalletConstant.address: wallet_address}
         start = time.time()
         result = self.mongo_wallet.find_one(key)
-        logger.info(f"Time to get wallet {time.time() - start}")
+        # logger.info(f"Time to get wallet {time.time() - start}")
         return result
 
     def get_token(self, token_address):
@@ -97,5 +97,5 @@ class IntermediaryDatabase(object):
         start = time.time()
         result = self.mongo_tokens.find_one(key)
 
-        logger.info(f"get_token {time.time() - start} ")
+        # logger.info(f"get_token {time.time() - start} ")
         return result

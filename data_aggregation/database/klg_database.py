@@ -227,7 +227,23 @@ class KlgDatabase(object):
         logger.info(f"Time to update balance 100 {time.time() - start_time}")
         return create[0]["p"]
 
-    def update_daly_transaction_amount_100(self, wallet_address, transaction_amount):
+    def get_daily_transaction_amount_100(self, wallet_address):
+        keys_list = []  # timestamp_balance_100 list
+        values_list = []  # balance_100 list
+        start_time = time.time()
+        getter = self._graph.run("match (p:Wallet { address: $address }) return p.dailyTransactionAmountsTimestamp ",
+                                 address=wallet_address).data()
+        if getter and getter[0]["p.dailyTransactionAmountsTimestamp"]:
+            keys_list = keys_list + getter[0]["p.dailyTransactionAmountsTimestamp"]
+
+        getter = self._graph.run("match (p:Wallet { address: $address }) return p.dailyTransactionAmounts ",
+                                 address=wallet_address).data()
+        if getter and getter[0]["p.dailyTransactionAmounts"]:
+            values_list = values_list + getter[0]["p.dailyTransactionAmounts"]
+        logger.info(f"time to get get_daily_transaction_amount_100 {time.time() - start_time}")
+        return two_list_to_dict(keys_list, values_list)
+
+    def update_daily_transaction_amount_100(self, wallet_address, transaction_amount):
         # """
         # cập nhật
         # dailyTransactionAmounts: Tổng giá trị giao dịch của wallet trong 100 ngày, mảng gồm 100 ngày - lưu ý chỉ tính giao dịch chuyển tiền tới tài khoản này
@@ -236,15 +252,46 @@ class KlgDatabase(object):
         # :param wallet_address:
         # :return:
         # """
+        # if not wallet_address or not transaction_amount:
+        #     return
+        # create = self._graph.run("MERGE (p:Wallet { address: $address }) "
+        #                          "SET p.dailyTransactionAmounts = coalesce(p.dailyTransactionAmounts, []) + $dailyTransactionAmounts "
+        #                          "RETURN p",
+        #                          address=wallet_address, dailyTransactionAmounts=transaction_amount).data()
+
+        start_time = time.time()
         if not wallet_address or not transaction_amount:
             return
+        keys, values = dict_to_two_list(transaction_amount)
+        keys = list(keys)
+        values = list(values)
         create = self._graph.run("MERGE (p:Wallet { address: $address }) "
-                                 "SET p.dailyTransactionAmounts = coalesce(p.dailyTransactionAmounts, []) + $dailyTransactionAmounts "
+                                 "SET p.dailyTransactionAmountsTimestamp = $dailyTransactionAmountsTimestamp, "
+                                 "p.dailyTransactionAmounts = $dailyTransactionAmounts "
                                  "RETURN p",
-                                 address=wallet_address, dailyTransactionAmounts=transaction_amount).data()
+                                 address=wallet_address, dailyTransactionAmountsTimestamp=keys,
+                                 dailyTransactionAmounts=values).data()
+        logger.info(f"Time to update balance 100 {time.time() - start_time}")
         return create[0]["p"]
 
-    def update_daly_frequency_of_transaction(self, wallet_address, transaction_id):
+    def get_daily_daily_frequency_of_transaction(self, wallet_address):
+        keys_list = []  # timestamp_balance_100 list
+        values_list = []  # balance_100 list
+        start_time = time.time()
+        getter = self._graph.run(
+            "match (p:Wallet { address: $address }) return p.dailyFrequencyOfTransactionsTimestamp ",
+            address=wallet_address).data()
+        if getter and getter[0]["p.dailyFrequencyOfTransactionsTimestamp"]:
+            keys_list = keys_list + getter[0]["p.dailyFrequencyOfTransactionsTimestamp"]
+
+        getter = self._graph.run("match (p:Wallet { address: $address }) return p.dailyFrequencyOfTransactions ",
+                                 address=wallet_address).data()
+        if getter and getter[0]["p.dailyFrequencyOfTransactions"]:
+            values_list = values_list + getter[0]["p.dailyFrequencyOfTransactions"]
+        logger.info(f"time to get get_daily_transaction_amount_100 {time.time() - start_time}")
+        return two_list_to_dict(keys_list, values_list)
+
+    def update_daily_frequency_of_transaction(self, wallet_address, transaction_id):
         # """
         # cập nhật
         # dailyTransactionAmounts: Tổng giá trị giao dịch của wallet trong 100 ngày, mảng gồm 100 ngày - lưu ý chỉ tính giao dịch chuyển tiền tới tài khoản này
@@ -256,10 +303,19 @@ class KlgDatabase(object):
         if not wallet_address or not transaction_id:
             return
         start_time = time.time()
+        # create = self._graph.run("MERGE (p:Wallet { address: $address }) "
+        #                          "SET p.dailyFrequencyOfTransactions = coalesce(p.dailyFrequencyOfTransactions, []) + $dailyFrequencyOfTransactions "
+        #                          "RETURN p",
+        #                          address=wallet_address, dailyFrequencyOfTransactions=transaction_id).data()
+        keys, values = dict_to_two_list(transaction_id)
+        keys = list(keys)
+        values = list(values)
         create = self._graph.run("MERGE (p:Wallet { address: $address }) "
-                                 "SET p.dailyFrequencyOfTransactions = coalesce(p.dailyFrequencyOfTransactions, []) + $dailyFrequencyOfTransactions "
+                                 "SET p.dailyFrequencyOfTransactionsTimestamp = $dailyFrequencyOfTransactionsTimestamp, "
+                                 "p.dailyFrequencyOfTransactions = $dailyFrequencyOfTransactions "
                                  "RETURN p",
-                                 address=wallet_address, dailyFrequencyOfTransactions=transaction_id).data()
+                                 address=wallet_address, dailyFrequencyOfTransactionsTimestamp=keys,
+                                 dailyFrequencyOfTransactions=values).data()
         logger.info(f"Time to update update_daly_frequency_of_transaction {time.time() - start_time}")
         return create[0]["p"]
 
