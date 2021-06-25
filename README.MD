@@ -64,4 +64,21 @@ Các nhà phát triển có thể tùy biến lại theo cách triển khai củ
         NEO4J_HTTP_PORT=6474
 
     
+## Deploy Rest Api
+
+### Create .env file for rest api server
+
+    cp example-rest-api.env
+
+REST_API_PORT=8000          ### for mainnet
+REST_API_PORT=9000          ### for testnet
+
+NEO4J_BOTH_PORT=7687        ### for mainnet
+NEO4J_BOTH_PORT=6687        ### for testnet
+
+### Docker run for rest api server
+
+    docker-compose -f docker-compose-rest-api-mainnet.yml up ### for mainnet
+
+    docker-compose -f docker-compose-rest-api-testnet.yml up ### for testnet
 

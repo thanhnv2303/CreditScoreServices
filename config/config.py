@@ -37,9 +37,9 @@ class MongoDBConfig:
 class Neo4jConfig:
     BOLT = "bolt://0.0.0.0:7687"
     HOST = os.environ.get("NEO4J_HOST") or "0.0.0.0"
-    BOTH_PORT = os.environ.get("NEO4J_PORT") or 7687
-    HTTP_PORT = os.environ.get("NEO4J_PORT") or 7474
-    HTTPS_PORT = os.environ.get("NEO4J_PORT") or 7473
+    BOTH_PORT = os.environ.get("NEO4J_BOTH_PORT") or 7687
+    HTTP_PORT = os.environ.get("NEO4J_HTTP_PORT") or 7474
+    HTTPS_PORT = os.environ.get("NEO4J_HTTPS_PORT") or 7473
     NEO4J_USERNAME = os.environ.get("NEO4J_USERNAME") or "neo4j_services_db"
     NEO4J_PASSWORD = os.environ.get("NEO4J_PASSWORD") or "klg_pass"
 
