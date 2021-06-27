@@ -61,10 +61,12 @@ class IntermediaryDatabase(object):
         return latest_block.get(BlockConstant.number) - 1
 
     def get_first_create_wallet(self, wallet_address):
-        key = {"$or": [
-            {TransactionConstant.from_address: wallet_address},
-            {TransactionConstant.to_address: wallet_address}
-        ]}
+        # key = {"$or": [
+        #     {TransactionConstant.from_address: wallet_address},
+        #     {TransactionConstant.to_address: wallet_address}
+        # ]}
+        key = {TransactionConstant.from_address: wallet_address}
+
         start = time.time()
         transaction = self.mongo_transactions.find_one(key, sort=[(TransactionConstant.block_timestamp, 1)])
         logger.info(f"time to get first create wallet at transaction {time.time() - start}")
