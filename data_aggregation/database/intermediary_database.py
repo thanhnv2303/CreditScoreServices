@@ -38,6 +38,8 @@ class IntermediaryDatabase(object):
             self.mongo_transactions.create_index([("to_address", "hashed")], name=MongoIndexConstant.tx_to_address)
         if MongoIndexConstant.tx_from_address not in self.mongo_transactions.index_information():
             self.mongo_transactions.create_index([("from_address", "hashed")], name=MongoIndexConstant.tx_from_address)
+        if MongoIndexConstant.tx_block_timestamp not in self.mongo_transactions.index_information():
+            self.mongo_transactions.create_index([("block_timestamp", 1)], name=MongoIndexConstant.tx_block_timestamp)
         if MongoIndexConstant.blocks_number not in self.mongo_blocks.index_information():
             self.mongo_blocks.create_index([("number", "hashed")], name=MongoIndexConstant.blocks_number)
 

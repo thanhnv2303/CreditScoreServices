@@ -76,9 +76,9 @@ class AggregateWalletJob(BaseJob):
     def _export_data_wallet(self, wallet_address):
         try:
             # wallet = self.intermediary_database.get_wallet(wallet_address)
-            start = time.time()
+            start1 = time.time()
             wallet = self.update_wallet_storage.get(wallet_address)
-            logger.info(f"Time to get wallet at storage is {time.time() - start}")
+            logger.info(f"Time to get wallet at storage is {time.time() - start1}")
             """
             update thông tin ví lên knowledge graph 
             """
@@ -110,12 +110,16 @@ class AggregateWalletJob(BaseJob):
             cập nhật thông tin về ngày xuất hiện giao dịch đầu tiên trên hệ thống
             """
             start = time.time()
-            try:
-                create_at = self.intermediary_database.get_first_create_wallet(wallet_address.lower())
-            except:
-                create_at = self.intermediary_database.block_number_to_time_stamp(wallet.get("block_number"))
-            self.klg_database.update_wallet_created_at(wallet_address, create_at)
-            logger.info(f"Total time to update create at of wallet {time.time()-start}")
+            created_at = self.klg_database.get_wallet_created_at(wallet_address)
+            if not created_at:
+                try:
+                    create_at = self.intermediary_database.get_first_create_wallet(wallet_address.lower())
+                except:
+                    create_at = self.intermediary_database.block_number_to_time_stamp(wallet.get("block_number"))
+                self.klg_database.update_wallet_created_at(wallet_address, create_at)
+            logger.info(f"Total time to update create at of wallet {time.time() - start}")
+
+            logger.info(f"Total time to update a wallet is {time.time() - start1}")
             ###
         except Exception as e:
             logger.error(e)

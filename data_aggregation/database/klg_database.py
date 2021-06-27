@@ -167,6 +167,13 @@ class KlgDatabase(object):
         logger.info(f"Time time to update create at {time.time() - start_time}")
         return create[0]["p"]
 
+    def get_wallet_created_at(self, wallet_address):
+        getter = self._graph.run("match (p:Wallet { address: $address }) return p.createdAt ",
+                                 address=wallet_address).data()
+        if getter and getter[0]["p.createdAt"]:
+            return getter[0]["p.createdAt"]
+        return None
+
     def get_balance_100(self, wallet_address):
         # """
         # Lấy ra
