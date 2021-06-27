@@ -65,7 +65,7 @@ class IntermediaryDatabase(object):
         ]}
         start = time.time()
         transaction = self.mongo_transactions.find_one(key, sort=[(TransactionConstant.block_timestamp, 1)])
-        # logger.info(f"time to get first create wallet {time.time() - start}")
+        logger.info(f"time to get first create wallet at transaction {time.time() - start}")
         return transaction.get(TransactionConstant.block_timestamp)
 
     def get_transfer_native_token_tx_in_block(self, block):

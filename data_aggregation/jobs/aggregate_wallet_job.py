@@ -21,6 +21,7 @@
 # SOFTWARE.
 # import asyncio
 import logging
+import time
 
 from config.constant import LoggerConstant, WalletConstant
 from config.data_aggregation_constant import MemoryStorageKeyConstant
@@ -56,6 +57,7 @@ class AggregateWalletJob(BaseJob):
     def _start(self):
         local_storage = MemoryStorage.getInstance()
         self.update_wallet_storage: dict = local_storage.get_element(MemoryStorageKeyConstant.update_wallet)
+
     def _end(self):
         self.batch_work_executor.shutdown()
 
@@ -74,19 +76,23 @@ class AggregateWalletJob(BaseJob):
     def _export_data_wallet(self, wallet_address):
         try:
             # wallet = self.intermediary_database.get_wallet(wallet_address)
+            start = time.time()
             wallet = self.update_wallet_storage.get(wallet_address)
+            logger.info(f"Time to get wallet at storage is {time.time() - start}")
             """
             update thông tin ví lên knowledge graph 
             """
             wallet_token = wallet.get(WalletConstant.balance)
             ### update wallet_token vao truong Token cua vi trong klg
             if wallet_token:
+                start = time.time()
                 total_balance = self.price_service.get_total_value(wallet_token)
                 self.klg_database.update_wallet_token(wallet_address, wallet_token, total_balance)
-
+                logger.info(f"Time to update balance wallet {time.time() - start}")
             wallet_token_deposit = wallet.get(WalletConstant.supply)
             wallet_token_borrow = wallet.get(WalletConstant.borrow)
             if wallet_token_deposit and wallet_token_borrow:
+                start = time.time()
                 deposit_balance = self.price_service.get_total_value(wallet_token_deposit)
                 borrow_balance = self.price_service.get_total_value(wallet_token_borrow)
 
@@ -98,14 +104,18 @@ class AggregateWalletJob(BaseJob):
                     borrow_balance
                 )
 
+                logger.info(f"Time to update lending info wallet {time.time() - start}")
+
             """
             cập nhật thông tin về ngày xuất hiện giao dịch đầu tiên trên hệ thống
             """
+            start = time.time()
             try:
                 create_at = self.intermediary_database.get_first_create_wallet(wallet_address.lower())
-            except :
+            except:
                 create_at = self.intermediary_database.block_number_to_time_stamp(wallet.get("block_number"))
             self.klg_database.update_wallet_created_at(wallet_address, create_at)
+            logger.info(f"Total time to update create at of wallet {time.time()-start}")
             ###
         except Exception as e:
             logger.error(e)
