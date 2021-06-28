@@ -1,8 +1,15 @@
+import os
+import sys
+
+TOP_DIR = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
+sys.path.insert(0, os.path.join(TOP_DIR, '../'))
+
 from config.config import Neo4jConfig
 from py2neo import Graph
 import time
 from datetime import datetime
 import csv
+
 
 def get_property(property, getter):
     if property in getter[0]['w']:
@@ -10,12 +17,14 @@ def get_property(property, getter):
     else:
         return 0
 
+
 def get_tscore(value, mean, std):
-    z_score = (float(value) - float(mean))/float(std)
-    t_score = z_score*100 + 500
+    z_score = (float(value) - float(mean)) / float(std)
+    t_score = z_score * 100 + 500
     if (t_score > 1000):
         return 1000
     return t_score
+
 
 def calculate_average_second(values, timestamps, time_current):
     if values == 0:
@@ -32,21 +41,24 @@ def calculate_average_second(values, timestamps, time_current):
     total_time = time_current - timestamps[0]
     average = sum / total_time
     return average
+
+
 class EstimateCreditScore:
-    def __init__(self, address: str, type_transaction: int,amount: float, time_estimate: int):
+    def __init__(self, address: str, type_transaction: int, amount: float, time_estimate: int):
         self.address = address
         self.k = 100
         self.type_transaction = type_transaction
         self.amount = amount
         # get wallet data from KG
-        self.graph = Graph(Neo4jConfig.BOLT, auth=(Neo4jConfig.NEO4J_USERNAME, Neo4jConfig.NEO4J_PASSWORD))
+        bolt = f"bolt://{Neo4jConfig.HOST}:{Neo4jConfig.BOTH_PORT}"
+        self.graph = Graph(bolt, auth=(Neo4jConfig.NEO4J_USERNAME, Neo4jConfig.NEO4J_PASSWORD))
         try:
             self.graph.run("Match () Return 1 Limit 1")
             print('Neo4j Database is connected')
         except Exception:
             print('Neo4j Database is not connected')
         self.getter = self.graph.run("match (w:Wallet { address: $address }) return w;", address=address).data()
-        #print(self.getter)
+        # print(self.getter)
 
         # get list of token
         token_creditScore = self.graph.run("match (t:Token) return t.address, t.creditScore;").data()
@@ -74,7 +86,6 @@ class EstimateCreditScore:
         self.timeCurrent = int(time.time())
         self.timeFuture = self.timeCurrent + time_estimate
 
-
     def calculate_x2(self):
         createdAt = get_property('createdAt', self.getter)
         numberOfLiquidation = get_property('numberOfLiquidation', self.getter)
@@ -90,7 +101,8 @@ class EstimateCreditScore:
             dailyTransactionAmounts_temp = self.amount
         else:
             dailyTransactionAmounts_temp = sum(dailyTransactionAmounts) + self.amount
-        x22 = get_tscore(dailyTransactionAmounts_temp, self.transaction_amount_statistic['mean'], self.transaction_amount_statistic['std'])
+        x22 = get_tscore(dailyTransactionAmounts_temp, self.transaction_amount_statistic['mean'],
+                         self.transaction_amount_statistic['std'])
 
         # x23 - frequency of transaction
         if (dailyFrequencyOfTransactions == []):
@@ -100,7 +112,7 @@ class EstimateCreditScore:
 
         # x24 - number of liquidations
         if (numberOfLiquidation < 10):
-            x24 = -100*numberOfLiquidation + 1000
+            x24 = -100 * numberOfLiquidation + 1000
         else:
             x24 = 0
 
@@ -108,11 +120,11 @@ class EstimateCreditScore:
         if (totalAmountOfLiquidation < 0):
             print("error liquid amount")
         if (totalAmountOfLiquidation < 10000):
-            x25 = 1000 - 0.1*totalAmountOfLiquidation
+            x25 = 1000 - 0.1 * totalAmountOfLiquidation
         else:
             x25 = 0
         # x2 - Activity history
-        x2 = 0.3*x21 + 0.2*x22 + 0.2*x23 + 0.1*x24 + 0.2*x25
+        x2 = 0.3 * x21 + 0.2 * x22 + 0.2 * x23 + 0.1 * x24 + 0.2 * x25
         return x2
 
     def calculate_x5(self):
@@ -139,7 +151,7 @@ class EstimateCreditScore:
         borrowChangeLogTimestamps = get_property('borrowChangeLogTimestamps', self.getter)
         borrowChangeLogValues = get_property('borrowChangeLogValues', self.getter)
 
-        if (self.type_transaction == 1): # deposit
+        if (self.type_transaction == 1):  # deposit
             balanceInUSD = balanceInUSD - self.amount
             if balanceInUSD < 0:
                 balanceInUSD = 0
@@ -148,7 +160,7 @@ class EstimateCreditScore:
             balanceChangeLogValues.append(balanceInUSD)
             depositChangeLogTimestamps.append(self.timeCurrent + 1)
             depositChangeLogValues.append(depositInUSD)
-        elif (self.type_transaction == 2): # borrow
+        elif (self.type_transaction == 2):  # borrow
             depositInUSD = depositInUSD - self.amount
             if depositInUSD < 0:
                 depositInUSD = 0
@@ -157,7 +169,7 @@ class EstimateCreditScore:
             depositChangeLogValues.append(depositInUSD)
             borrowChangeLogTimestamps.append(self.timeCurrent + 1)
             borrowChangeLogValues.append(borrowInUSD)
-        elif (self.type_transaction == 3): # repay
+        elif (self.type_transaction == 3):  # repay
             balanceInUSD = balanceInUSD - self.amount
             if balanceInUSD < 0:
                 balanceInUSD = 0
@@ -168,7 +180,7 @@ class EstimateCreditScore:
             balanceChangeLogValues.append(balanceInUSD)
             borrowChangeLogTimestamps.append(self.timeCurrent + 1)
             borrowChangeLogValues.append(borrowInUSD)
-        elif (self.type_transaction == 4): # withdraw
+        elif (self.type_transaction == 4):  # withdraw
             balanceInUSD = balanceInUSD + self.amount
             depositInUSD = depositInUSD - self.amount
             if depositInUSD < 0:
@@ -182,61 +194,65 @@ class EstimateCreditScore:
         x11 = balanceInUSD + depositInUSD - borrowInUSD
         if (x11 < 1000):
             x11 = 0
-        elif(x11 < 10000):
-            x11 = 0.1*x11
+        elif (x11 < 10000):
+            x11 = 0.1 * x11
         else:
             x11 = 1000
-        #print('x11', x11)
-        #x1 = 0
-        #x3 = 0
-        #x4 = 0
+        # print('x11', x11)
+        # x1 = 0
+        # x3 = 0
+        # x4 = 0
         loan_average = calculate_average_second(borrowChangeLogValues, borrowChangeLogTimestamps, self.timeFuture)
         balance_average = calculate_average_second(balanceChangeLogValues, balanceChangeLogTimestamps, self.timeFuture)
         deposit_average = calculate_average_second(depositChangeLogValues, depositChangeLogTimestamps, self.timeFuture)
         total_asset_average = balance_average + deposit_average - loan_average
 
         x12 = get_tscore(total_asset_average, self.total_assets_statistic['mean'], self.total_assets_statistic['std'])
-        #print('x12', total_asset_average)
-        x1 = 0.04*x11 + 0.96*x12
+        # print('x12', total_asset_average)
+        x1 = 0.04 * x11 + 0.96 * x12
 
         # x3 - loan ratio
-        if(balance_average == 0):
+        if (balance_average == 0):
             x31 = 0
         else:
-            ratio31 = loan_average/balance_average
-            x31 = 1000*(1 - min(1, ratio31))
-        #print('x31',x31 )
+            ratio31 = loan_average / balance_average
+            x31 = 1000 * (1 - min(1, ratio31))
+        # print('x31',x31 )
         if (deposit_average == 0):
             x32 = 0
         else:
             ratio32 = loan_average / deposit_average
             x32 = 1000 * (1 - min(1, ratio32))
-        #print('x32', x32)
-        x3 = 0.6*x31 + 0.4*x32
+        # print('x32', x32)
+        x3 = 0.6 * x31 + 0.4 * x32
 
         # x4 - Circulating asset
         if (total_asset_average == 0):
             x41 = 0
         else:
-            ratio41 = deposit_average/total_asset_average
-            x41 = 1000*ratio41
-        #print('deposit_average', deposit_average)
-        #print('x41', x41)
+            ratio41 = deposit_average / total_asset_average
+            x41 = 1000 * ratio41
+        # print('deposit_average', deposit_average)
+        # print('x41', x41)
         x4 = x41
         return x1, x3, x4
+
     def calculate_credit_score(self):
         x2 = self.calculate_x2()
         [x1, x3, x4] = self.calculate_x134()
         x5 = self.calculate_x5()
-        credit_score = 0.25*x1 + 0.35*x2 + 0.15*x3 + 0.2*x4 + 0.05*x5
+        credit_score = 0.25 * x1 + 0.35 * x2 + 0.15 * x3 + 0.2 * x4 + 0.05 * x5
         return credit_score
+
     def newCreditScore(self):
         credit_score = self.calculate_credit_score()
-        print(" Credit Score will be " + str(credit_score) + " at " + datetime.utcfromtimestamp(self.timeFuture).strftime('%Y-%m-%d %H:%M:%S'))
+        print(
+            " Credit Score will be " + str(credit_score) + " at " + datetime.utcfromtimestamp(self.timeFuture).strftime(
+                '%Y-%m-%d %H:%M:%S'))
         return 0
 
-if __name__ == '__main__':
 
+if __name__ == '__main__':
     # EstimateCreditScore(address, type_transaction, time_estimates)
     # - address of wallet
     # - type_transaction: 1-deposit, 2-borrow, 3-repay, 4-withdraw

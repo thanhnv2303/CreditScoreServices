@@ -1,10 +1,17 @@
-from config.config import Neo4jConfig
-from py2neo import Graph
-import time
-import numpy as np
+import os
+import sys
+
+TOP_DIR = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
+sys.path.insert(0, os.path.join(TOP_DIR, '../'))
+
 import csv
+import time
+
 import numpy as np
+from py2neo import Graph
 from scipy.stats.stats import _contains_nan
+
+from config.config import Neo4jConfig
 
 
 def get_standardized_score_info(a, axis=0, ddof=0, nan_policy='propagate'):
@@ -20,6 +27,7 @@ def get_standardized_score_info(a, axis=0, ddof=0, nan_policy='propagate'):
         sstd = a.std(axis=axis, ddof=ddof, keepdims=True)
 
     return mns[0], sstd[0]
+
 
 def get_property(property, getter):
     if property in getter:
@@ -45,11 +53,11 @@ def calculate_average_second(values, timestamps, time_current):
     return average
 
 
-
 def get_statistics():
     k = 100
     # get wallet data from KG
-    graph = Graph(Neo4jConfig.BOLT, auth=(Neo4jConfig.NEO4J_USERNAME, Neo4jConfig.NEO4J_PASSWORD))
+    bolt = f"bolt://{Neo4jConfig.HOST}:{Neo4jConfig.BOTH_PORT}"
+    graph = Graph(bolt, auth=(Neo4jConfig.NEO4J_USERNAME, Neo4jConfig.NEO4J_PASSWORD))
     try:
         graph.run("Match () Return 1 Limit 1")
         print('Neo4j Database is connected')
@@ -61,14 +69,12 @@ def get_statistics():
     frequency_of_transaction = {'mean': 0, 'std': 0}
     transaction_amount_statistic = {'mean': 0, 'std': 0}
 
-
     timeCurrent = int(time.time())
 
     createdAt = []
-    #dailyFrequencyOfTransactions = []
+    # dailyFrequencyOfTransactions = []
     dailyTransactionAmounts = []
     total_asset = []
-
 
     for i in range(len(getter)):
         # get age info x21
@@ -80,7 +86,6 @@ def get_statistics():
         #     dailyFrequencyOfTransactions_temp.append(0)
         # else:
         #     dailyFrequencyOfTransactions.append(sum(dailyFrequencyOfTransactions_temp))
-
 
         # Get Daily Transaction Amount x23
         dailyTransactionAmounts_temp = get_property('dailyTransactionAmounts', getter[i]['w'])
@@ -108,7 +113,8 @@ def get_statistics():
     age = timeCurrent - timestamp
     [age_of_account_statistic['mean'], age_of_account_statistic['std']] = get_standardized_score_info(age)
 
-    [transaction_amount_statistic['mean'], transaction_amount_statistic['std']] = get_standardized_score_info(dailyTransactionAmounts)
+    [transaction_amount_statistic['mean'], transaction_amount_statistic['std']] = get_standardized_score_info(
+        dailyTransactionAmounts)
 
     [total_assets_statistic['mean'], total_assets_statistic['std']] = get_standardized_score_info(total_asset)
     print('Complete calculating statistics information')
@@ -133,8 +139,6 @@ def get_statistics():
         writer = csv.DictWriter(f, fieldnames=fieldnames)
         writer.writeheader()
         writer.writerows(rows)
-
-
 
 
 if __name__ == '__main__':

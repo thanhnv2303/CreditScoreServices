@@ -1,9 +1,14 @@
+import os
+import sys
+
+TOP_DIR = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
+sys.path.insert(0, os.path.join(TOP_DIR, '../'))
+
 from config.config import Neo4jConfig
 from py2neo import Graph
 import time
-from datetime import datetime
-import numpy as np
 import csv
+
 
 def get_property(property, getter):
     if property in getter:
@@ -11,12 +16,14 @@ def get_property(property, getter):
     else:
         return 0
 
+
 def get_tscore(value, mean, std):
-    z_score = (float(value) - float(mean))/float(std)
-    t_score = z_score*100 + 500
+    z_score = (float(value) - float(mean)) / float(std)
+    t_score = z_score * 100 + 500
     if (t_score > 1000):
         return 1000
     return t_score
+
 
 def calculate_average_second(values, timestamps, time_current):
     if values == 0:
@@ -33,19 +40,22 @@ def calculate_average_second(values, timestamps, time_current):
     total_time = time_current - timestamps[0]
     average = sum / total_time
     return average
+
+
 class CalculateCreditScoreAllWallet:
 
     def __init__(self):
         self.k = 100
         # get wallet data from KG
-        self.graph = Graph(Neo4jConfig.BOLT, auth=(Neo4jConfig.NEO4J_USERNAME, Neo4jConfig.NEO4J_PASSWORD))
+        bolt = f"bolt://{Neo4jConfig.HOST}:{Neo4jConfig.BOTH_PORT}"
+        self.graph = Graph(bolt, auth=(Neo4jConfig.NEO4J_USERNAME, Neo4jConfig.NEO4J_PASSWORD))
         try:
             self.graph.run("Match () Return 1 Limit 1")
             print('Neo4j Database is connected')
         except Exception:
             print('Neo4j Database is not connected')
         self.getter = self.graph.run("match (w:Wallet) return w;").data()
-        #print(self.getter)
+        # print(self.getter)
 
         # get list of token
         token_creditScore = self.graph.run("match (t:Token) return t.address, t.creditScore;").data()
@@ -69,10 +79,7 @@ class CalculateCreditScoreAllWallet:
         self.transaction_amount_statistic = readlines[2]
         self.frequency_of_transaction = readlines[3]
 
-
         self.time = int(time.time())
-
-
 
     def calculate_x2(self, i: int):
         get_property('createdAt', self.getter[i]['w'])
@@ -185,6 +192,7 @@ class CalculateCreditScoreAllWallet:
         # print('x41', x41)
         x4 = x41
         return x1, x3, x4
+
     def updateCreditScore(self, i: int, credit_score):
         # print(credit_score)
         address = get_property('address', self.getter[i]['w'])
@@ -193,6 +201,7 @@ class CalculateCreditScoreAllWallet:
             address=address, creditScore=credit_score)
         # print(i, credit_score)
         return 0
+
     def calculate_credit_score(self):
         for i in range(len(self.getter)):
             x2 = self.calculate_x2(i)
@@ -200,8 +209,6 @@ class CalculateCreditScoreAllWallet:
             x5 = self.calculate_x5(i)
             credit_score = 0.25 * x1 + 0.35 * x2 + 0.15 * x3 + 0.2 * x4 + 0.05 * x5
             self.updateCreditScore(i, credit_score)
-
-
 
 
 if __name__ == '__main__':
