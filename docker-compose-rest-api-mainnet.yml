@@ -7,7 +7,7 @@ services:
     image: credit-score
     container_name: credit-score-rest-api-mainnet
     ports:
-      - ${REST_API_PORT}:8000
+      - ${REST_API_PORT}:${REST_API_PORT}
     volumes:
       - .:/project
     command: |
