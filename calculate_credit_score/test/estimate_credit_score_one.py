@@ -89,7 +89,7 @@ class EstimateCreditScore:
     def calculate_x2(self):
         createdAt = get_property('createdAt', self.getter)
         if(createdAt == 0):
-            createdAt = self.time
+            createdAt = self.timeCurrent
         numberOfLiquidation = get_property('numberOfLiquidation', self.getter)
         totalAmountOfLiquidation = get_property('totalAmountOfLiquidation', self.getter)
         dailyFrequencyOfTransactions = get_property('dailyFrequencyOfTransactions', self.getter)
