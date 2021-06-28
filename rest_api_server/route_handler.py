@@ -24,6 +24,7 @@ class RouteHandler(object):
         address = request.match_info.get('address', '')
         address = str(address).lower()
         try:
+            # self._database.get_wallet(address)
             calc = CalculateCreditScoreOneWallet(address)
             credit_score = calc.updateCreditScore()
             return json_response(
