@@ -209,7 +209,7 @@ class CalculateCreditScoreOneWallet:
             address=self.address, creditScore=credit_score)
         print("Credit Score " + str(credit_score) + " was updated at " + datetime.utcfromtimestamp(self.time).strftime(
             '%Y-%m-%d %H:%M:%S'))
-        return 0
+        return credit_score
 
 
 if __name__ == '__main__':

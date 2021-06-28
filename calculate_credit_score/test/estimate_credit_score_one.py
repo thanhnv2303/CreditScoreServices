@@ -249,7 +249,7 @@ class EstimateCreditScore:
         print(
             " Credit Score will be " + str(credit_score) + " at " + datetime.utcfromtimestamp(self.timeFuture).strftime(
                 '%Y-%m-%d %H:%M:%S'))
-        return 0
+        return credit_score
 
 
 if __name__ == '__main__':
