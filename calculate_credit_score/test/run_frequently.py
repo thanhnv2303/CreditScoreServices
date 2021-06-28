@@ -18,5 +18,6 @@ config_log()
 logger.info("Start get statistic info ...")
 while True:
     get_statistics()
-    logger.info(f"Get credit score statistic info done sleep for {CreditScoreConfig.PERIOD_SECONDS}s")
-    time.sleep(CreditScoreConfig.PERIOD_SECONDS)
+    period_seconds = int(CreditScoreConfig.PERIOD_SECONDS)
+    logger.info(f"Get credit score statistic info done sleep for {period_seconds}s")
+    time.sleep(period_seconds)
