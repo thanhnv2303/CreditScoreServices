@@ -89,7 +89,7 @@ class EstimateCreditScore:
     def calculate_x2(self):
         createdAt = get_property('createdAt', self.getter)
         if(createdAt == 0):
-            createdAt = self.time
+            createdAt = self.timeCurrent
         numberOfLiquidation = get_property('numberOfLiquidation', self.getter)
         totalAmountOfLiquidation = get_property('totalAmountOfLiquidation', self.getter)
         dailyFrequencyOfTransactions = get_property('dailyFrequencyOfTransactions', self.getter)
@@ -287,6 +287,9 @@ class EstimateCreditScore:
         return credit_score
 
     def newCreditScore(self):
+        if (self.getter == []):
+            print("No Wallet")
+            return 0
         credit_score = self.calculate_credit_score()
         print(
             " Credit Score will be " + str(credit_score) + " at " + datetime.utcfromtimestamp(self.timeFuture).strftime(

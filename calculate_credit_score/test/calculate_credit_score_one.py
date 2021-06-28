@@ -204,6 +204,9 @@ class CalculateCreditScoreOneWallet:
         return credit_score
 
     def updateCreditScore(self):
+        if (self.getter == []):
+            print('No wallet')
+            return 0
         credit_score = self.calculate_credit_score()
         # print(credit_score)
         self.result = self.graph.run(
