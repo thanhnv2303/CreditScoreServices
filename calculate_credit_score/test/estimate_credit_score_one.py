@@ -88,6 +88,8 @@ class EstimateCreditScore:
 
     def calculate_x2(self):
         createdAt = get_property('createdAt', self.getter)
+        if(createdAt == 0):
+            createdAt = self.time
         numberOfLiquidation = get_property('numberOfLiquidation', self.getter)
         totalAmountOfLiquidation = get_property('totalAmountOfLiquidation', self.getter)
         dailyFrequencyOfTransactions = get_property('dailyFrequencyOfTransactions', self.getter)
@@ -105,11 +107,11 @@ class EstimateCreditScore:
                          self.transaction_amount_statistic['std'])
 
         # x23 - frequency of transaction
-        if (dailyFrequencyOfTransactions == []):
-            x23 = 0
-        else:
-            x23 = 1000
-
+        # if (dailyFrequencyOfTransactions == []):
+        #     x23 = 0
+        # else:
+        #     x23 = 1000
+        x23 = 0
         # x24 - number of liquidations
         if (numberOfLiquidation < 10):
             x24 = -100 * numberOfLiquidation + 1000

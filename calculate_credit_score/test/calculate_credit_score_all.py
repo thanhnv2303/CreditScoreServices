@@ -84,6 +84,8 @@ class CalculateCreditScoreAllWallet:
     def calculate_x2(self, i: int):
         get_property('createdAt', self.getter[i]['w'])
         createdAt = get_property('createdAt', self.getter[i]['w'])
+        if(createdAt == 0):
+            createdAt = self.time
         numberOfLiquidation = get_property('numberOfLiquidation', self.getter[i]['w'])
         totalAmountOfLiquidation = get_property('totalAmountOfLiquidation', self.getter[i]['w'])
         dailyFrequencyOfTransactions = get_property('dailyFrequencyOfTransactions', self.getter[i]['w'])
@@ -100,11 +102,11 @@ class CalculateCreditScoreAllWallet:
         x22 = get_tscore(dailyTransactionAmounts_temp, self.transaction_amount_statistic['mean'],
                          self.transaction_amount_statistic['std'])
         # x23 - frequency of transaction
-        if (dailyFrequencyOfTransactions == []):
-            x23 = 0
-        else:
-            x23 = 1000
-
+        # if (dailyFrequencyOfTransactions == []):
+        #     x23 = 0
+        # else:
+        #     x23 = 1000
+        x23 = 0
         # x24 - number of liquidations
         if (numberOfLiquidation < 10):
             x24 = -100 * numberOfLiquidation + 1000
