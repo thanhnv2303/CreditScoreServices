@@ -11,7 +11,7 @@ services:
     command: |
       bash -c "
         sleep 10
-        python3 ./calculate_credit_score/docker_run/run_stream.py
+        python3 ./calculate_credit_score/docker_run/run_frequently.py
       "
     depends_on:
       - neo4j-klg-testnet
