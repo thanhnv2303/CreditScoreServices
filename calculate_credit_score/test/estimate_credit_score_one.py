@@ -156,19 +156,38 @@ class EstimateCreditScore:
             if balanceInUSD < 0:
                 balanceInUSD = 0
             depositInUSD = depositInUSD + self.amount
-            balanceChangeLogTimestamps.append(self.timeCurrent + 1)
-            balanceChangeLogValues.append(balanceInUSD)
-            depositChangeLogTimestamps.append(self.timeCurrent + 1)
-            depositChangeLogValues.append(depositInUSD)
+
+            if (balanceChangeLogTimestamps == 0):
+                balanceChangeLogTimestamps = [self.timeCurrent + 1]
+                balanceChangeLogValues = [balanceInUSD]
+            else:
+                balanceChangeLogTimestamps.append(self.timeCurrent + 1)
+                balanceChangeLogValues.append(balanceInUSD)
+
+            if (depositChangeLogTimestamps == 0):
+                depositChangeLogTimestamps = [self.timeCurrent + 1]
+                depositChangeLogValues = [depositInUSD]
+            else:
+                depositChangeLogTimestamps.append(self.timeCurrent + 1)
+                depositChangeLogValues.append(depositInUSD)
         elif (self.type_transaction == 2):  # borrow
             depositInUSD = depositInUSD - self.amount
             if depositInUSD < 0:
                 depositInUSD = 0
             borrowInUSD = borrowInUSD + self.amount
-            depositChangeLogTimestamps.append(self.timeCurrent + 1)
-            depositChangeLogValues.append(depositInUSD)
-            borrowChangeLogTimestamps.append(self.timeCurrent + 1)
-            borrowChangeLogValues.append(borrowInUSD)
+
+            if (depositChangeLogTimestamps == 0):
+                depositChangeLogTimestamps = [self.timeCurrent + 1]
+                depositChangeLogValues = [depositInUSD]
+            else:
+                depositChangeLogTimestamps.append(self.timeCurrent + 1)
+                depositChangeLogValues.append(depositInUSD)
+            if (borrowChangeLogTimestamps == 0):
+                borrowChangeLogTimestamps = [self.timeCurrent + 1]
+                borrowChangeLogValues = [borrowInUSD]
+            else:
+                borrowChangeLogTimestamps.append(self.timeCurrent + 1)
+                borrowChangeLogValues.append(borrowInUSD)
         elif (self.type_transaction == 3):  # repay
             balanceInUSD = balanceInUSD - self.amount
             if balanceInUSD < 0:
@@ -176,19 +195,40 @@ class EstimateCreditScore:
             borrowInUSD = borrowInUSD - self.amount
             if borrowInUSD < 0:
                 borrowInUSD = 0
-            balanceChangeLogTimestamps.append(self.timeCurrent + 1)
-            balanceChangeLogValues.append(balanceInUSD)
-            borrowChangeLogTimestamps.append(self.timeCurrent + 1)
-            borrowChangeLogValues.append(borrowInUSD)
+
+            if (balanceChangeLogTimestamps == 0):
+                balanceChangeLogTimestamps = [self.timeCurrent + 1]
+                balanceChangeLogValues = [balanceInUSD]
+            else:
+                balanceChangeLogTimestamps.append(self.timeCurrent + 1)
+                balanceChangeLogValues.append(balanceInUSD)
+
+            if (borrowChangeLogTimestamps == 0):
+                borrowChangeLogTimestamps = [self.timeCurrent + 1]
+                borrowChangeLogValues = [borrowInUSD]
+            else:
+                borrowChangeLogTimestamps.append(self.timeCurrent + 1)
+                borrowChangeLogValues.append(borrowInUSD)
         elif (self.type_transaction == 4):  # withdraw
             balanceInUSD = balanceInUSD + self.amount
             depositInUSD = depositInUSD - self.amount
             if depositInUSD < 0:
                 depositInUSD = 0
-            balanceChangeLogTimestamps.append(self.timeCurrent + 1)
-            balanceChangeLogValues.append(balanceInUSD)
-            depositChangeLogTimestamps.append(self.timeCurrent + 1)
-            depositChangeLogValues.append(depositInUSD)
+
+            if (balanceChangeLogTimestamps == 0):
+                balanceChangeLogTimestamps = [self.timeCurrent + 1]
+                balanceChangeLogValues = [balanceInUSD]
+            else:
+                balanceChangeLogTimestamps.append(self.timeCurrent + 1)
+                balanceChangeLogValues.append(balanceInUSD)
+
+            if (depositChangeLogTimestamps == 0):
+                depositChangeLogTimestamps = [self.timeCurrent + 1]
+                depositChangeLogValues = [depositInUSD]
+            else:
+                depositChangeLogTimestamps.append(self.timeCurrent + 1)
+                depositChangeLogValues.append(depositInUSD)
+
 
         # x1 - total asset
         x11 = balanceInUSD + depositInUSD - borrowInUSD
