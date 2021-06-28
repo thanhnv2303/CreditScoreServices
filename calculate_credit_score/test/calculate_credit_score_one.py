@@ -215,6 +215,6 @@ class CalculateCreditScoreOneWallet:
 
 
 if __name__ == '__main__':
-    calc = CalculateCreditScoreOneWallet('0x42ff331afdfe064c3e17fcf4486e13a885d3d1a7')
+    calc = CalculateCreditScoreOneWallet('0xF6420Dc445E787078f3fd0855A5834Be05fD462f')
     calc.updateCreditScore()
     pass
