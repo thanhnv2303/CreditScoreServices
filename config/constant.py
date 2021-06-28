@@ -118,6 +118,11 @@ class MongoIndexConstant:
     transfer_tx_id = "transfer_tx_id"
     transfer_block_number = "transfer_block_number"
     wallet_address = "wallet_address"
+    tx_to_address = "tx_to_address"
+    tx_from_address = "tx_from_address"
+    tx_block_timestamp = "block_timestamp_1"
+    blocks_number = "block_number"
+    native_transfer_block_number = "native_transfer_block_number"
 
 
 class LendingTypeConstant:
@@ -151,13 +156,15 @@ class RelationshipConstant:
     amount = "amount"
     token = "token"
     label = "label"
+
+
 class Neo4jWalletConstant:
     address = "address"
     lastUpdatedAt = "lastUpdatedAt"
     creditScore = "creditScore"
     tokens = "tokens"
     tokenBalances = "tokenBalances"
-    balanceInUSD = "balanceInUSD" 
+    balanceInUSD = "balanceInUSD"
     balanceChangeLogTimestamps = "balanceChangeLogTimestamps"
     balanceChangeLogValues = "balanceChangeLogValues"
     createdAt = "createdAt"
@@ -166,35 +173,38 @@ class Neo4jWalletConstant:
     depositInUSD = "depositInUSD"
     depositChangeLogTimestamps = "depositChangeLogTimestamps"
     depositChangeLogValues = "depositChangeLogValues"
-    borrowTokens  = "borrowTokens"
+    borrowTokens = "borrowTokens"
     borrowTokenBalances = "borrowTokenBalances"
-    borrowInUSD = "borrowInUSD" 
+    borrowInUSD = "borrowInUSD"
     borrowChangeLogTimestamps = "borrowChangeLogTimestamps"
     borrowChangeLogValues = "borrowChangeLogValues"
     numberOfLiquidation = "numberOfLiquidation"
-    totalAmountOfLiquidation = "totalAmountOfLiquidation" 
+    totalAmountOfLiquidation = "totalAmountOfLiquidation"
     dailyTransactionAmounts = "dailyTransactionAmounts"
-    dailyFrequencyOfTransactions = "dailyFrequencyOfTransactions" 
+    dailyFrequencyOfTransactions = "dailyFrequencyOfTransactions"
+
 
 class Neo4jTokenConstant:
     address = "address"
     totalSupply = "totalSupply"
     symbol = "symbol"
     name = "name"
-    decimal ="decimal"
-    dailyFrequencyOfTransactions ="dailyFrequencyOfTransactions" 
+    decimal = "decimal"
+    dailyFrequencyOfTransactions = "dailyFrequencyOfTransactions"
     creditScore = "creditScore"
     price = "price"
-    highestPrice = "highestPrice" 
+    highestPrice = "highestPrice"
     marketCap = "marketCap"
-    tradingVolume24 = "tradingVolume24" 
+    tradingVolume24 = "tradingVolume24"
     lastUpdatedAt = "lastUpdatedAt"
+
 
 class Neo4jLendingPoolConstant:
     address = "address"
     tokens = "tokens"
     supply = "supply"
     borrow = "borrow"
+
 
 class Neo4jTransferConstant:
     transactionID = "transactionID"
@@ -203,6 +213,7 @@ class Neo4jTransferConstant:
     toWallet = "toWallet"
     token = "token"
     value = "value"
+
 
 class Neo4jDepositConstant:
     transactionID = "transactionID"
@@ -230,6 +241,7 @@ class Neo4jRepayConstant:
     token = "token"
     value = "value"
 
+
 class Neo4jWithdrawConstant:
     transactionID = "transactionID"
     timestamp = "timestamp"
@@ -249,4 +261,3 @@ class Neo4jLiquidateConstant:
     fromAmount = "fromAmount"
     toBalance = "toBalance"
     toAmount = "toAmount"
-

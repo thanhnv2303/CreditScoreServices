@@ -37,10 +37,10 @@ class MongoDBConfig:
 class Neo4jConfig:
     BOLT = "bolt://0.0.0.0:7687"
     HOST = os.environ.get("NEO4J_HOST") or "0.0.0.0"
-    BOTH_PORT = os.environ.get("NEO4J_PORT") or 7687
-    HTTP_PORT = os.environ.get("NEO4J_PORT") or 7474
-    HTTPS_PORT = os.environ.get("NEO4J_PORT") or 7473
-    NEO4J_USERNAME = os.environ.get("NEO4J_USERNAME") or "neo4j"
+    BOTH_PORT = os.environ.get("NEO4J_BOTH_PORT") or 7687
+    HTTP_PORT = os.environ.get("NEO4J_HTTP_PORT") or 7474
+    HTTPS_PORT = os.environ.get("NEO4J_HTTPS_PORT") or 7473
+    NEO4J_USERNAME = os.environ.get("NEO4J_USERNAME") or "neo4j_services_db"
     NEO4J_PASSWORD = os.environ.get("NEO4J_PASSWORD") or "klg_pass"
 
 
@@ -69,7 +69,7 @@ class KLGLendingStreamerAdapterConfig:
     PID_FILE = os.environ.get("KNOWLEDGE_GRAPH_LENDING_PID_FILE") or None
     BLOCK_BATCH_SIZE = os.environ.get("KNOWLEDGE_GRAPH_LENDING_BLOCK_BATCH_SIZE") or 24
     # TOKENS_FILTER_FILE = os.environ.get("KNOWLEDGE_GRAPH_LENDING_TOKENS_FILTER_FILE") or "artifacts/token_filter"
-    TOKENS_FILTER_FILE = os.environ.get("KNOWLEDGE_GRAPH_LENDING_TOKENS_FILTER_FILE") or "artifacts/token_filter_bnb_testnet"
+    TOKENS_FILTER_FILE = os.environ.get("KNOWLEDGE_GRAPH_LENDING_TOKENS_FILTER_FILE") or "artifacts/smart_contract_filter/token_filter_bnb_testnet"
     V_TOKENS_FILTER_FILE = os.environ.get("KNOWLEDGE_GRAPH_LENDING_V_TOKENS_FILTER_FILE") or "artifacts/vToken_filter"
     EVENT_ABI_DIR = os.environ.get("KNOWLEDGE_GRAPH_LENDING_EVENT_ABI_DIR") or "artifacts/event-abi"
     # LIST_TOKEN_FILTER = os.environ.get(

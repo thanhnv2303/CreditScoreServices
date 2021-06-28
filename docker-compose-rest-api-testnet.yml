@@ -1,0 +1,23 @@
+version: '3'
+services:
+  credit-score-rest-api-testnet:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    image: credit-score
+    container_name: credit-score-rest-api-testnet
+    ports:
+      - ${REST_API_PORT}:8000
+    volumes:
+      - .:/project
+    command: |
+      bash -c "
+        sleep 10
+        python3 ./rest_api_server/main.py
+      "
+    env_file:
+      - ./.env
+    environment:
+      - HOST
+      - NEO4J_HOST
+      - NEO4J_BOTH_PORT
