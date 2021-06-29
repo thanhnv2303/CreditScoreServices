@@ -88,3 +88,7 @@ NEO4J_BOTH_PORT=7687 ### for mainnet NEO4J_BOTH_PORT=6687 ### for testnet
 
     docker-compose -f docker-compose-rest-api-testnet.yml up ### for testnet
 
+### Postman api collection
+   
+   https://www.getpostman.com/collections/a1d78ff54885ad91bbff
+   
