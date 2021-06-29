@@ -27,6 +27,7 @@ class RouteHandler(object):
             # self._database.get_wallet(address)
             calc = CalculateCreditScoreOneWallet(address)
             credit_score = calc.updateCreditScore()
+            credit_score = round(credit_score)
             return json_response(
                 {
                     "address": address,
@@ -46,6 +47,7 @@ class RouteHandler(object):
             time_estimates = int(request.rel_url.query['time_estimates'])
             calc = EstimateCreditScore(address, type_transaction, amount, time_estimates)
             credit_score = calc.newCreditScore()
+            credit_score = round(credit_score)
             return json_response(
                 {
                     "address": address,
