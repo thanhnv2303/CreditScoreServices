@@ -1,5 +1,5 @@
 variable,mean,std
-total_asset,60844.953416345146,3660500.9340166105
-age_of_account,27348393.448457096,172378329.3495187
-transaction_amount,2673.683603936858,120467.23839103429
+total_asset,nan,nan
+age_of_account,nan,nan
+transaction_amount,nan,nan
 frequency_of_transaction,0,0

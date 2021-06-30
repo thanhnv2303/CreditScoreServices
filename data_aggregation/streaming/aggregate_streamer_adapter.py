@@ -2,7 +2,6 @@ import logging
 import os
 from time import time
 
-from config.constant import EthKnowledgeGraphStreamerAdapterConstant
 from data_aggregation.database.intermediary_database import IntermediaryDatabase
 from data_aggregation.database.klg_database import KlgDatabase
 from data_aggregation.jobs.aggregation_data import aggregate
@@ -40,9 +39,14 @@ class KLGLendingStreamerAdapter:
         self.v_tokens_filter_file = cur_path + v_tokens_filter_file
 
         self.price_service = PriceService(intermediary_database, list_token_filter, token_info)
-        self.price_service.update_token_info()
+        # self.price_service.update_token_info()
         self.list_token_filter = list_token_filter
         self.token_info = token_info
+        self.tokens = []
+        with open(self.tokens_filter_file, "r") as file:
+            tokens_list = file.read().splitlines()
+            for token in tokens_list:
+                self.tokens.append(str(token).lower())
 
     def open(self):
         self.item_exporter.open()
@@ -84,7 +88,6 @@ class KLGLendingStreamerAdapter:
                 smart_contracts.append(token.lower())
 
         aggregate(start_block, end_block, self.max_workers, self.batch_size,
-                  event_abi_dir=EthKnowledgeGraphStreamerAdapterConstant.event_abi_dir_default,
                   smart_contracts=smart_contracts,
                   credit_score_service=self.price_service,
                   intermediary_database=self.intermediary_database,

@@ -73,6 +73,7 @@ class LoggerConstant:
     AggregateWalletJob = "AggregateWalletJob"
     EthService = "EthService"
     EthLendingService = "EthLendingService"
+    UpdateTokenJob = "UpdateTokenJob"
 
 
 class EthKnowledgeGraphStreamerAdapterConstant:
