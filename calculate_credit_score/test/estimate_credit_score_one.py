@@ -287,6 +287,9 @@ class EstimateCreditScore:
         return credit_score
 
     def newCreditScore(self):
+        if (self.getter == []):
+            print("No Wallet")
+            return 0
         credit_score = self.calculate_credit_score()
         print(
             " Credit Score will be " + str(credit_score) + " at " + datetime.utcfromtimestamp(self.timeFuture).strftime(
@@ -300,6 +303,6 @@ if __name__ == '__main__':
     # - type_transaction: 1-deposit, 2-borrow, 3-repay, 4-withdraw
     # - amount[USD]
     # - time_estimates[seconds]
-    calc = EstimateCreditScore('0x42ff331afdfe064c3e17fcf4486e13a885d3d1a7', 1, 10000, 86400)
+    calc = EstimateCreditScore('0x42ff331afdfe064c3e17fcf4486e13a885d3d1a7', 1, 10, 86400)
     calc.newCreditScore()
     pass
