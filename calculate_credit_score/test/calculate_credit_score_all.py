@@ -82,24 +82,27 @@ class CalculateCreditScoreAllWallet:
         self.time = int(time.time())
 
     def calculate_x2(self, i: int):
-        get_property('createdAt', self.getter[i]['w'])
         createdAt = get_property('createdAt', self.getter[i]['w'])
-        if(createdAt == 0):
-            createdAt = self.time
+
         numberOfLiquidation = get_property('numberOfLiquidation', self.getter[i]['w'])
         totalAmountOfLiquidation = get_property('totalAmountOfLiquidation', self.getter[i]['w'])
         dailyFrequencyOfTransactions = get_property('dailyFrequencyOfTransactions', self.getter[i]['w'])
         dailyTransactionAmounts = get_property('dailyTransactionAmounts', self.getter[i]['w'])
-        age = self.time - createdAt
-        # x21 - age of account
-        x21 = get_tscore(age, self.age_of_account_statistic['mean'], self.age_of_account_statistic['std'])
 
+        # x21 - age of account
+        if (createdAt == 0):
+            x21 = 0
+        else:
+            age = self.time - createdAt
+            x21 = get_tscore(age, self.age_of_account_statistic['mean'], self.age_of_account_statistic['std'])
+            if(x21 > 1000):
+                x21 = 1000
         # x22 - transaction amount -
         if (dailyTransactionAmounts == 0):
-            dailyTransactionAmounts_temp = 0
+            x22 = 0
         else:
             dailyTransactionAmounts_temp = sum(dailyTransactionAmounts)
-        x22 = get_tscore(dailyTransactionAmounts_temp, self.transaction_amount_statistic['mean'],
+            x22 = get_tscore(dailyTransactionAmounts_temp, self.transaction_amount_statistic['mean'],
                          self.transaction_amount_statistic['std'])
         # x23 - frequency of transaction
         # if (dailyFrequencyOfTransactions == []):
@@ -125,8 +128,9 @@ class CalculateCreditScoreAllWallet:
         return x2
 
     def calculate_x5(self, i: int):
-        return 0
         tokens = get_property('tokens', self.getter[i]['w'])
+        if (tokens == 0):
+            return 0
         maxCreditToken = 0
         for i in range(len(tokens)):
             if tokens[i] in self.tokenCreditScore.keys():
@@ -163,9 +167,13 @@ class CalculateCreditScoreAllWallet:
         balance_average = calculate_average_second(balanceChangeLogValues, balanceChangeLogTimestamps, self.time)
         deposit_average = calculate_average_second(depositChangeLogValues, depositChangeLogTimestamps, self.time)
         total_asset_average = balance_average + deposit_average - loan_average
-
-        x12 = get_tscore(total_asset_average, self.total_assets_statistic['mean'],
+        if(total_asset_average <=0 ):
+            x12 = 0
+        else:
+            x12 = get_tscore(total_asset_average, self.total_assets_statistic['mean'],
                          self.total_assets_statistic['std'])
+            if x12 > 1000:
+                x12 = 1000
         # print('x12', total_asset_average)
         x1 = 0.04 * x11 + 0.96 * x12
 
@@ -198,10 +206,21 @@ class CalculateCreditScoreAllWallet:
     def updateCreditScore(self, i: int, credit_score):
         # print(credit_score)
         address = get_property('address', self.getter[i]['w'])
+        creditScoreChangeLogTimestamps = get_property('creditScoreChangeLogTimestamps', self.getter[i]['w'])
+        creditScoreChangeLogValues = get_property('creditScoreChangeLogValues', self.getter[i]['w'])
+
+        # print(creditScoreChangeLogTimestamps == 0)
+        if (creditScoreChangeLogTimestamps == 0):
+            creditScoreChangeLogTimestamps = [self.time]
+            creditScoreChangeLogValues = [credit_score]
+        else:
+            creditScoreChangeLogTimestamps.append(self.time)
+            creditScoreChangeLogValues.append(credit_score)
         self.result = self.graph.run(
-            "MATCH (a:Wallet { address: $address }) SET a.creditScore = $creditScore RETURN a.creditScore", \
-            address=address, creditScore=credit_score)
-        # print(i, credit_score)
+            "MATCH (a:Wallet { address: $address }) SET a.creditScore = $creditScore, a.creditScoreChangeLogTimestamps = $ChangeLogTimestamps, a.creditScoreChangeLogValues = $ChangeLogValues  RETURN a.creditScore", \
+            address=address, creditScore=credit_score, ChangeLogTimestamps=creditScoreChangeLogTimestamps, ChangeLogValues=creditScoreChangeLogValues)
+
+        print(i, credit_score)
         return 0
 
     def calculate_credit_score(self):
@@ -210,8 +229,7 @@ class CalculateCreditScoreAllWallet:
             [x1, x3, x4] = self.calculate_x134(i)
             x5 = self.calculate_x5(i)
             credit_score = 0.25 * x1 + 0.35 * x2 + 0.15 * x3 + 0.2 * x4 + 0.05 * x5
-            self.updateCreditScore(i, credit_score)
-
+            self.updateCreditScore(i, int(credit_score))
 
 if __name__ == '__main__':
     calc = CalculateCreditScoreAllWallet()

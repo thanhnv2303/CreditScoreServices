@@ -78,7 +78,9 @@ def get_statistics():
 
     for i in range(len(getter)):
         # get age info x21
-        createdAt.append(get_property('createdAt', getter[i]['w']))
+        temp_age = get_property('createdAt', getter[i]['w'])
+        if(temp_age > 0):
+            createdAt.append(temp_age)
 
         # Get Daily Frequent Transaction x22
         # dailyFrequencyOfTransactions_temp = get_property('dailyFrequencyOfTransactions', getter[i]['w'])
@@ -89,7 +91,7 @@ def get_statistics():
 
         # Get Daily Transaction Amount x23
         dailyTransactionAmounts_temp = get_property('dailyTransactionAmounts', getter[i]['w'])
-        if (dailyTransactionAmounts_temp == 0):
+        if (dailyTransactionAmounts_temp <= 0):
             dailyTransactionAmounts.append(0)
         else:
             dailyTransactionAmounts.append(sum(dailyTransactionAmounts_temp))
@@ -107,10 +109,13 @@ def get_statistics():
         balance_average = calculate_average_second(balanceChangeLogValues, balanceChangeLogTimestamps, timeCurrent)
         deposit_average = calculate_average_second(depositChangeLogValues, depositChangeLogTimestamps, timeCurrent)
         total_asset_average = balance_average + deposit_average - loan_average
-        total_asset.append(total_asset_average)
+        if(total_asset_average > 0):
+            total_asset.append(total_asset_average)
 
     timestamp = np.array(createdAt)
     age = timeCurrent - timestamp
+
+    #age = age[age>2000000]
     [age_of_account_statistic['mean'], age_of_account_statistic['std']] = get_standardized_score_info(age)
 
     [transaction_amount_statistic['mean'], transaction_amount_statistic['std']] = get_standardized_score_info(
@@ -118,7 +123,8 @@ def get_statistics():
 
     [total_assets_statistic['mean'], total_assets_statistic['std']] = get_standardized_score_info(total_asset)
     print('Complete calculating statistics information')
-
+    print("wallet have asset > 0 ", len(total_asset))
+    print("wallet have age>0 ", len(age))
     # write to csv file
     fieldnames = ['variable', 'mean', 'std']
     rows = [
