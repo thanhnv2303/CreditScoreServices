@@ -54,14 +54,14 @@ def aggregate(start_block, end_block, max_workers, batch_size,
             Cập nhật giá của các đồng vào một thời điểm cố định trong ngày
             """
         )
-        credit_score_service.update_token_market_info()
+        credit_score_service.update_token_market_info(credit_score_service.file_input, credit_score_service.file_output)
         logger.info(
             """
-            Update thông tin Số lần giao dịch của token này trong 100 ngày gần 
+            Update thông tin Số lần giao dịch của token này trong 100 ngày gần
             """
         )
         """
-        Update thông tin Số lần giao dịch của token này trong 100 ngày gần 
+        Update thông tin Số lần giao dịch của token này trong 100 ngày gần
         """
         job = UpdateTokenJob(smart_contracts=smart_contracts,
                              price_service=credit_score_service,

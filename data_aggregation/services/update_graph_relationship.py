@@ -19,12 +19,14 @@ def update_info_merge_relationship(graph, from_address, to_address, value_usd,
     :param relationship_type:
     :return:
     """
-    total_number, total_amount, highest_value, sort_values, tokens = get_info_relationship(graph, from_address,
-                                                                                           to_address,
-                                                                                           relationship_type)
+    total_number, total_amount, highest_value, lowest_value, sort_values, tokens = get_info_relationship(graph,
+                                                                                                         from_address,
+                                                                                                         to_address,
+                                                                                                         relationship_type)
     total_number += 1
     total_amount += value_usd
     highest_value = max(highest_value, value_usd)
+    lowest_value = min(lowest_value, value_usd)
     avg_value = total_amount / total_number
     median = 0
     i = 0
@@ -38,7 +40,7 @@ def update_info_merge_relationship(graph, from_address, to_address, value_usd,
         i = total_number / 2
         median = (sort_values[i] + sort_values[i - 1]) / 2
 
-    return total_number, total_amount, highest_value, avg_value, median, sort_values, tokens
+    return total_number, total_amount, highest_value,lowest_value, avg_value, median, sort_values, tokens
 
 
 def update_token_balance_relationship(token="", current_tokens=[], wallet_address="", related_wallets=[],
