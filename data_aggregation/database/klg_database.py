@@ -285,16 +285,19 @@ class KlgDatabase(object):
         keys_list = []  # timestamp_balance_100 list
         values_list = []  # balance_100 list
         start_time = time.time()
-        getter = self._graph.run(
-            "match (p:Wallet { address: $address }) return p.dailyFrequencyOfTransactionsTimestamp ",
-            address=wallet_address).data()
-        if getter and getter[0]["p.dailyFrequencyOfTransactionsTimestamp"]:
-            keys_list = keys_list + getter[0]["p.dailyFrequencyOfTransactionsTimestamp"]
+        try:
+            getter = self._graph.run(
+                "match (p:Wallet { address: $address }) return p.dailyFrequencyOfTransactionsTimestamp ",
+                address=wallet_address).data()
+            if getter and getter[0]["p.dailyFrequencyOfTransactionsTimestamp"]:
+                keys_list = keys_list + list(getter[0]["p.dailyFrequencyOfTransactionsTimestamp"])
 
-        getter = self._graph.run("match (p:Wallet { address: $address }) return p.dailyFrequencyOfTransactions ",
-                                 address=wallet_address).data()
-        if getter and getter[0]["p.dailyFrequencyOfTransactions"]:
-            values_list = values_list + getter[0]["p.dailyFrequencyOfTransactions"]
+            getter = self._graph.run("match (p:Wallet { address: $address }) return p.dailyFrequencyOfTransactions ",
+                                     address=wallet_address).data()
+            if getter and getter[0]["p.dailyFrequencyOfTransactions"]:
+                values_list = values_list + getter[0]["p.dailyFrequencyOfTransactions"]
+        except Exception as e:
+            logger.info(e)
         logger.info(f"time to get get_daily_transaction_amount_100 {time.time() - start_time}")
         return two_list_to_dict(keys_list, values_list)
 
