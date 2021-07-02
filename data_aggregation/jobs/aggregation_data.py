@@ -45,51 +45,51 @@ def aggregate(start_block, end_block, max_workers, batch_size,
     checkpoint = local_storage.get_element(MemoryStorageKeyConstant.checkpoint)
     timestamp = round(start_time)
     timestamp_day = round_timestamp_to_date(timestamp)
-    if not checkpoint or checkpoint != timestamp_day:
-        """
-        Cập nhật giá của các đồng vào một thời điểm cố định trong ngày
-        """
-        logger.info(
-            """
-            Cập nhật giá của các đồng vào một thời điểm cố định trong ngày
-            """
-        )
-        credit_score_service.update_token_market_info(credit_score_service.file_input, credit_score_service.file_output)
-        logger.info(
-            """
-            Update thông tin Số lần giao dịch của token này trong 100 ngày gần
-            """
-        )
-        """
-        Update thông tin Số lần giao dịch của token này trong 100 ngày gần
-        """
-        job = UpdateTokenJob(smart_contracts=smart_contracts,
-                             price_service=credit_score_service,
-                             batch_size=batch_size,
-                             max_workers=max_workers,
-                             intermediary_database=intermediary_database,
-                             klg_database=klg_database)
-        job.run()
-
-        local_storage.set_element(MemoryStorageKeyConstant.checkpoint, timestamp_day)
+    # if not checkpoint or checkpoint != timestamp_day:
+    #     """
+    #     Cập nhật giá của các đồng vào một thời điểm cố định trong ngày
+    #     """
+    #     logger.info(
+    #         """
+    #         Cập nhật giá của các đồng vào một thời điểm cố định trong ngày
+    #         """
+    #     )
+    #     credit_score_service.update_token_market_info(credit_score_service.file_input, credit_score_service.file_output)
+    #     logger.info(
+    #         """
+    #         Update thông tin Số lần giao dịch của token này trong 100 ngày gần
+    #         """
+    #     )
+    #     """
+    #     Update thông tin Số lần giao dịch của token này trong 100 ngày gần
+    #     """
+    #     job = UpdateTokenJob(smart_contracts=smart_contracts,
+    #                          price_service=credit_score_service,
+    #                          batch_size=batch_size,
+    #                          max_workers=max_workers,
+    #                          intermediary_database=intermediary_database,
+    #                          klg_database=klg_database)
+    #     job.run()
+    #
+    #     local_storage.set_element(MemoryStorageKeyConstant.checkpoint, timestamp_day)
     """
     Tổng hợp thông tin theo từng transaction chuyển native token
     """
     logger.info("""
     Tổng hợp thông tin theo từng transaction chuyển native token
     """)
-    start1 = time()
-    job = AggregateNativeTokenTransferJob(start_block,
-                                          end_block,
-                                          price_service=credit_score_service,
-                                          batch_size=batch_size,
-                                          max_workers=max_workers,
-                                          intermediary_database=intermediary_database,
-                                          klg_database=klg_database)
+    # start1 = time()
+    # job = AggregateNativeTokenTransferJob(start_block,
+    #                                       end_block,
+    #                                       price_service=credit_score_service,
+    #                                       batch_size=batch_size,
+    #                                       max_workers=max_workers,
+    #                                       intermediary_database=intermediary_database,
+    #                                       klg_database=klg_database)
+    #
+    # job.run()
 
-    job.run()
-
-    logger.info(f"time to aggreegate token transfer native {time() - start1}")
+    # logger.info(f"time to aggreegate token transfer native {time() - start1}")
     """
     Tổng hợp thông tin theo từng event của các smart contract
     """
