@@ -283,6 +283,8 @@ class AggregateEventJob(BaseJob):
 
         :return:
         """
+        logger.info(f"Withdraw")
+        logger.info(event)
         tx_id = event.get(TransactionConstant.transaction_hash)
         timestamp = timestamp
         to_address = event.get(EventConstant.contract_address)
