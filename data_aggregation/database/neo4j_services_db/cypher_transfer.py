@@ -16,8 +16,8 @@ def get_transfer_info(graph, from_address, to_address):
     total_amount = 0
     highest_value = 0
     sort_values = []
-    getter = graph.run(cypher)
-    if getter and getter[0]["r.totalAmountOfTransferInUSD"]:
+    getter = graph.run(cypher).data()
+    if getter and getter[0] and getter[0]["r.totalAmountOfTransferInUSD"]:
         total_number = getter[0]["r.totalNumberOfTransfer"]
         total_amount = getter[0]["r.totalAmountOfTransferInUSD"]
         highest_value = getter[0]["r.highestValueTransferInUSD"]
@@ -39,12 +39,16 @@ def get_info_relationship(graph, from_address, to_address, relationship_type=Rel
     lowest_value = 0
     sort_values = []
     tokens = []
-    getter = graph.run(cypher)
-    if getter and getter[0].get(f"r.totalAmountOf{relationship_type}InUSD"):
-        total_number = getter[0].get(f"r.totalNumberOf{relationship_type}") or 0
-        total_amount = getter[0].get(f"r.totalAmountOf{relationship_type}InUSD") or 0
-        highest_value = getter[0].get(f"r.highestValue{relationship_type}InUSD") or 0
-        lowest_value = getter[0].get(f"r.lowestValue{relationship_type}InUSD") or 0
+    getter = graph.run(cypher).data()
+    totalAmountOf = f"r.totalAmountOf{relationship_type}InUSD"
+    totalNumberOf = f"r.totalNumberOf{relationship_type}"
+    highestValue = f"r.highestValue{relationship_type}InUSD"
+    lowestValue = f"r.lowestValue{relationship_type}InUSD"
+    if getter and getter[0] and getter[0].get(totalNumberOf):
+        total_number = getter[0].get(totalNumberOf) or 0
+        total_amount = getter[0].get(totalAmountOf) or 0
+        highest_value = getter[0].get(highestValue) or 0
+        lowest_value = getter[0].get(lowestValue) or 0
         sort_values = getter[0].get("r.sortValues") or []
         tokens = getter[0].get("r.tokens") or []
 

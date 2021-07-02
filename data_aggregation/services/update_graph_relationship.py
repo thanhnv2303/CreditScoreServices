@@ -37,10 +37,12 @@ def update_info_merge_relationship(graph, from_address, to_address, value_usd,
     sort_values.insert(i, value_usd)
 
     if total_number % 2:
-        i = total_number / 2
+        i = int(total_number / 2)
         median = (sort_values[i] + sort_values[i - 1]) / 2
+    else:
+        median = sort_values[i]
 
-    return total_number, total_amount, highest_value,lowest_value, avg_value, median, sort_values, tokens
+    return total_number, total_amount, highest_value, lowest_value, avg_value, median, sort_values, tokens
 
 
 def update_token_balance_relationship(token="", current_tokens=[], wallet_address="", related_wallets=[],
