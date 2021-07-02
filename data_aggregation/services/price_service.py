@@ -42,6 +42,34 @@ class PriceService:
             "market_cap": 7555675507.00,
             "decimals": 18
         }
+        self.tokens_market["0xcedc3b4d3c4359a1f842cf94d3418fedb105669f"] = {
+            "symbol": "DAI",
+            "price": "1.1",
+            "credit_score": 1000.0,
+            "market_cap": 7555675507.00,
+            "decimals": 18
+        }
+        self.tokens_market["0x059ba0204de65bddb172d55d6a53074ea98d7917"] = {
+            "symbol": "USDT",
+            "price": "12.1",
+            "credit_score": 1000.0,
+            "market_cap": 7555675507.00,
+            "decimals": 18
+        }
+        self.tokens_market["0xfc3fb4aa34c1720d5a50eb70b60d3118cc47636c"] = {
+            "symbol": "USDC",
+            "price": "12.1",
+            "credit_score": 1000.0,
+            "market_cap": 7555675507.00,
+            "decimals": 18
+        }
+        self.tokens_market["0xfc3fb4aa34c1720d5a50eb70b60d3118cc47636c"] = {
+            "symbol": "USDC",
+            "price": "12.1",
+            "credit_score": 1000.0,
+            "market_cap": 7555675507.00,
+            "decimals": 18
+        }
 
         self.balance_threshold = CreditScoreConstant.balance_threshold
         self.supply_threshold = CreditScoreConstant.supply_threshold
