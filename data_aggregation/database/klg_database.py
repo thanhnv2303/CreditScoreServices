@@ -4,7 +4,11 @@ import time
 from py2neo import Graph
 
 from config.config import Neo4jConfig
+from config.constant import WalletConstant
+from data_aggregation.database.neo4j_services_db.cypher_transfer import RelationshipType
 from data_aggregation.database.relationships_model import Liquidate, Withdraw, Repay, Borrow, Deposit, Transfer
+from data_aggregation.services.update_graph_relationship import update_info_merge_relationship, \
+    update_token_balance_relationship
 from services.zip_service import two_list_to_dict, dict_to_two_list
 
 logger = logging.getLogger("KlgDatabase")
@@ -533,35 +537,85 @@ class KlgDatabase(object):
         return create[0]["p"]
 
     def create_transfer_relationship(self, transfer: Transfer):
-        merge = self._graph.run("MATCH (a { address: $fromWallet }), (b {address: $toWallet}) "
-                                "MERGE (a)-[r:TRANSFER { transactionID: $transactionID,"
-                                "timestamp: $timestamp,"
-                                "fromWallet: $fromWallet,"
-                                "toWallet: $toWallet,"
-                                "token: $token,"
-                                "value: $value }]->(b) RETURN a,b,r",
-                                transactionID=transfer.transactionID,
-                                timestamp=transfer.timestamp,
-                                fromWallet=transfer.fromWallet,
-                                toWallet=transfer.toWallet,
-                                token=transfer.token,
-                                value=transfer.value).data()
+        value_usd = transfer.valueUsd
+        from_address = transfer.fromWallet
+        to_address = transfer.toWallet
+        timestamp = transfer.timestamp
+        relationship_type = RelationshipType.TRANSFER
+        total_number, total_amount, highest_value, avg_value, median, sort_values, tokens = update_info_merge_relationship(
+            self._graph, from_address, to_address, value_usd, relationship_type)
+
+        merge = self._graph.run("""
+                                MATCH (a { address: $fromWallet }), (b {address: $toWallet}) 
+                                MERGE (a)-[r:TRANSFERS ]->(b)
+                                SET r.transferLogTimestamps = coalesce(r.transferLogTimestamps, []) + $transferLogTimestamp,
+                                    r.transferLogValues = coalesce(r.transferLogValues, []) + $transferLogValue,
+                                    r.totalNumberOfTransfer = $totalNumberOfTransfer,
+                                    r.totalAmountOfTransferInUSD= $totalAmountOfTransferInUSD,
+                                    r.highestValueTransferInUSD = $highestValueTransferInUSD,
+                                    r.averageValueTransferInUSD = $averageValueTransferInUSD,
+                                    r.medianValueTransferInUSD = $medianValueTransferInUSD,                
+                                    r.sortValues = $sortValues              
+                                """,
+                                fromWallet=from_address,
+                                toWallet=to_address,
+                                transferLogTimestamp=timestamp,
+                                transferLogValue=value_usd,
+                                totalNumberOfTransfer=total_number,
+                                totalAmountOfTransferInUSD=total_amount,
+                                highestValueTransferInUSD=highest_value,
+                                averageValueTransferInUSD=avg_value,
+                                medianValueTransferInUSD=median,
+                                sortValues=sort_values,
+                                ).data()
         return merge
 
     def create_deposit_relationship(self, deposit: Deposit):
-        merge = self._graph.run("MATCH (a :Wallet { address: $fromWallet }), (b :LendingPool { address: $toAddress}) "
-                                "MERGE (a)-[r:DEPOSIT { transactionID: $transactionID,"
-                                "timestamp: $timestamp,"
-                                "fromWallet: $fromWallet,"
-                                "toAddress: $toAddress,"
-                                "token: $token,"
-                                "value: $value }]->(b) RETURN a,b,r",
-                                transactionID=deposit.transactionID,
-                                timestamp=deposit.timestamp,
-                                fromWallet=deposit.fromWallet,
-                                toAddress=deposit.toAddress,
-                                token=deposit.token,
-                                value=deposit.value).data()
+
+        value_usd = deposit.valueUsd
+        from_address = deposit.fromWallet
+        to_address = deposit.toAddress
+        timestamp = deposit.timestamp
+        total_number, total_amount, highest_value, avg_value, median, sort_values, tokens = update_info_merge_relationship(
+            self._graph, from_address, to_address, value_usd, RelationshipType.DEPOSIT)
+
+        token = deposit.token
+        current_tokens = tokens
+        wallet_address = from_address
+        related_wallets = deposit.relatedWallets
+        balance_type = WalletConstant.supply
+        current_tokens, tokens_amount = update_token_balance_relationship(token, current_tokens, wallet_address,
+                                                                          related_wallets, balance_type)
+
+        merge = self._graph.run("""
+                                       MATCH (a { address: $fromWallet }), (b {address: $toWallet}) 
+                                       MERGE (a)-[r:DEPOSITS ]->(b)
+                                       SET r.depositLogTimestamps = coalesce(r.depositLogTimestamps, []) + $depositLogTimestamps,
+                                           r.depositLogValues = coalesce(r.depositLogValues, []) + $depositLogValues,
+                                           r.totalNumberOfDeposit = $totalNumberOfDeposit,
+                                           r.totalAmountOfDepositInUSD= $totalAmountOfDepositInUSD,
+                                           r.highestDepositInUSD = $highestDepositInUSD,
+                                           r.averageDepositInUSD = $averageDepositInUSD,
+                                           r.medianDepositInUSD = $medianDepositInUSD,                
+                                           r.sortValues = $sortValues ,
+                                           r.depositTokens = $depositTokens,
+                                           r.depositTokenBalances = $depositTokenBalances,
+                                           r.tokens = $tokens             
+                                       """,
+                                fromWallet=from_address,
+                                toWallet=to_address,
+                                depositLogTimestamps=timestamp,
+                                depositLogValues=value_usd,
+                                totalNumberOfDeposit=total_number,
+                                totalAmountOfDepositInUSD=total_amount,
+                                highestDepositInUSD=highest_value,
+                                averageDepositInUSD=avg_value,
+                                medianDepositInUSD=median,
+                                sortValues=sort_values,
+                                depositTokens=current_tokens,
+                                depositTokenBalances=tokens_amount,
+                                tokens=current_tokens
+                                ).data()
         return merge
 
     def create_borrow_relationship(self, borrow: Borrow):
