@@ -1,22 +1,21 @@
 import logging
-from datetime import datetime
 from time import time
 
-from config.constant import EthKnowledgeGraphStreamerAdapterConstant
 from config.data_aggregation_constant import MemoryStorageKeyConstant
 from data_aggregation.database.intermediary_database import IntermediaryDatabase
 from data_aggregation.database.klg_database import KlgDatabase
 from data_aggregation.jobs.aggregate_native_token_transfer_job import AggregateNativeTokenTransferJob
 from data_aggregation.jobs.aggregate_smart_contract_job import AggregateSmartContractJob
 from data_aggregation.jobs.aggregate_wallet_job import AggregateWalletJob
+from data_aggregation.jobs.update_token_job import UpdateTokenJob
 from data_aggregation.services.price_service import PriceService
+from data_aggregation.services.time_service import round_timestamp_to_date
 from database_common.memory_storage import MemoryStorage
 
 logger = logging.getLogger('Aggregation data')
 
 
 def aggregate(start_block, end_block, max_workers, batch_size,
-              event_abi_dir=EthKnowledgeGraphStreamerAdapterConstant.event_abi_dir_default,
               smart_contracts=None,
               credit_score_service=PriceService(),
               intermediary_database=IntermediaryDatabase(),
@@ -29,7 +28,6 @@ def aggregate(start_block, end_block, max_workers, batch_size,
     :param max_workers:
     :param batch_size:
     :param item_exporter:
-    :param event_abi_dir:
     :param smart_contracts:
     :param credit_score_service:
     :param intermediary_database:
@@ -38,17 +36,42 @@ def aggregate(start_block, end_block, max_workers, batch_size,
     """
 
     """
-    Cập nhật giá của các đồng vào một thời điểm cố định trong ngày
-    """
-    now = datetime.now()
-    if now.hour == 3 and now.minute < 5:
-        credit_score_service.update_token_market_info()
-    """
-    Tạo kho dữ liệu tạm để có thể lưu trữ các ví được update trong batch này
-    """
+        Tạo kho dữ liệu tạm để có thể lưu trữ các ví được update trong batch này
+        """
     start_time = time()
     local_storage = MemoryStorage.getInstance()
     local_storage.set_element(key=MemoryStorageKeyConstant.update_wallet, value=dict())
+
+    checkpoint = local_storage.get_element(MemoryStorageKeyConstant.checkpoint)
+    timestamp = round(start_time)
+    timestamp_day = round_timestamp_to_date(timestamp)
+    if not checkpoint or checkpoint != timestamp_day:
+        """
+        Cập nhật giá của các đồng vào một thời điểm cố định trong ngày
+        """
+        logger.info(
+            """
+            Cập nhật giá của các đồng vào một thời điểm cố định trong ngày
+            """
+        )
+        credit_score_service.update_token_market_info()
+        logger.info(
+            """
+            Update thông tin Số lần giao dịch của token này trong 100 ngày gần 
+            """
+        )
+        """
+        Update thông tin Số lần giao dịch của token này trong 100 ngày gần 
+        """
+        job = UpdateTokenJob(smart_contracts=smart_contracts,
+                             price_service=credit_score_service,
+                             batch_size=batch_size,
+                             max_workers=max_workers,
+                             intermediary_database=intermediary_database,
+                             klg_database=klg_database)
+        job.run()
+
+        local_storage.set_element(MemoryStorageKeyConstant.checkpoint, timestamp_day)
     """
     Tổng hợp thông tin theo từng transaction chuyển native token
     """

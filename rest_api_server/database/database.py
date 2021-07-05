@@ -1,8 +1,11 @@
+import logging
 import random
 
 from py2neo import Graph
 
 from config.config import Neo4jConfig
+
+logger = logging.getLogger("Database rest ")
 
 
 class Database(object):
@@ -30,6 +33,12 @@ class Database(object):
         else:
             self.set_credit_score(wallet_address, credit_score)
         return credit_score
+
+    def get_wallet(self, wallet_address):
+        getter = self._graph.run("match (p:Wallet { address: $address }) return p ",
+                                 address=wallet_address).data()
+        logger.info(getter)
+        return getter
 
     def set_credit_score(self, wallet_address, credit_score):
         match = self._graph.run("MATCH (p:Wallet { address : $address}) return p ", address=wallet_address).data()

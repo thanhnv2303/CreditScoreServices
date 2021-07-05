@@ -487,7 +487,7 @@ class KlgDatabase(object):
         # :param wallet_address:
         # :return:
         # """
-        if not wallet_address or not wallet_address:
+        if not wallet_address or not borrow_100:
             return
         keys, values = dict_to_two_list(borrow_100)
         keys = list(keys)
@@ -511,6 +511,25 @@ class KlgDatabase(object):
                                  "p.borrowChangeLogValues = $borrow100value "
                                  "RETURN p",
                                  address=wallet_address, borrow100=keys, borrow100value=values).data()
+        return create[0]["p"]
+
+    def update_daily_frequency_of_transactions(self, wallet_address, daily_frequency_of_transactions):
+        """
+
+        dailyFrequencyOfTransactions : Số lần giao dịch của token này trong 100 ngày gần
+
+        :param wallet_address:
+        :param daily_frequency_of_transactions:
+        :return:
+        """
+        if not wallet_address or not daily_frequency_of_transactions:
+            return
+
+        create = self._graph.run("MERGE (p { address: $address }) "
+                                 "SET p.dailyFrequencyOfTransactions = $dailyFrequencyOfTransactions "
+                                 "RETURN p",
+                                 address=wallet_address,
+                                 dailyFrequencyOfTransactions=daily_frequency_of_transactions).data()
         return create[0]["p"]
 
     def create_transfer_relationship(self, transfer: Transfer):

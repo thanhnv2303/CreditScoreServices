@@ -103,3 +103,17 @@ class IntermediaryDatabase(object):
 
         # logger.info(f"get_token {time.time() - start} ")
         return result
+
+    def get_num_event_of_smart_contract_after_block(self, block_number, smart_contract_address):
+        smart_contract_address = str(smart_contract_address).lower()
+        start = time.time()
+        if not self.mongo_token_collection_dict.get(smart_contract_address):
+            self.mongo_token_collection_dict[smart_contract_address] = self.mongo_db[smart_contract_address]
+
+        key = {
+            TokenConstant.block_number: {"$gt": block_number}
+        }
+
+        result = self.mongo_token_collection_dict.get(smart_contract_address).find(key).count()
+        logger.info(f"time to get_num_event_of_smart_contract_after_block {time.time() - start} ")
+        return result

@@ -7,7 +7,7 @@ services:
     image: credit-score
     container_name: credit-score-rest-api-testnet
     ports:
-      - ${REST_API_PORT}:8000
+      - ${REST_API_PORT}:${REST_API_PORT}
     volumes:
       - .:/project
     command: |
@@ -18,6 +18,5 @@ services:
     env_file:
       - ./.env
     environment:
-      - HOST
       - NEO4J_HOST
       - NEO4J_BOTH_PORT

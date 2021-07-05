@@ -148,6 +148,7 @@ class CreateGraph:
         return create[0]["p"]
 
     def neo4j_create_token_node(self, token_address):
+        token_address = str(token_address).lower()
         match = self._graph.run("MATCH (p:Token { address : $address}) return p ", address=token_address).data()
         if not match:
             create = self._graph.run("MERGE (p:Token { address: $address }) "
@@ -213,6 +214,7 @@ class CreateGraph:
             return create[0]['a']
 
     def neo4j_create_lending_pool_node(self, lending_pool_address):
+        lending_pool_address = str(lending_pool_address).lower()
         match = self._graph.run("MATCH (p:LendingPool { address : $address}) return p ",
                                 address=lending_pool_address).data()
         if not match:
