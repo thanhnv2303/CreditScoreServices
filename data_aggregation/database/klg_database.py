@@ -301,14 +301,14 @@ class KlgDatabase(object):
             return
         create = self._graph.run("MERGE (p:Wallet { address: $address }) "
                                  "ON CREATE SET p.numberOfLiquidation = 1 "
-                                 "ON MATCH SET p.numberOfLiquidation = p.numberOfLiquidation + $numberOfLiquidation "
+                                 "ON MATCH SET p.numberOfLiquidation = coalesce(p.numberOfLiquidation,0) + $numberOfLiquidation "
                                  "RETURN p",
                                  address=wallet_address, numberOfLiquidation=number).data()
         return create[0]["p"]
 
     def get_total_amount_liquidation_100(self, wallet_address):
         # """
-        # Lấy ra
+        # Lấy rak
         # numberOfLiquidation: số lần bị thanh lý khoản vay
 
         # :param wallet_address:
@@ -335,8 +335,8 @@ class KlgDatabase(object):
         if not wallet_address or not number:
             return
         create = self._graph.run("MERGE (p:Wallet { address: $address }) "
-                                 "ON CREATE SET p.totalAmountOfLiquidation = 0 "
-                                 "ON MATCH SET p.totalAmountOfLiquidation = p.totalAmountOfLiquidation + $totalAmountOfLiquidation "
+                                 "ON CREATE SET p.totalAmountOfLiquidation = $totalAmountOfLiquidation "
+                                 "ON MATCH SET p.totalAmountOfLiquidation =coalesce(p.totalAmountOfLiquidation,0) + $totalAmountOfLiquidation "
                                  "RETURN p",
                                  address=wallet_address, totalAmountOfLiquidation=number).data()
         return create[0]["p"]
