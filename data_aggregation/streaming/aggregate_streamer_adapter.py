@@ -21,10 +21,7 @@ class KLGLendingStreamerAdapter:
             klg_database=KlgDatabase(),
             batch_size=100,
             max_workers=5,
-            tokens_filter_file="artifacts/smart_contract_filter/token_filter",
-            v_tokens_filter_file="artifacts/smart_contract_filter/vToken_filter",
-            list_token_filter="artifacts/token_credit_info/listToken.txt",
-            token_info="artifacts/token_credit_info/infoToken.json"
+            tokens_filter_file="artifacts/smart_contract_filter/token_filter"
     ):
 
         self.item_exporter = item_exporter
@@ -36,12 +33,9 @@ class KLGLendingStreamerAdapter:
         self.klg_database = klg_database
         cur_path = os.path.dirname(os.path.realpath(__file__)) + "/../../"
         self.tokens_filter_file = cur_path + tokens_filter_file
-        self.v_tokens_filter_file = cur_path + v_tokens_filter_file
 
-        self.price_service = PriceService(intermediary_database, list_token_filter, token_info)
+        self.price_service = PriceService(intermediary_database, klg_database)
         # self.price_service.update_token_info()
-        self.list_token_filter = list_token_filter
-        self.token_info = token_info
         self.tokens = []
         with open(self.tokens_filter_file, "r") as file:
             tokens_list = file.read().splitlines()

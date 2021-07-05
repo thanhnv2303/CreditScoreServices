@@ -27,6 +27,16 @@ class KlgDatabase(object):
     def _create_index(self):
         self._graph.run("")
 
+    def get_token_prices(self):
+        cypher = """
+                MATCH (n:Token) RETURN n.address,n.price     
+            """
+        tokens = self._graph.run(cypher)
+        token_prices ={}
+        for token in tokens:
+            token_prices[token[0]] = token[1]
+        return token_prices
+
     def update_wallet_token(self, wallet_address, token_map={}, balance=0):
         # """
         # cập nhật  trường
@@ -732,3 +742,4 @@ class KlgDatabase(object):
                                 toBalance=liquidate.toBalance,
                                 toAmount=liquidate.toAmount).data()
         return merge
+
