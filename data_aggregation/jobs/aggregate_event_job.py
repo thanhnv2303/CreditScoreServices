@@ -201,7 +201,8 @@ class AggregateEventJob(BaseJob):
         token = event.get(EventConstant.contract_address)
         value = event.get(TransactionConstant.value)
 
-        transfer = Transfer(tx_id, timestamp, from_address, to_address, token, value)
+        value_usd = self.price_service.token_amount_to_usd(token, value)
+        transfer = Transfer(tx_id, timestamp, from_address, to_address, token, value, value_usd)
 
         daily_timestamp = round_timestamp_to_date(timestamp)
 
@@ -228,7 +229,10 @@ class AggregateEventJob(BaseJob):
         timestamp = timestamp
         token = event.get(DepositEventConstant.reserve)
         value = event.get(DepositEventConstant.amount)
-        deposit = Deposit(tx_id, timestamp, from_address, to_address, token, value)
+
+        value_usd = self.price_service.token_amount_to_usd(token, value)
+        related_wallets = event.get(TransactionConstant.related_wallets)
+        deposit = Deposit(tx_id, timestamp, from_address, to_address, token, value, value_usd, related_wallets)
         self.klg_database.create_deposit_relationship(deposit)
 
     def _mint_handler(self, event, timestamp):
@@ -242,7 +246,10 @@ class AggregateEventJob(BaseJob):
         timestamp = timestamp
         token = event.get(EventConstant.contract_address)
         value = event.get(MintEventConstant.mintAmount)
-        deposit = Deposit(tx_id, timestamp, from_address, to_address, token, value)
+
+        value_usd = self.price_service.token_amount_to_usd(token, value)
+        related_wallets = event.get(TransactionConstant.related_wallets)
+        deposit = Deposit(tx_id, timestamp, from_address, to_address, token, value, value_usd, related_wallets)
         self.klg_database.create_deposit_relationship(deposit)
 
     def _borrow_handler(self, event, timestamp):
@@ -261,7 +268,10 @@ class AggregateEventJob(BaseJob):
         else:
             token = event.get(EventConstant.contract_address)
             value = event.get(BorrowEventVTokenConstant.borrowAmount)
-        borrow = Borrow(tx_id, timestamp, from_address, to_address, token, value)
+
+        value_usd = self.price_service.token_amount_to_usd(token, value)
+        related_wallets = event.get(TransactionConstant.related_wallets)
+        borrow = Borrow(tx_id, timestamp, from_address, to_address, token, value, value_usd, related_wallets)
         self.klg_database.create_borrow_relationship(borrow)
 
     def _redeem_handler(self, event, timestamp):
@@ -275,7 +285,10 @@ class AggregateEventJob(BaseJob):
         from_address = event.get(RedeemEventConstant.redeemer)
         token = event.get(EventConstant.contract_address)
         value = event.get(RedeemEventConstant.redeemAmount)
-        withdraw = Withdraw(tx_id, timestamp, from_address, to_address, token, value)
+
+        value_usd = self.price_service.token_amount_to_usd(token, value)
+        related_wallets = event.get(TransactionConstant.related_wallets)
+        withdraw = Withdraw(tx_id, timestamp, from_address, to_address, token, value, value_usd, related_wallets)
         self.klg_database.create_withdraw_relationship(withdraw)
 
     def _withdraw_handler(self, event, timestamp):
@@ -289,7 +302,9 @@ class AggregateEventJob(BaseJob):
         from_address = event.get(WithdrawEventConstant.user)
         token = event.get(WithdrawEventConstant.reserve)
         value = event.get(WithdrawEventConstant.amount)
-        withdraw = Withdraw(tx_id, timestamp, from_address, to_address, token, value)
+        value_usd = self.price_service.token_amount_to_usd(token, value)
+        related_wallets = event.get(TransactionConstant.related_wallets)
+        withdraw = Withdraw(tx_id, timestamp, from_address, to_address, token, value, value_usd, related_wallets)
         self.klg_database.create_withdraw_relationship(withdraw)
 
     def _repay_handler(self, event, timestamp):
@@ -304,7 +319,9 @@ class AggregateEventJob(BaseJob):
         token = event.get(RepayEventConstant.reserve)
         value = event.get(RepayEventConstant.amount)
 
-        repay = Repay(tx_id, timestamp, from_address, to_address, token, value)
+        value_usd = self.price_service.token_amount_to_usd(token, value)
+        related_wallets = event.get(TransactionConstant.related_wallets)
+        repay = Repay(tx_id, timestamp, from_address, to_address, token, value, value_usd, related_wallets)
         self.klg_database.create_repay_relationship(repay)
 
     def _repay_borrow_handler(self, event, timestamp):
@@ -319,7 +336,9 @@ class AggregateEventJob(BaseJob):
         token = event.get(EventConstant.contract_address)
         value = event.get(RepayBorrowEventConstant.repayAmount)
 
-        repay = Repay(tx_id, timestamp, from_address, to_address, token, value)
+        value_usd = self.price_service.token_amount_to_usd(token, value)
+        related_wallets = event.get(TransactionConstant.related_wallets)
+        repay = Repay(tx_id, timestamp, from_address, to_address, token, value, value_usd, related_wallets)
         self.klg_database.create_repay_relationship(repay)
 
     def _liquidate_borrow_handler(self, event, timestamp):

@@ -64,10 +64,7 @@ if __name__ == '__main__':
         intermediary_database=intermediary_database,
         batch_size=batch_size,
         max_workers=max_workers,
-        tokens_filter_file=tokens_filter_file,
-        v_tokens_filter_file=v_tokens_filter_file,
-        list_token_filter=list_token_filter,
-        token_info=token_info
+        tokens_filter_file=tokens_filter_file
     )
     streamer = Klg_Streamer(
         blockchain_streamer_adapter=streamer_adapter,

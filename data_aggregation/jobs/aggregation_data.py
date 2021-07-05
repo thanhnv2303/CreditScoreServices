@@ -4,7 +4,6 @@ from time import time
 from config.data_aggregation_constant import MemoryStorageKeyConstant
 from data_aggregation.database.intermediary_database import IntermediaryDatabase
 from data_aggregation.database.klg_database import KlgDatabase
-from data_aggregation.jobs.aggregate_native_token_transfer_job import AggregateNativeTokenTransferJob
 from data_aggregation.jobs.aggregate_smart_contract_job import AggregateSmartContractJob
 from data_aggregation.jobs.aggregate_wallet_job import AggregateWalletJob
 from data_aggregation.jobs.update_token_job import UpdateTokenJob
@@ -57,11 +56,11 @@ def aggregate(start_block, end_block, max_workers, batch_size,
         credit_score_service.update_token_market_info()
         logger.info(
             """
-            Update thông tin Số lần giao dịch của token này trong 100 ngày gần 
+            Update thông tin Số lần giao dịch của token này trong 100 ngày gần
             """
         )
         """
-        Update thông tin Số lần giao dịch của token này trong 100 ngày gần 
+        Update thông tin Số lần giao dịch của token này trong 100 ngày gần
         """
         job = UpdateTokenJob(smart_contracts=smart_contracts,
                              price_service=credit_score_service,
@@ -78,18 +77,18 @@ def aggregate(start_block, end_block, max_workers, batch_size,
     logger.info("""
     Tổng hợp thông tin theo từng transaction chuyển native token
     """)
-    start1 = time()
-    job = AggregateNativeTokenTransferJob(start_block,
-                                          end_block,
-                                          price_service=credit_score_service,
-                                          batch_size=batch_size,
-                                          max_workers=max_workers,
-                                          intermediary_database=intermediary_database,
-                                          klg_database=klg_database)
+    # start1 = time()
+    # job = AggregateNativeTokenTransferJob(start_block,
+    #                                       end_block,
+    #                                       price_service=credit_score_service,
+    #                                       batch_size=batch_size,
+    #                                       max_workers=max_workers,
+    #                                       intermediary_database=intermediary_database,
+    #                                       klg_database=klg_database)
+    #
+    # job.run()
 
-    job.run()
-
-    logger.info(f"time to aggreegate token transfer native {time() - start1}")
+    # logger.info(f"time to aggreegate token transfer native {time() - start1}")
     """
     Tổng hợp thông tin theo từng event của các smart contract
     """

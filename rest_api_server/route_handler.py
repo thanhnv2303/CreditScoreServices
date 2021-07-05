@@ -57,6 +57,55 @@ class RouteHandler(object):
             LOGGER.info(e)
             return ApiInternalError(str(e))
 
+    async def estimate_credit_score_next_n_days(self, request):
+        address = request.match_info.get('address', '')
+        address = str(address).lower()
+
+        try:
+            n = int(request.rel_url.query['n'])
+            type_transaction = 1
+            amount = 0
+            time_estimates = 0
+            checkpoint_timestamp = int(time.time())
+            timestamp_day = 86400
+            data = []
+            for i in range(n):
+                time_estimates += timestamp_day
+                checkpoint_timestamp += timestamp_day
+                calc = EstimateCreditScore(address, type_transaction, amount, time_estimates)
+                credit_score = calc.newCreditScore()
+                credit_score = round(credit_score)
+                data.append({
+                    "timestamp": checkpoint_timestamp,
+                    "creditScore": credit_score
+                })
+
+            return json_response(
+                {
+                    "address": address,
+                    'data': data,
+                })
+        except Exception as e:
+            LOGGER.info(e)
+            return ApiInternalError(str(e))
+
+    async def frequency_transaction(self, request):
+        address = request.match_info.get('address', '')
+        address = str(address).lower()
+
+        try:
+            frequency_of_transaction, frequency_of_transaction_timestamp = self._database.get_daily_frequency_of_transaction(
+                address)
+            return json_response(
+                {
+                    "address": address,
+                    'frequency_of_transaction': frequency_of_transaction,
+                    'frequency_of_transaction_timestamp': frequency_of_transaction_timestamp,
+                })
+        except Exception as e:
+            LOGGER.info(e)
+            return ApiInternalError(str(e))
+
     async def update_credit_score(self, request):
         address = request.match_info.get('address', '')
         credit_score = self._database.update_credit_score(address)
@@ -89,6 +138,10 @@ class RouteHandler(object):
         app.router.add_get(
             RestApiServer.API_VERSION + RouteApiConstant.estimate_credit_score_path + RouteApiConstant.address,
             self.estimate_credit_score)
+
+        app.router.add_get(
+            RestApiServer.API_VERSION + RouteApiConstant.estimate_credit_score_n_days_path + RouteApiConstant.address,
+            self.estimate_credit_score_next_n_days)
 
         app.router.add_get(
             RestApiServer.API_VERSION + RouteApiConstant.update_credit_score_path + RouteApiConstant.address,
