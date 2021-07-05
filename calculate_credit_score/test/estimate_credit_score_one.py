@@ -34,14 +34,34 @@ def calculate_average_second(values, timestamps, time_current):
             return 0
         else:
             return (values[0] / (time_current - timestamps[0]))
+    d = dict(zip(timestamps, values))
+    dictionary_items = d.items()
+    sorted_items = sorted(dictionary_items)
+    timestamps = []
+    values = []
+
+    for i in range(len(sorted_items)):
+        timestamps.append(sorted_items[i][0])
+        values.append(sorted_items[i][1])
     sum = 0
     for i in range(len(values) - 1):
+        temp = values[i] * (timestamps[i + 1] - timestamps[i])
+        # print(temp)
         sum += values[i] * (timestamps[i + 1] - timestamps[i])
     sum += values[-1] * (time_current - timestamps[-1])
     total_time = time_current - timestamps[0]
     average = sum / total_time
     return average
-
+def sumFrequency(array):
+    if type(array) is not list:
+        return array
+    sum = 0
+    for i in range(len(array)):
+        if type(array[i]) != 'int':
+            sum += 1
+            continue
+        sum += array[i]
+    return sum
 
 class EstimateCreditScore:
     def __init__(self, address: str, type_transaction: int, amount: float, time_estimate: int):
@@ -107,11 +127,13 @@ class EstimateCreditScore:
                          self.transaction_amount_statistic['std'])
 
         # x23 - frequency of transaction
-        # if (dailyFrequencyOfTransactions == []):
-        #     x23 = 0
-        # else:
-        #     x23 = 1000
-        x23 = 0
+        if (dailyFrequencyOfTransactions == 0):
+            x23 = 0
+        else:
+            x23 = get_tscore(sumFrequency(dailyFrequencyOfTransactions), self.frequency_of_transaction['mean'],
+                             self.frequency_of_transaction['std'])
+            if (x23 > 1000):
+                x23 = 1000
         # x24 - number of liquidations
         if (numberOfLiquidation < 10):
             x24 = -100 * numberOfLiquidation + 1000

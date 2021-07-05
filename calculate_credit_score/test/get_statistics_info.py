@@ -1,3 +1,4 @@
+
 import os
 import sys
 
@@ -44,15 +45,36 @@ def calculate_average_second(values, timestamps, time_current):
             return 0
         else:
             return (values[0] / (time_current - timestamps[0]))
+    d = dict(zip(timestamps, values))
+    dictionary_items = d.items()
+    sorted_items = sorted(dictionary_items)
+    timestamps = []
+    values = []
+
+    for i in range(len(sorted_items)):
+        timestamps.append(sorted_items[i][0])
+        values.append(sorted_items[i][1])
     sum = 0
     for i in range(len(values) - 1):
+        temp = values[i] * (timestamps[i + 1] - timestamps[i])
+        # print(temp)
         sum += values[i] * (timestamps[i + 1] - timestamps[i])
     sum += values[-1] * (time_current - timestamps[-1])
-    total_time = time_current - timestamps[1]
+    total_time = time_current - timestamps[0]
     average = sum / total_time
     return average
-
-
+    # print(timestamps_temp)
+    # print(values_temp)
+def sumFrequency(array):
+    if type(array) is not list:
+        return array
+    sum = 0
+    for i in range(len(array)):
+            if type(array[i]) != 'int':
+                sum +=1
+                continue
+            sum += array[i]
+    return sum
 def get_statistics():
     k = 100
     # get wallet data from KG
@@ -72,7 +94,7 @@ def get_statistics():
     timeCurrent = int(time.time())
 
     createdAt = []
-    # dailyFrequencyOfTransactions = []
+    dailyFrequencyOfTransactions = []
     dailyTransactionAmounts = []
     total_asset = []
 
@@ -83,15 +105,16 @@ def get_statistics():
             createdAt.append(temp_age)
 
         # Get Daily Frequent Transaction x22
-        # dailyFrequencyOfTransactions_temp = get_property('dailyFrequencyOfTransactions', getter[i]['w'])
-        # if (dailyFrequencyOfTransactions_temp == 0):
-        #     dailyFrequencyOfTransactions_temp.append(0)
-        # else:
-        #     dailyFrequencyOfTransactions.append(sum(dailyFrequencyOfTransactions_temp))
+        #print(i, getter[i]['w']['address'])
+        dailyFrequencyOfTransactions_temp = get_property('dailyFrequencyOfTransactions', getter[i]['w'])
+        if (dailyFrequencyOfTransactions_temp == 0):
+            dailyFrequencyOfTransactions.append(0)
+        else:
+            dailyFrequencyOfTransactions.append(sumFrequency(dailyFrequencyOfTransactions_temp))
 
         # Get Daily Transaction Amount x23
         dailyTransactionAmounts_temp = get_property('dailyTransactionAmounts', getter[i]['w'])
-        if (dailyTransactionAmounts_temp <= 0):
+        if (dailyTransactionAmounts_temp == 0):
             dailyTransactionAmounts.append(0)
         else:
             dailyTransactionAmounts.append(sum(dailyTransactionAmounts_temp))
@@ -122,9 +145,10 @@ def get_statistics():
         dailyTransactionAmounts)
 
     [total_assets_statistic['mean'], total_assets_statistic['std']] = get_standardized_score_info(total_asset)
+    [frequency_of_transaction['mean'], frequency_of_transaction['std']] = get_standardized_score_info(dailyFrequencyOfTransactions)
     print('Complete calculating statistics information')
-    print("wallet have asset > 0 ", len(total_asset))
-    print("wallet have age>0 ", len(age))
+    #print("wallet have asset > 0 ", len(total_asset))
+    #print("wallet have age>0 ", len(age))
     # write to csv file
     fieldnames = ['variable', 'mean', 'std']
     rows = [
@@ -149,4 +173,5 @@ def get_statistics():
 
 if __name__ == '__main__':
     get_statistics()
+
     pass

@@ -1,6 +1,7 @@
 import os
 import sys
-
+import timeit
+start = timeit.default_timer()
 TOP_DIR = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 sys.path.insert(0, os.path.join(TOP_DIR, '../'))
 
@@ -34,14 +35,34 @@ def calculate_average_second(values, timestamps, time_current):
             return 0
         else:
             return (values[0] / (time_current - timestamps[0]))
+    d = dict(zip(timestamps, values))
+    dictionary_items = d.items()
+    sorted_items = sorted(dictionary_items)
+    timestamps = []
+    values = []
+
+    for i in range(len(sorted_items)):
+        timestamps.append(sorted_items[i][0])
+        values.append(sorted_items[i][1])
     sum = 0
     for i in range(len(values) - 1):
+        temp = values[i] * (timestamps[i + 1] - timestamps[i])
+        # print(temp)
         sum += values[i] * (timestamps[i + 1] - timestamps[i])
     sum += values[-1] * (time_current - timestamps[-1])
     total_time = time_current - timestamps[0]
     average = sum / total_time
     return average
-
+def sumFrequency(array):
+    if type(array) is not list:
+        return array
+    sum = 0
+    for i in range(len(array)):
+        if type(array[i]) != 'int':
+            sum += 1
+            continue
+        sum += array[i]
+    return sum
 
 class CalculateCreditScoreOneWallet:
 
@@ -100,17 +121,22 @@ class CalculateCreditScoreOneWallet:
 
         # x22 - transaction amount -
         if (dailyTransactionAmounts == 0):
-            dailyTransactionAmounts_temp = 0
+            x22 = 0
         else:
             dailyTransactionAmounts_temp = sum(dailyTransactionAmounts)
-        x22 = get_tscore(dailyTransactionAmounts_temp, self.transaction_amount_statistic['mean'],
+            x22 = get_tscore(dailyTransactionAmounts_temp, self.transaction_amount_statistic['mean'],
                          self.transaction_amount_statistic['std'])
+            if x22 > 1000:
+                x22 = 1000
         # x23 - frequency of transaction
-        # if (dailyFrequencyOfTransactions == []):
-        #     x23 = 0
-        # else:
-        #     x23 = 1000
-        x23 = 0
+        if (dailyFrequencyOfTransactions == 0):
+            x23 = 0
+        else:
+            x23 = get_tscore(sumFrequency(dailyFrequencyOfTransactions), self.frequency_of_transaction['mean'],
+                             self.frequency_of_transaction['std'])
+            if (x23 > 1000):
+                x23 = 1000
+
         # x24 - number of liquidations
         if (numberOfLiquidation < 10):
             x24 = -100 * numberOfLiquidation + 1000
@@ -172,6 +198,8 @@ class CalculateCreditScoreOneWallet:
             x12 = 0
         else:
             x12 = get_tscore(total_asset_average, self.total_assets_statistic['mean'], self.total_assets_statistic['std'])
+            if x12 > 1000:
+                x12 = 1000
         # print('x12', total_asset_average)
         x1 = 0.04 * x11 + 0.96 * x12
 
@@ -196,15 +224,23 @@ class CalculateCreditScoreOneWallet:
         else:
             ratio41 = deposit_average / total_asset_average
             x41 = 1000 * ratio41
+            if (x41 > 1000):
+                x41 = 1000
+            if (x41 < 0):
+                x41 = 0
         # print('deposit_average', deposit_average)
         # print('x41', x41)
         x4 = x41
         return x1, x3, x4
 
     def calculate_credit_score(self):
+
         x2 = self.calculate_x2()
+
         [x1, x3, x4] = self.calculate_x134()
+
         x5 = self.calculate_x5()
+
         credit_score = 0.25 * x1 + 0.35 * x2 + 0.15 * x3 + 0.2 * x4 + 0.05 * x5
         return int(credit_score)
 
@@ -239,4 +275,5 @@ if __name__ == '__main__':
     calc = CalculateCreditScoreOneWallet('0x42ff331afdfe064c3e17fcf4486e13a885d3d1a7')
     #calc = CalculateCreditScoreOneWallet('0x123')
     calc.updateCreditScore()
+
     pass

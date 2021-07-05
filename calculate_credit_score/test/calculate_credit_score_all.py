@@ -1,3 +1,5 @@
+import timeit
+start = timeit.default_timer()
 import os
 import sys
 
@@ -33,14 +35,35 @@ def calculate_average_second(values, timestamps, time_current):
             return 0
         else:
             return (values[0] / (time_current - timestamps[0]))
+    d = dict(zip(timestamps, values))
+    dictionary_items = d.items()
+    sorted_items = sorted(dictionary_items)
+    timestamps = []
+    values = []
+
+    for i in range(len(sorted_items)):
+        timestamps.append(sorted_items[i][0])
+        values.append(sorted_items[i][1])
     sum = 0
     for i in range(len(values) - 1):
+        temp = values[i] * (timestamps[i + 1] - timestamps[i])
+        # print(temp)
         sum += values[i] * (timestamps[i + 1] - timestamps[i])
     sum += values[-1] * (time_current - timestamps[-1])
     total_time = time_current - timestamps[0]
     average = sum / total_time
     return average
 
+def sumFrequency(array):
+    if type(array) is not list:
+        return array
+    sum = 0
+    for i in range(len(array)):
+        if type(array[i]) != 'int':
+            sum += 1
+            continue
+        sum += array[i]
+    return sum
 
 class CalculateCreditScoreAllWallet:
 
@@ -104,12 +127,17 @@ class CalculateCreditScoreAllWallet:
             dailyTransactionAmounts_temp = sum(dailyTransactionAmounts)
             x22 = get_tscore(dailyTransactionAmounts_temp, self.transaction_amount_statistic['mean'],
                          self.transaction_amount_statistic['std'])
+            if x22 > 1000:
+                x22 = 1000
         # x23 - frequency of transaction
-        # if (dailyFrequencyOfTransactions == []):
-        #     x23 = 0
-        # else:
-        #     x23 = 1000
-        x23 = 0
+        if (dailyFrequencyOfTransactions == 0):
+            x23 = 0
+        else:
+            x23 = get_tscore(sumFrequency(dailyFrequencyOfTransactions), self.frequency_of_transaction['mean'],
+                             self.frequency_of_transaction['std'])
+            if (x23 > 1000):
+                x23 = 1000
+
         # x24 - number of liquidations
         if (numberOfLiquidation < 10):
             x24 = -100 * numberOfLiquidation + 1000
@@ -189,15 +217,19 @@ class CalculateCreditScoreAllWallet:
         else:
             ratio32 = loan_average / deposit_average
             x32 = 1000 * (1 - min(1, ratio32))
+
         # print('x32', x32)
         x3 = 0.6 * x31 + 0.4 * x32
-
+        if x3 > 1000:
+            x3 = 1000
         # x4 - Circulating asset
         if (total_asset_average == 0):
             x41 = 0
         else:
             ratio41 = deposit_average / total_asset_average
             x41 = 1000 * ratio41
+            if x41 > 1000:
+                x41 = 1000
         # print('deposit_average', deposit_average)
         # print('x41', x41)
         x4 = x41
@@ -220,7 +252,7 @@ class CalculateCreditScoreAllWallet:
             "MATCH (a:Wallet { address: $address }) SET a.creditScore = $creditScore, a.creditScoreChangeLogTimestamps = $ChangeLogTimestamps, a.creditScoreChangeLogValues = $ChangeLogValues  RETURN a.creditScore", \
             address=address, creditScore=credit_score, ChangeLogTimestamps=creditScoreChangeLogTimestamps, ChangeLogValues=creditScoreChangeLogValues)
 
-        print(i, credit_score)
+        #print(i, credit_score)
         return 0
 
     def calculate_credit_score(self):
@@ -234,4 +266,7 @@ class CalculateCreditScoreAllWallet:
 if __name__ == '__main__':
     calc = CalculateCreditScoreAllWallet()
     calc.calculate_credit_score()
+    stop = timeit.default_timer()
+
+    print('Time: ', stop - start)
     pass
