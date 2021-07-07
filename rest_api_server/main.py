@@ -29,6 +29,7 @@ def start_rest_api(host, port, database):
 
     handler.add_route(app)
     LOGGER.info(f"Start Listen at http://{host}:{port}")
+
     web.run_app(
         app,
         host=host,

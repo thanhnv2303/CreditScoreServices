@@ -1,80 +1,79 @@
 version: '3'
 services:
-  calculate-credit-score:
+  calculate-credit-score-trava:
     build:
       context: .
       dockerfile: ./Dockerfile
     image: credit-score
-    container_name: calculate-credit-score
+    container_name: calculate-credit-score-trava
     volumes:
       - .:/project
     command: |
       bash -c "
-        sleep 10
+        sleep 20
         python3 ./calculate_credit_score/docker_run/run_frequently.py
-
       "
     depends_on:
-      - neo4j-klg
+      - neo4j-klg-trava
     env_file:
       - ./.env
     environment:
       - MONGO_HOST
       - MONGO_PORT
-      - NEO4J_HOST=neo4j_services_db-klg
+      - NEO4J_HOST=neo4j_services_db-klg-trava
       - NEO4J_BOTH_PORT=7687
 
-  data-aggreagation:
+  data-aggreagation-trava:
     build:
       context: .
       dockerfile: ./Dockerfile
     image: credit-score
-    container_name: data-aggreagation
+    container_name: data-aggreagation-trava
     volumes:
       - .:/project
     command: |
       bash -c "
-        sleep 10
+        sleep 20
         python3 ./data_aggregation/docker_run/run_stream.py
       "
     depends_on:
-      - neo4j-klg
+      - neo4j-klg-trava
     env_file:
       - ./.env
     environment:
       - MONGO_HOST
       - MONGO_PORT
-      - NEO4J_HOST=neo4j_services_db-klg
+      - NEO4J_HOST=neo4j_services_db-klg-trava
       - NEO4J_BOTH_PORT=7687
 
-  credit-score-rest-api-server:
+  credit-score-rest-api-server-trava:
     build:
       context: .
       dockerfile: ./Dockerfile
     image: credit-score
-    container_name: credit-score-rest-api-server
+    container_name: credit-score-rest-api-server-trava
     ports:
       - 8000:8000
     volumes:
       - .:/project
     command: |
       bash -c "
-        sleep 10
+        sleep 20
         python3 ./rest_api_server/main.py
       "
     depends_on:
-      - neo4j-klg
+      - neo4j-klg-trava
     env_file:
       - ./.env
     environment:
       - HOST
-      - NEO4J_HOST=neo4j_services_db-klg
+      - NEO4J_HOST=neo4j_services_db-klg-trava
       - NEO4J_BOTH_PORT=7687
 
-  neo4j-klg:
+  neo4j-klg-trava:
     image: neo4j:4.0.3
     hostname: neo4j_services_db
-    container_name: neo4j_services_db-klg
+    container_name: neo4j_services_db-klg-trava
     ports:
       - ${NEO4J_HTTP_PORT}:7474
       - ${NEO4J_HTTPS_PORT}:7473
@@ -85,16 +84,5 @@ services:
     env_file:
       - ./.env
     environment:
-      - NEO4J_AUTH=${NEO4J_USERNAME}/${NEO4J_PASSWORD}
-      - NEO4J_ACCEPT_LICENSE_AGREEMENT=yes
-      - NEO4J_dbms_security_procedures_unrestricted=apoc.*,algo.*
-      - NEO4J_dbms_security_allow__csv__import__from__file__urls=true
-      - NEO4J_apoc_export_file_enabled=true
-      - NEO4J_apoc_import_file_enabled=true
-      - NEO4J_apoc_import_file_use__neo4j__config=true
-      - NEO4J_apoc_http_timeout_connect=60000
-      - NEO4J_apoc_http_timeout_read=120000
-      - NEO4J_apoc_jobs_pool_num__threads=4
-      - NEO4J_apoc_jobs_schedule_num__threads=4
-      - NEO4J_apoc_spatial_geocode_provider=osm
-      - NEO4J_apoc_spatial_geocode_osm_throttle=5000
+      NEO4J_AUTH: ${NEO4J_USERNAME}/${NEO4J_PASSWORD}
+      NEO4J_dbms_logs_debug_level: DEBUG

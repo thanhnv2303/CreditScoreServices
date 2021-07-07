@@ -1,9 +1,8 @@
-import json
 import logging
-import os
 
 from config.constant import CreditScoreConstant, TokenConstant
 from data_aggregation.database.intermediary_database import IntermediaryDatabase
+from data_aggregation.database.klg_database import KlgDatabase
 from data_aggregation.services.update_date_token_credit_score import update_token_credit_score
 from utils.to_number import to_int, to_float
 
@@ -12,29 +11,18 @@ logger = logging.getLogger('Credit Score Service V0.3.0')
 
 class PriceService:
 
-    def __init__(self, database=IntermediaryDatabase(), list_token_filter="artifacts/token_credit_info/listToken.txt",
-                 token_info="artifacts/token_credit_info/infoToken.json"):
+    def __init__(self, database=IntermediaryDatabase(), klg_database=KlgDatabase()):
         self.database = database
+        self.klg_database = klg_database
         self.fix_prices = {
             "0x": {
                 "price": 343.30,  ### fix price for BNB
                 "decimals": 18
             }
         }
+        self.tokens_market = {}
 
-        self.file_input = list_token_filter
-        self.file_output = token_info
-        cur_path = os.path.dirname(os.path.realpath(__file__)) + "/../../"
-        path_market = cur_path + token_info
-
-        with open(path_market, "r") as file:
-            try:
-                self.tokens_market = json.load(file)
-            except:
-                self.update_token_market_info(fileInput=list_token_filter, fileOutput=token_info)
-                with open(path_market, "r") as file:
-                    self.tokens_market = json.load(file)
-
+        ### fix price
         self.tokens_market["0x"] = {
             "symbol": "BNB",
             "price": "380.17",
@@ -42,7 +30,35 @@ class PriceService:
             "market_cap": 7555675507.00,
             "decimals": 18
         }
-
+        self.tokens_market["0xcedc3b4d3c4359a1f842cf94d3418fedb105669f"] = {
+            "symbol": "DAI",
+            "price": "1.1",
+            "credit_score": 1000.0,
+            "market_cap": 7555675507.00,
+            "decimals": 18
+        }
+        self.tokens_market["0x059ba0204de65bddb172d55d6a53074ea98d7917"] = {
+            "symbol": "USDT",
+            "price": "12.1",
+            "credit_score": 1000.0,
+            "market_cap": 7555675507.00,
+            "decimals": 18
+        }
+        self.tokens_market["0xfc3fb4aa34c1720d5a50eb70b60d3118cc47636c"] = {
+            "symbol": "USDC",
+            "price": "12.1",
+            "credit_score": 1000.0,
+            "market_cap": 7555675507.00,
+            "decimals": 18
+        }
+        self.tokens_market["0xfc3fb4aa34c1720d5a50eb70b60d3118cc47636c"] = {
+            "symbol": "USDC",
+            "price": "12.1",
+            "credit_score": 1000.0,
+            "market_cap": 7555675507.00,
+            "decimals": 18
+        }
+        # self.update_token_market_info()
         self.balance_threshold = CreditScoreConstant.balance_threshold
         self.supply_threshold = CreditScoreConstant.supply_threshold
         self.threshold = CreditScoreConstant.threshold
@@ -84,13 +100,15 @@ class PriceService:
             total_value += self.token_amount_to_usd(token_address, value)
         return total_value
 
-    def update_token_market_info(self, fileInput='artifacts/token_credit_info/listToken.txt',
-                                 fileOutput='artifacts/token_credit_info/infoToken.json'):
-        update_token_credit_score(fileInput=fileInput, fileOutput=fileOutput, database=self.database)
+    def update_token_market_info(self):
+        token_prices = self.klg_database.get_token_prices()
+        for token_address in token_prices:
+            token = self.database.get_token(token_address)
+            if token:
+                self.tokens_market[token_address] = token
+            else:
+                self.tokens_market[token_address] = {}
+            self.tokens_market[token_address][TokenConstant.price] = token_prices[token_address]
+        # print(self.tokens_market)
         return 0
-
-    def update_token_info(self):
-        file_input = self.file_input
-        file_output = self.file_output
-        update_token_credit_score(fileInput=file_input, fileOutput=file_output, database=self.database)
-        return 0
+# price_service = PriceService()

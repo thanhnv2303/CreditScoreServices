@@ -36,10 +36,10 @@ class MongoDBConfig:
 
 class Neo4jConfig:
     BOLT = "bolt://0.0.0.0:7687"
-    HOST = os.environ.get("NEO4J_HOST") or "0.0.0.0"
-    BOTH_PORT = os.environ.get("NEO4J_PORT") or 7687
-    HTTP_PORT = os.environ.get("NEO4J_PORT") or 7474
-    HTTPS_PORT = os.environ.get("NEO4J_PORT") or 7473
+    HOST = os.environ.get("NEO4J_HOST") or "25.29.164.152"
+    BOTH_PORT = os.environ.get("NEO4J_BOTH_PORT") or 6687
+    HTTP_PORT = os.environ.get("NEO4J_HTTP_PORT") or 7474
+    HTTPS_PORT = os.environ.get("NEO4J_HTTPS_PORT") or 7473
     NEO4J_USERNAME = os.environ.get("NEO4J_USERNAME") or "neo4j"
     NEO4J_PASSWORD = os.environ.get("NEO4J_PASSWORD") or "klg_pass"
 
@@ -50,7 +50,7 @@ class CreditScoreConfig:
     BATCH_SIZE = os.environ.get("CREDIT_SCORE_BATCH_SIZE") or 64
     MAX_WORKERS = os.environ.get("CREDIT_SCORE_MAX_WORKERS") or 8
     START_BLOCK = os.environ.get("CREDIT_SCORE_START_BLOCK")
-    PERIOD_SECONDS = os.environ.get("CREDIT_SCORE_PERIOD_SECONDS") or 10
+    PERIOD_SECONDS = os.environ.get("CREDIT_SCORE_PERIOD_SECONDS") or 1000
     PID_FILE = os.environ.get("CREDIT_SCORE_PID_FILE") or None
     BLOCK_BATCH_SIZE = os.environ.get("CREDIT_SCORE_BLOCK_BATCH_SIZE") or 24
     TOKENS_FILTER_FILE = os.environ.get(

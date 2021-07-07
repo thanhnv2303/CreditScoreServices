@@ -1,8 +1,11 @@
+import logging
 import random
 
 from py2neo import Graph
 
 from config.config import Neo4jConfig
+
+logger = logging.getLogger("Database rest ")
 
 
 class Database(object):
@@ -30,6 +33,12 @@ class Database(object):
         else:
             self.set_credit_score(wallet_address, credit_score)
         return credit_score
+
+    def get_wallet(self, wallet_address):
+        getter = self._graph.run("match (p:Wallet { address: $address }) return p ",
+                                 address=wallet_address).data()
+        logger.info(getter)
+        return getter
 
     def set_credit_score(self, wallet_address, credit_score):
         match = self._graph.run("MATCH (p:Wallet { address : $address}) return p ", address=wallet_address).data()
@@ -77,3 +86,20 @@ class Database(object):
                                      address=token_address, creditScore=credit_score).data()
 
         return create[0]["p"]
+
+    def get_daily_frequency_of_transaction(self, address):
+        frequency_of_transaction = []
+        frequency_of_transaction_timestamp = []
+
+        getter = self._graph.run(
+            """
+            match (p:Wallet { address: $address }) 
+            return  p.dailyFrequencyOfTransactions ,
+                    q.dailyFrequencyOfTransactionsTimestamp
+            """,
+            address=address).data()
+        if getter and getter[0]["p.dailyFrequencyOfTransactions"]:
+            frequency_of_transaction = getter[0]["p.dailyFrequencyOfTransactions"]
+            frequency_of_transaction_timestamp = getter[0]["p.dailyFrequencyOfTransactionsTimestamp"]
+
+        return frequency_of_transaction, frequency_of_transaction_timestamp

@@ -11,7 +11,7 @@ services:
     command: |
       bash -c "
         sleep 10
-        python3 ./calculate_credit_score/docker_run/run_stream.py
+        python3 ./calculate_credit_score/docker_run/run_frequently.py
       "
     depends_on:
       - neo4j-klg-testnet
@@ -20,7 +20,7 @@ services:
     environment:
       - MONGO_HOST
       - MONGO_PORT
-      - NEO4J_HOST=neo4j-klg-testnet
+      - NEO4J_HOST=neo4j_services_db-klg-testnet
       - NEO4J_BOTH_PORT=7687
 
   data-aggreagation-testnet:
@@ -43,7 +43,7 @@ services:
     environment:
       - MONGO_HOST
       - MONGO_PORT
-      - NEO4J_HOST=neo4j-klg-testnet
+      - NEO4J_HOST=neo4j_services_db-klg-testnet
       - NEO4J_BOTH_PORT=7687
 
   credit-score-rest-api-server-testnet:
@@ -67,18 +67,19 @@ services:
       - ./.env
     environment:
       - HOST
-      - NEO4J_HOST=neo4j-klg-testnet
+      - NEO4J_HOST=neo4j_services_db-klg-testnet
       - NEO4J_BOTH_PORT=7687
   neo4j-klg-testnet:
     image: neo4j:4.0.3
-    hostname: neo4j
-    container_name: neo4j-klg-testnet
+    hostname: neo4j_services_db
+    container_name: neo4j_services_db-klg-testnet
     ports:
       - ${NEO4J_HTTP_PORT}:7474
       - ${NEO4J_HTTPS_PORT}:7473
       - ${NEO4J_BOTH_PORT}:7687
     volumes:
-      - ./neo4j/plugins:/plugins
+      - ./data/neo4j/plugins:/plugins
+      - ./data/neo4j/data:/data
     env_file:
       - ./.env
     environment:
