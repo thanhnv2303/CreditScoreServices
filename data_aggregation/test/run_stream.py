@@ -30,9 +30,6 @@ if __name__ == '__main__':
     pid_file = str(KLGLendingStreamerAdapterConfig.PID_FILE)
     block_batch_size = int(KLGLendingStreamerAdapterConfig.BLOCK_BATCH_SIZE)
     tokens_filter_file = str(KLGLendingStreamerAdapterConfig.TOKENS_FILTER_FILE)
-    v_tokens_filter_file = str(KLGLendingStreamerAdapterConfig.V_TOKENS_FILTER_FILE)
-    list_token_filter = "artifacts/token_credit_info/listToken_testnetbnb.txt"
-    token_info = "artifacts/token_credit_info/infoToken.json"
     # configure_logging(log_file)
     configure_signals()
     logger.info(log_file)
@@ -61,10 +58,7 @@ if __name__ == '__main__':
         item_exporter=create_item_exporter(output),
         batch_size=batch_size,
         max_workers=max_workers,
-        tokens_filter_file=tokens_filter_file,
-        v_tokens_filter_file=v_tokens_filter_file,
-        list_token_filter=list_token_filter,
-        token_info=token_info
+        tokens_filter_file=tokens_filter_file
     )
     streamer = Klg_Streamer(
         blockchain_streamer_adapter=streamer_adapter,

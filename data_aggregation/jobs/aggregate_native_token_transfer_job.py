@@ -145,5 +145,6 @@ class AggregateNativeTokenTransferJob(BaseJob):
             token = TokenConstant.native_token
             value = tx.get(TransactionConstant.value)
 
-            transfer = Transfer(tx_id, timestamp, from_address, to_address, token, value)
+            value_usd = self.price_service.token_amount_to_usd(token, value)
+            transfer = Transfer(tx_id, timestamp, from_address, to_address, token, value, value_usd)
             self.klg_database.create_transfer_relationship(transfer)
