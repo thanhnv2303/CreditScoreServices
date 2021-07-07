@@ -1,0 +1,23 @@
+version: '3'
+services:
+
+  data-aggreagation:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    image: credit-score
+    container_name: data-aggreagation
+    volumes:
+      - .:/project
+    command: |
+      bash -c "
+        sleep 10
+        python3 ./data_aggregation/docker_run/run_stream.py
+      "
+    env_file:
+      - ./.env
+    environment:
+      - MONGO_HOST
+      - MONGO_PORT
+      - NEO4J_HOST
+      - NEO4J_BOTH_PORT
