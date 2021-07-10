@@ -86,3 +86,4 @@ class LiquidationCallEventConstant:
 class RunOnConstant:
     BSC_MAINNET = "BSC_MAINNET"
     BSC_TESTNET = "BSC_TESTNET"
+    ETH_MAINNET = "ETH_MAINNET"

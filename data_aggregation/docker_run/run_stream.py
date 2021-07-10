@@ -6,7 +6,7 @@ TOP_DIR = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 sys.path.insert(0, os.path.join(TOP_DIR, '../'))
 
 from config.data_aggregation_constant import RunOnConstant
-from data_aggregation.services.init_graph import init_graph_testnet, init_graph_mainnet
+from data_aggregation.services.init_graph import init_graph_testnet, init_graph_mainnet, init_graph_ether
 
 from data_aggregation.database.intermediary_database import IntermediaryDatabase
 from services.log_services import config_log
@@ -58,6 +58,8 @@ if __name__ == '__main__':
         init_graph_mainnet()
     elif run_on == RunOnConstant.BSC_TESTNET:
         init_graph_testnet()
+    elif run_on == RunOnConstant.ETH_MAINNET:
+        init_graph_ether()
 
     streamer_adapter = KLGLendingStreamerAdapter(
         item_exporter=create_item_exporter(output),
