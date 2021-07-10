@@ -6,6 +6,8 @@ services:
       dockerfile: ./Dockerfile
     image: credit-score
     container_name: credit-score-rest-api-testnet
+    restart: always
+    restart: always
     ports:
       - ${REST_API_PORT}:${REST_API_PORT}
     volumes:

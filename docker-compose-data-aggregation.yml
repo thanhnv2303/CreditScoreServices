@@ -7,6 +7,7 @@ services:
       dockerfile: ./Dockerfile
     image: credit-score
     container_name: data-aggreagation
+    restart: always
     volumes:
       - .:/project
     command: |

@@ -79,4 +79,4 @@ class KLGLendingStreamerAdapterConfig:
     LIST_TOKEN_FILTER = os.environ.get(
         "KNOWLEDGE_GRAPH_LENDING_LIST_TOKEN_FILTER") or "artifacts/token_credit_info/listToken_testnetbnb.txt"
     TOKEN_INFO = os.environ.get("KNOWLEDGE_GRAPH_LENDING_TOKEN_INFO") or "artifacts/token_credit_info/infoToken.json"
-    RUN_ON = os.environ.get("KNOWLEDGE_GRAPH_RUN_ON") or "BSC_MAINNET" or "BSC_TESTNET"
+    RUN_ON = os.environ.get("KNOWLEDGE_GRAPH_RUN_ON") or "BSC_MAINNET" or "BSC_TESTNET" or "ETH_MAINNET"
