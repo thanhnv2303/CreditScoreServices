@@ -36,3 +36,5 @@ def init_graph_ether():
 
     for pool in ETH_POOLS:
         create_graph.neo4j_create_lending_pool_node(pool)
+
+init_graph_ether()

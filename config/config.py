@@ -20,7 +20,7 @@ class MongoDBConfig:
     PASSWORD = os.environ.get("MONGO_PASSWORD") or "password_for_dev"
     HOST = os.environ.get("MONGO_HOST") or "25.39.155.190"
     # HOST = "25.19.185.225"
-    PORT = os.environ.get("MONGO_PORT") or "27037"
+    PORT = os.environ.get("MONGO_PORT") or "27057"
     DATABASE = "extract_data_knowledge_graph"
     TRANSACTIONS = "transactions"
     TRANSACTIONS_TRANSFER = "native_transfer_transactions"
@@ -36,8 +36,8 @@ class MongoDBConfig:
 
 class Neo4jConfig:
     BOLT = "bolt://0.0.0.0:7687"
-    HOST = os.environ.get("NEO4J_HOST") or "25.29.164.152"
-    BOTH_PORT = os.environ.get("NEO4J_BOTH_PORT") or 6687
+    HOST = os.environ.get("NEO4J_HOST") or "0.0.0.0"
+    BOTH_PORT = os.environ.get("NEO4J_BOTH_PORT") or 7687
     HTTP_PORT = os.environ.get("NEO4J_HTTP_PORT") or 7474
     HTTPS_PORT = os.environ.get("NEO4J_HTTPS_PORT") or 7473
     NEO4J_USERNAME = os.environ.get("NEO4J_USERNAME") or "neo4j"
@@ -71,7 +71,7 @@ class KLGLendingStreamerAdapterConfig:
     BLOCK_BATCH_SIZE = os.environ.get("KNOWLEDGE_GRAPH_LENDING_BLOCK_BATCH_SIZE") or 24
     # TOKENS_FILTER_FILE = os.environ.get("KNOWLEDGE_GRAPH_LENDING_TOKENS_FILTER_FILE") or "artifacts/smart_contract_filter/token_filter"
     TOKENS_FILTER_FILE = os.environ.get(
-        "KNOWLEDGE_GRAPH_LENDING_TOKENS_FILTER_FILE") or "artifacts/smart_contract_filter/token_filter_bnb_testnet"
+        "KNOWLEDGE_GRAPH_LENDING_TOKENS_FILTER_FILE") or "artifacts/smart_contract_filter/token_filter_ether"
     V_TOKENS_FILTER_FILE = os.environ.get("KNOWLEDGE_GRAPH_LENDING_V_TOKENS_FILTER_FILE") or "artifacts/smart_contract_filter/vToken_filter"
     EVENT_ABI_DIR = os.environ.get("KNOWLEDGE_GRAPH_LENDING_EVENT_ABI_DIR") or "artifacts/event-abi"
     # LIST_TOKEN_FILTER = os.environ.get(

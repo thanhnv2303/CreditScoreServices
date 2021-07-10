@@ -36,11 +36,11 @@ class KLGLendingStreamerAdapter:
 
         self.price_service = PriceService(intermediary_database, klg_database)
         # self.price_service.update_token_info()
-        self.tokens = []
-        with open(self.tokens_filter_file, "r") as file:
-            tokens_list = file.read().splitlines()
-            for token in tokens_list:
-                self.tokens.append(str(token).lower())
+        # self.tokens = []
+        # with open(self.tokens_filter_file, "r") as file:
+        #     tokens_list = file.read().splitlines()
+        #     for token in tokens_list:
+        #         self.tokens.append(str(token).lower())
 
     def open(self):
         self.item_exporter.open()
