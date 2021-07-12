@@ -56,7 +56,7 @@ def aggregate(start_block, end_block, max_workers, batch_size,
 
     performance_constant_keys = local_storage.get_element(MemoryStorageKeyConstant.performance_constant_keys)
     for key in performance_constant_keys:
-        logger.info(f"performance_storage.set({key}, 0)")
+        # logger.info(f"performance_storage.set({key}, 0)")
         performance_storage.set(key, 0)
 
     if not checkpoint or checkpoint != timestamp_day:
