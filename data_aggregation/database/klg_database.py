@@ -266,7 +266,7 @@ class KlgDatabase(object):
             getter = self._graph.run("match (p:Wallet { address: $address }) return p.dailyFrequencyOfTransactions ",
                                      address=wallet_address).data()
             if getter and getter[0]["p.dailyFrequencyOfTransactions"]:
-                values_list = values_list + getter[0]["p.dailyFrequencyOfTransactions"]
+                values_list = values_list + list(getter[0]["p.dailyFrequencyOfTransactions"])
         except Exception as e:
             logger.info("get_daily_daily_frequency_of_transaction")
             logger.error(e)
