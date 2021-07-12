@@ -55,8 +55,8 @@ class PerformanceConstant:
     AggregateWalletJob = "5.AggregateWalletJob"
 
     def get_all_attr(self):
-        inspect.getmembers(PerformanceConstant, lambda a: not (inspect.isroutine(a)))
         obj = PerformanceConstant
         attr = [getattr(PerformanceConstant, a) for a in dir(obj) if
                 not a.startswith('__') and not callable(getattr(obj, a))]
-        return attr.sort()
+        attr.sort()
+        return attr
