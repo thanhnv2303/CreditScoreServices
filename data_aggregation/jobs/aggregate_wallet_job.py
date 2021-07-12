@@ -78,7 +78,7 @@ class AggregateWalletJob(BaseJob):
             # wallet = self.intermediary_database.get_wallet(wallet_address)
             start1 = time.time()
             wallet = self.update_wallet_storage.get(wallet_address)
-            logger.info(f"Time to get wallet at storage is {time.time() - start1}")
+            # logger.info(f"Time to get wallet at storage is {time.time() - start1}")
             """
             update thông tin ví lên knowledge graph 
             """
@@ -88,7 +88,7 @@ class AggregateWalletJob(BaseJob):
                 start = time.time()
                 total_balance = self.price_service.get_total_value(wallet_token)
                 self.klg_database.update_wallet_token(wallet_address, wallet_token, total_balance)
-                logger.info(f"Time to update balance wallet {time.time() - start}")
+                # logger.info(f"Time to update balance wallet {time.time() - start}")
             wallet_token_deposit = wallet.get(WalletConstant.supply)
             wallet_token_borrow = wallet.get(WalletConstant.borrow)
             if wallet_token_deposit and wallet_token_borrow:
@@ -104,7 +104,7 @@ class AggregateWalletJob(BaseJob):
                     borrow_balance
                 )
 
-                logger.info(f"Time to update lending info wallet {time.time() - start}")
+                # logger.info(f"Time to update lending info wallet {time.time() - start}")
 
             """
             cập nhật thông tin về ngày xuất hiện giao dịch đầu tiên trên hệ thống
@@ -117,9 +117,9 @@ class AggregateWalletJob(BaseJob):
                 except:
                     create_at = self.intermediary_database.block_number_to_time_stamp(wallet.get("block_number"))
                 self.klg_database.update_wallet_created_at(wallet_address, create_at)
-            logger.info(f"Total time to update create at of wallet {time.time() - start}")
-
-            logger.info(f"Total time to update a wallet is {time.time() - start1}")
+            # logger.info(f"Total time to update create at of wallet {time.time() - start}")
+            #
+            # logger.info(f"Total time to update a wallet is {time.time() - start1}")
             ###
         except Exception as e:
             logger.error(e)

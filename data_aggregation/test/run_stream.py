@@ -31,10 +31,10 @@ if __name__ == '__main__':
     block_batch_size = int(KLGLendingStreamerAdapterConfig.BLOCK_BATCH_SIZE)
     tokens_filter_file = str(KLGLendingStreamerAdapterConfig.TOKENS_FILTER_FILE)
     # configure_logging(log_file)
-    configure_signals()
-    logger.info(log_file)
-    if log_file and log_file != "None":
-        configure_logging(log_file)
+    # configure_signals()
+    # logger.info(log_file)
+    # if log_file and log_file != "None":
+    #     configure_logging(log_file)
 
     cur_path = os.path.dirname(os.path.realpath(__file__)) + "/../"
 

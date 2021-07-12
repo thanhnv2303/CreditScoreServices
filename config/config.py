@@ -20,7 +20,7 @@ class MongoDBConfig:
     PASSWORD = os.environ.get("MONGO_PASSWORD") or "password_for_dev"
     HOST = os.environ.get("MONGO_HOST") or "25.39.155.190"
     # HOST = "25.19.185.225"
-    PORT = os.environ.get("MONGO_PORT") or "27057"
+    PORT = os.environ.get("MONGO_PORT") or "27047"
     DATABASE = "extract_data_knowledge_graph"
     TRANSACTIONS = "transactions"
     TRANSACTIONS_TRANSFER = "native_transfer_transactions"
@@ -63,12 +63,12 @@ class CreditScoreConfig:
 class KLGLendingStreamerAdapterConfig:
     LOG_FILE = os.environ.get("KNOWLEDGE_GRAPH_LENDING_LOG_FILE") or None
     LAG = os.environ.get("KNOWLEDGE_GRAPH_LENDING_LAG") or 0
-    BATCH_SIZE = os.environ.get("KNOWLEDGE_GRAPH_LENDING_BATCH_SIZE") or 64
+    BATCH_SIZE = os.environ.get("KNOWLEDGE_GRAPH_LENDING_BATCH_SIZE") or 4
     MAX_WORKERS = os.environ.get("KNOWLEDGE_GRAPH_LENDING_MAX_WORKERS") or 8
     START_BLOCK = os.environ.get("KNOWLEDGE_GRAPH_LENDING_START_BLOCK") or 0
     PERIOD_SECONDS = os.environ.get("KNOWLEDGE_GRAPH_LENDING_PERIOD_SECONDS") or 10
     PID_FILE = os.environ.get("KNOWLEDGE_GRAPH_LENDING_PID_FILE") or None
-    BLOCK_BATCH_SIZE = os.environ.get("KNOWLEDGE_GRAPH_LENDING_BLOCK_BATCH_SIZE") or 24
+    BLOCK_BATCH_SIZE = os.environ.get("KNOWLEDGE_GRAPH_LENDING_BLOCK_BATCH_SIZE") or 32
     # TOKENS_FILTER_FILE = os.environ.get("KNOWLEDGE_GRAPH_LENDING_TOKENS_FILTER_FILE") or "artifacts/smart_contract_filter/token_filter"
     TOKENS_FILTER_FILE = os.environ.get(
         "KNOWLEDGE_GRAPH_LENDING_TOKENS_FILTER_FILE") or "artifacts/smart_contract_filter/token_filter_ether"
@@ -80,3 +80,7 @@ class KLGLendingStreamerAdapterConfig:
         "KNOWLEDGE_GRAPH_LENDING_LIST_TOKEN_FILTER") or "artifacts/token_credit_info/listToken_testnetbnb.txt"
     TOKEN_INFO = os.environ.get("KNOWLEDGE_GRAPH_LENDING_TOKEN_INFO") or "artifacts/token_credit_info/infoToken.json"
     RUN_ON = os.environ.get("KNOWLEDGE_GRAPH_RUN_ON") or "BSC_MAINNET" or "BSC_TESTNET" or "ETH_MAINNET"
+
+
+class TestPerformanceConfig:
+    CALCULATE_PERFORMANCE = os.environ.get("CALCULATE_PERFORMANCE") or True
