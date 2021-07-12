@@ -1,6 +1,7 @@
 class MemoryStorageKeyConstant:
     update_wallet = "update_wallet"
     checkpoint = "checkpoint"
+    performance_constant_keys = "performance_constant_keys"
 
 
 class EventTypeAggregateConstant:

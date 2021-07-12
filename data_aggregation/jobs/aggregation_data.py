@@ -50,7 +50,11 @@ def aggregate(start_block, end_block, max_workers, batch_size,
 
     ### set up for carculate performance
     performance_storage = MemoryStoragePerformance.getInstance()
-    performance_constant_keys = PerformanceConstant().get_all_attr()
+    if not local_storage.get_element(MemoryStorageKeyConstant.performance_constant_keys):
+        performance_constant_keys = PerformanceConstant().get_all_attr()
+        local_storage.set_element(MemoryStorageKeyConstant.performance_constant_keys, performance_constant_keys)
+
+    performance_constant_keys = local_storage.get_element(MemoryStorageKeyConstant.performance_constant_keys)
     for key in performance_constant_keys:
         logger.info(f"performance_storage.set({key}, 0)")
         performance_storage.set(key, 0)
