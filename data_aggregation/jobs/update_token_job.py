@@ -89,4 +89,4 @@ class UpdateTokenJob(BaseJob):
         start = time.time()
         self.klg_database.update_daily_frequency_of_transactions(smart_contract_address, number_events)
 
-        logger.info(f"Time to update daily_frequency_of_transactions {time.time() - start}s")
+        # logger.info(f"Time to update daily_frequency_of_transactions {time.time() - start}s")
