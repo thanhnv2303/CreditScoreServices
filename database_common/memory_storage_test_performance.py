@@ -35,7 +35,7 @@ class MemoryStoragePerformance:
         if not self.calculate_performance:
             return 0
         try:
-            return self.storage.get(key)
+            return self.storage[key]
         except Exception as e:
             logger.warning(f"key {e} not found")
             return 0

@@ -48,7 +48,10 @@ class IntermediaryDatabase(object):
 
     def block_number_to_time_stamp(self, block_number):
         key = {BlockConstant.number: block_number}
+        start = time.time()
         block = self.mongo_blocks.find_one(key)
+        duration = time.time() - start
+        self.performance_storage.accumulate_to_key(PerformanceConstant.block_number_to_time_stamp, duration)
         return block.get(BlockConstant.timestamp)
 
     def get_latest_block_update(self):
