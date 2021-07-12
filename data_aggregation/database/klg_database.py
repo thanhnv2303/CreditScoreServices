@@ -63,10 +63,10 @@ class KlgDatabase(object):
                                  address=wallet_address,
                                  tokens=tokens,
                                  tokenBalances=tokenBalances,
-                                 balanceInUSD=balance).data()
+                                 balanceInUSD=balance)#.data()
         duration = time.time() - start
         self.performance_storage.accumulate_to_key(PerformanceConstant.update_wallet_token, duration)
-        return create[0]["p"]
+        return create
 
     def update_wallet_token_deposit_and_borrow(self, wallet_address, token_deposit_map={}, token_borrow_map={},
                                                deposit=0, borrow=0):
@@ -105,12 +105,12 @@ class KlgDatabase(object):
                                  borrowTokens=borrowTokens,
                                  borrowTokenBalances=borrowTokenBalances,
                                  depositInUSD=deposit,
-                                 borrowInUSD=borrow).data()
+                                 borrowInUSD=borrow)#.data()
 
         duration = time.time() - start
         self.performance_storage.accumulate_to_key(PerformanceConstant.update_wallet_token_deposit_and_borrow, duration)
         # logger.info(f"Time to update deposit token and deposit token balances is {time.time() - start}")
-        return create[0]["p"]
+        return create
 
     def update_wallet_created_at(self, wallet_address, created_at):
         # """
@@ -125,12 +125,12 @@ class KlgDatabase(object):
         create = self._graph.run("MERGE (p:Wallet { address: $address }) "
                                  "SET p.createdAt = $createdAt "
                                  "RETURN p",
-                                 address=wallet_address, createdAt=created_at).data()
+                                 address=wallet_address, createdAt=created_at)#.data()
 
         duration = time.time() - start
         self.performance_storage.accumulate_to_key(PerformanceConstant.update_wallet_created_at, duration)
         # logger.info(f"Time time to update create at {time.time() - start}")
-        return create[0]["p"]
+        return create
 
     def get_wallet_created_at(self, wallet_address):
         start = time.time()
@@ -157,13 +157,13 @@ class KlgDatabase(object):
         start = time.time()
         try:
 
-            getter = self._graph.run("match (p:Wallet { address: $address }) return p.balanceChangeLogTimestamps ",
+            getter = self._graph.run("match (p:Wallet { address: $address }) return p.balanceChangeLogTimestamps ,p.balanceChangeLogValues ",
                                      address=wallet_address).data()
             if getter and getter[0]["p.balanceChangeLogTimestamps"]:
                 keys_list = keys_list + getter[0]["p.balanceChangeLogTimestamps"]
 
-            getter = self._graph.run("match (p:Wallet { address: $address }) return p.balanceChangeLogValues ",
-                                     address=wallet_address).data()
+            # getter = self._graph.run("match (p:Wallet { address: $address }) return p.balanceChangeLogValues ",
+            #                          address=wallet_address).data()
             if getter and getter[0]["p.balanceChangeLogValues"]:
                 values_list = values_list + getter[0]["p.balanceChangeLogValues"]
 
@@ -195,11 +195,11 @@ class KlgDatabase(object):
                                  "SET p.balanceChangeLogTimestamps = $balance100, "
                                  "p.balanceChangeLogValues = $balance100value "
                                  "RETURN p",
-                                 address=wallet_address, balance100=keys, balance100value=values).data()
+                                 address=wallet_address, balance100=keys, balance100value=values)#.data()
         duration = time.time() - start
         self.performance_storage.accumulate_to_key(PerformanceConstant.update_balance_100, duration)
         # logger.info(f"Time to update balance 100 {time.time() - start}")
-        return create[0]["p"]
+        return create
 
     def get_daily_transaction_amount_100(self, wallet_address):
         keys_list = []  # timestamp_balance_100 list
@@ -207,13 +207,13 @@ class KlgDatabase(object):
         start = time.time()
         try:
             getter = self._graph.run(
-                "match (p:Wallet { address: $address }) return p.dailyTransactionAmountsTimestamp ",
+                "match (p:Wallet { address: $address }) return p.dailyTransactionAmountsTimestamp ,p.dailyTransactionAmounts ",
                 address=wallet_address).data()
             if getter and getter[0]["p.dailyTransactionAmountsTimestamp"]:
                 keys_list = keys_list + getter[0]["p.dailyTransactionAmountsTimestamp"]
 
-            getter = self._graph.run("match (p:Wallet { address: $address }) return p.dailyTransactionAmounts ",
-                                     address=wallet_address).data()
+            # getter = self._graph.run("match (p:Wallet { address: $address }) return p.dailyTransactionAmounts ",
+            #                          address=wallet_address).data()
             if getter and getter[0]["p.dailyTransactionAmounts"]:
                 values_list = values_list + getter[0]["p.dailyTransactionAmounts"]
 
@@ -246,11 +246,11 @@ class KlgDatabase(object):
                                  "p.dailyTransactionAmounts = $dailyTransactionAmounts "
                                  "RETURN p",
                                  address=wallet_address, dailyTransactionAmountsTimestamp=keys,
-                                 dailyTransactionAmounts=values).data()
+                                 dailyTransactionAmounts=values)#.data()
         duration = time.time() - start
         self.performance_storage.accumulate_to_key(PerformanceConstant.update_daily_transaction_amount_100, duration)
         # logger.info(f"Time to update balance 100 {time.time() - start}")
-        return create[0]["p"]
+        return create
 
     def get_daily_daily_frequency_of_transaction(self, wallet_address):
         keys_list = []  # timestamp_balance_100 list
@@ -258,13 +258,13 @@ class KlgDatabase(object):
         start = time.time()
         try:
             getter = self._graph.run(
-                "match (p:Wallet { address: $address }) return p.dailyFrequencyOfTransactionsTimestamp ",
+                "match (p:Wallet { address: $address }) return p.dailyFrequencyOfTransactionsTimestamp ,p.dailyFrequencyOfTransactions  ",
                 address=wallet_address).data()
             if getter and getter[0]["p.dailyFrequencyOfTransactionsTimestamp"]:
                 keys_list = keys_list + list(getter[0]["p.dailyFrequencyOfTransactionsTimestamp"])
 
-            getter = self._graph.run("match (p:Wallet { address: $address }) return p.dailyFrequencyOfTransactions ",
-                                     address=wallet_address).data()
+            # getter = self._graph.run("match (p:Wallet { address: $address }) return p.dailyFrequencyOfTransactions ",
+            #                          address=wallet_address).data()
             if getter and getter[0]["p.dailyFrequencyOfTransactions"]:
                 values_list = values_list + list(getter[0]["p.dailyFrequencyOfTransactions"])
         except Exception as e:
@@ -300,11 +300,11 @@ class KlgDatabase(object):
                                  "p.dailyFrequencyOfTransactions = $dailyFrequencyOfTransactions "
                                  "RETURN p",
                                  address=wallet_address, dailyFrequencyOfTransactionsTimestamp=keys,
-                                 dailyFrequencyOfTransactions=values).data()
+                                 dailyFrequencyOfTransactions=values)#.data()
         duration = time.time() - start
         self.performance_storage.accumulate_to_key(PerformanceConstant.update_daily_frequency_of_transaction, duration)
         # logger.info(f"Time to update update_daly_frequency_of_transaction {time.time() - start}")
-        return create[0]["p"]
+        return create
 
     def get_num_of_liquidation_100(self, wallet_address):
         # """
@@ -341,10 +341,10 @@ class KlgDatabase(object):
                                  "ON CREATE SET p.numberOfLiquidation = 1 "
                                  "ON MATCH SET p.numberOfLiquidation = coalesce(p.numberOfLiquidation,0) + $numberOfLiquidation "
                                  "RETURN p",
-                                 address=wallet_address, numberOfLiquidation=number).data()
+                                 address=wallet_address, numberOfLiquidation=number)#.data()
         duration = time.time() - start
         self.performance_storage.accumulate_to_key(PerformanceConstant.update_num_of_liquidation_100, duration)
-        return create[0]["p"]
+        return create
 
     def get_total_amount_liquidation_100(self, wallet_address):
         # """
@@ -382,10 +382,10 @@ class KlgDatabase(object):
                                  "ON CREATE SET p.totalAmountOfLiquidation = $totalAmountOfLiquidation "
                                  "ON MATCH SET p.totalAmountOfLiquidation =coalesce(p.totalAmountOfLiquidation,0) + $totalAmountOfLiquidation "
                                  "RETURN p",
-                                 address=wallet_address, totalAmountOfLiquidation=number).data()
+                                 address=wallet_address, totalAmountOfLiquidation=number)#.data()
         duration = time.time() - start
         self.performance_storage.accumulate_to_key(PerformanceConstant.update_total_amount_liquidation_100, duration)
-        return create[0]["p"]
+        return create
 
     def get_deposit_100(self, wallet_address):
         # """
@@ -401,13 +401,13 @@ class KlgDatabase(object):
 
         start = time.time()
 
-        getter = self._graph.run("match (p:Wallet { address: $address }) return p.depositChangeLogTimestamps ",
+        getter = self._graph.run("match (p:Wallet { address: $address }) return p.depositChangeLogTimestamps, p.depositChangeLogValues  ",
                                  address=wallet_address).data()
         if getter and getter[0]["p.depositChangeLogTimestamps"]:
             keys_list = getter[0]["p.depositChangeLogTimestamps"]
 
-        getter = self._graph.run("match (p:Wallet { address: $address }) return p.depositChangeLogValues ",
-                                 address=wallet_address).data()
+        # getter = self._graph.run("match (p:Wallet { address: $address }) return p.depositChangeLogValues ",
+        #                          address=wallet_address).data()
         if getter and getter[0]["p.depositChangeLogValues"]:
             values_list = getter[0]["p.depositChangeLogValues"]
 
@@ -434,10 +434,10 @@ class KlgDatabase(object):
                                  "SET p.depositChangeLogTimestamps = $deposit100, "
                                  "p.depositChangeLogValues = $deposit100value "
                                  "RETURN p",
-                                 address=wallet_address, deposit100=keys, deposit100value=values).data()
+                                 address=wallet_address, deposit100=keys, deposit100value=values)#.data()
         duration = time.time() - start
         self.performance_storage.accumulate_to_key(PerformanceConstant.update_deposit_100, duration)
-        return create[0]["p"]
+        return create
 
     def get_borrow_100(self, wallet_address):
         # """
@@ -451,13 +451,13 @@ class KlgDatabase(object):
         keys_list = []  # timestamp_borrow_100 list
         values_list = []  # borrow_100 list
         start = time.time()
-        getter = self._graph.run("match (p:Wallet { address: $address }) return p.borrowChangeLogTimestamps ",
+        getter = self._graph.run("match (p:Wallet { address: $address }) return p.borrowChangeLogTimestamps,p.borrowChangeLogValues  ",
                                  address=wallet_address).data()
         if getter and getter[0]["p.borrowChangeLogTimestamps"]:
             keys_list = getter[0]["p.borrowChangeLogTimestamps"]
 
-        getter = self._graph.run("match (p:Wallet { address: $address }) return p.borrowChangeLogValues ",
-                                 address=wallet_address).data()
+        # getter = self._graph.run("match (p:Wallet { address: $address }) return p.borrowChangeLogValues ",
+        #                          address=wallet_address).data()
         if getter and getter[0]["p.borrowChangeLogValues"]:
             values_list = getter[0]["p.borrowChangeLogValues"]
         duration = time.time() - start
@@ -483,10 +483,10 @@ class KlgDatabase(object):
                                  "SET p.borrowChangeLogTimestamps = $borrow100, "
                                  "p.borrowChangeLogValues = $borrow100value "
                                  "RETURN p",
-                                 address=wallet_address, borrow100=keys, borrow100value=values).data()
+                                 address=wallet_address, borrow100=keys, borrow100value=values)#.data()
         duration = time.time() - start
         self.performance_storage.accumulate_to_key(PerformanceConstant.update_borrow_100, duration)
-        return create[0]["p"]
+        return create
 
     def update_daily_frequency_of_transactions(self, wallet_address, daily_frequency_of_transactions):
         """
@@ -504,10 +504,10 @@ class KlgDatabase(object):
                                  "SET p.dailyFrequencyOfTransactions = $dailyFrequencyOfTransactions "
                                  "RETURN p",
                                  address=wallet_address,
-                                 dailyFrequencyOfTransactions=daily_frequency_of_transactions).data()
+                                 dailyFrequencyOfTransactions=daily_frequency_of_transactions)#.data()
         duration = time.time() - start
         self.performance_storage.accumulate_to_key(PerformanceConstant.update_daily_frequency_of_transactions, duration)
-        return create[0]["p"]
+        return create
 
     def create_transfer_relationship(self, transfer: Transfer):
         value_usd = transfer.valueUsd
@@ -542,7 +542,7 @@ class KlgDatabase(object):
                                 averageValueTransferInUSD=avg_value,
                                 medianValueTransferInUSD=median,
                                 sortValues=sort_values,
-                                ).data()
+                                )#.data()
         duration = time.time() - start
         self.performance_storage.accumulate_to_key(PerformanceConstant.create_transfer_relationship, duration)
         return merge
@@ -596,7 +596,7 @@ class KlgDatabase(object):
                                 depositTokens=current_tokens,
                                 depositTokenBalances=tokens_amount,
                                 tokens=current_tokens
-                                ).data()
+                                )#.data()
         duration = time.time() - start
         self.performance_storage.accumulate_to_key(PerformanceConstant.create_deposit_relationship, duration)
         return merge
@@ -648,7 +648,7 @@ class KlgDatabase(object):
                                 borrowTokens=current_tokens,
                                 borrowTokenBalances=tokens_amount,
                                 tokens=current_tokens
-                                ).data()
+                                )#.data()
         duration = time.time() - start
         self.performance_storage.accumulate_to_key(PerformanceConstant.create_borrow_relationship, duration)
         return merge
@@ -697,7 +697,7 @@ class KlgDatabase(object):
                                 averageValueRepayInUSD=avg_value,
                                 medianValueRepayInUSD=median,
                                 sortValues=sort_values,
-                                ).data()
+                                )#.data()
         """
         update 
         borrowTokens: mảng lưu các token đang được token borrow trong lending pool
@@ -716,7 +716,7 @@ class KlgDatabase(object):
                                 borrowTokens=current_tokens,
                                 borrowTokenBalances=tokens_amount,
                                 tokens=current_tokens
-                                ).data()
+                                )#.data()
         duration = time.time() - start
         self.performance_storage.accumulate_to_key(PerformanceConstant.create_repay_relationship, duration)
         return merge
@@ -765,7 +765,7 @@ class KlgDatabase(object):
                                 averageValueWithdrawInUSD=avg_value,
                                 medianValueWithdrawInUSD=median,
                                 sortValues=sort_values,
-                                ).data()
+                                )#.data()
         """
         update 
         depositTokens: mảng lưu các token đang được token deposit trong lending pool
@@ -785,7 +785,7 @@ class KlgDatabase(object):
                                 depositTokens=current_tokens,
                                 depositTokenBalances=tokens_amount,
                                 tokens=current_tokens
-                                ).data()
+                                )#.data()
         duration = time.time() - start
         self.performance_storage.accumulate_to_key(PerformanceConstant.create_withdraw_relationship, duration)
         return merge
@@ -810,7 +810,7 @@ class KlgDatabase(object):
                                 fromBalance=liquidate.fromBalance,
                                 fromAmount=liquidate.fromAmount,
                                 toBalance=liquidate.toBalance,
-                                toAmount=liquidate.toAmount).data()
+                                toAmount=liquidate.toAmount)#.data()
         duration = time.time() - start
         self.performance_storage.accumulate_to_key(PerformanceConstant.create_liquidate_relationship, duration)
         return merge
