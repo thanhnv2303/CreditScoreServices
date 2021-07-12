@@ -1,3 +1,5 @@
+import inspect
+
 class PerformanceConstant:
     ### read mongo
     block_number_to_time_stamp = "1.block_number_to_time_stamp"
@@ -52,5 +54,7 @@ class PerformanceConstant:
     AggregateWalletJob = "5.AggregateWalletJob"
 
     def get_all_attr(self):
+        inspect.getmembers(PerformanceConstant, lambda a: not (inspect.isroutine(a)))
         obj = PerformanceConstant
-        return [a for a in dir(obj) if not a.startswith('__') and not callable(getattr(obj, a))]
+        attr = [getattr(PerformanceConstant,a) for a in dir(obj) if not a.startswith('__') and not callable(getattr(obj, a))]
+        return  attr
