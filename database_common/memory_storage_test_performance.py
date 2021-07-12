@@ -34,7 +34,11 @@ class MemoryStoragePerformance:
     def get(self, key):
         if not self.calculate_performance:
             return 0
-        return self.storage.get(key)
+        try:
+            return self.storage.get(key)
+        except Exception as e:
+            logger.warning(f"key {e} not found")
+            return 0
 
     def set_calculate_performance(self, calculate_performance=True):
         self.calculate_performance = calculate_performance
@@ -43,11 +47,7 @@ class MemoryStoragePerformance:
         return self.calculate_performance
 
     def get_keys(self):
-        try:
-            return self.storage.keys()
-        except Exception as e:
-            logger.warning(f"key {e} not found")
-            return 0
+        return self.storage.keys()
 
     def accumulate_to_key(self, key, amount):
         if not self.calculate_performance:
