@@ -199,3 +199,4 @@ def aggregate(start_block, end_block, max_workers, batch_size,
         block_range=block_range,
         time_diff=time_diff,
     ))
+
