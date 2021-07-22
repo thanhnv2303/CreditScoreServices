@@ -1,4 +1,5 @@
-
+import timeit
+start = timeit.default_timer()
 import os
 import sys
 
@@ -37,7 +38,8 @@ def get_property(property, getter):
         return 0
 
 
-def calculate_average_second(values, timestamps, time_current):
+def calculate_average_second(values, timestamps, time_current, timestamps_chosen):
+
     if values == 0:
         return 0
     if (len(values) == 1):
@@ -52,8 +54,13 @@ def calculate_average_second(values, timestamps, time_current):
     values = []
 
     for i in range(len(sorted_items)):
-        timestamps.append(sorted_items[i][0])
-        values.append(sorted_items[i][1])
+        if sorted_items[i][0] > timestamps_chosen:
+            timestamps.append(sorted_items[i][0])
+            values.append(sorted_items[i][1])
+    if timestamps == []:
+        return 0
+    if len(timestamps) == 1:
+        return values[0]
     sum = 0
     for i in range(len(values) - 1):
         temp = values[i] * (timestamps[i + 1] - timestamps[i])
@@ -63,8 +70,7 @@ def calculate_average_second(values, timestamps, time_current):
     total_time = time_current - timestamps[0]
     average = sum / total_time
     return average
-    # print(timestamps_temp)
-    # print(values_temp)
+
 def sumFrequency(array):
     if type(array) is not list:
         return array
@@ -76,7 +82,8 @@ def sumFrequency(array):
             sum += array[i]
     return sum
 def get_statistics():
-    k = 100
+    k = 30
+    h = 10
     # get wallet data from KG
     bolt = f"bolt://{Neo4jConfig.HOST}:{Neo4jConfig.BOTH_PORT}"
     graph = Graph(bolt, auth=(Neo4jConfig.NEO4J_USERNAME, Neo4jConfig.NEO4J_PASSWORD))
@@ -92,7 +99,7 @@ def get_statistics():
     transaction_amount_statistic = {'mean': 0, 'std': 0}
 
     timeCurrent = int(time.time())
-
+    timestamps_chosen = timeCurrent - k * 86400
     createdAt = []
     dailyFrequencyOfTransactions = []
     dailyTransactionAmounts = []
@@ -120,7 +127,9 @@ def get_statistics():
             dailyTransactionAmounts.append(sum(dailyTransactionAmounts_temp))
 
         # get total asset info
-
+        balanceInUSD = get_property('balanceInUSD', getter[i]['w'])
+        depositInUSD = get_property('depositInUSD', getter[i]['w'])
+        borrowInUSD = get_property('borrowInUSD', getter[i]['w'])
         balanceChangeLogTimestamps = get_property('balanceChangeLogTimestamps', getter[i]['w'])
         balanceChangeLogValues = get_property('balanceChangeLogValues', getter[i]['w'])
         depositChangeLogTimestamps = get_property('depositChangeLogTimestamps', getter[i]['w'])
@@ -128,9 +137,19 @@ def get_statistics():
         borrowChangeLogTimestamps = get_property('borrowChangeLogTimestamps', getter[i]['w'])
         borrowChangeLogValues = get_property('borrowChangeLogValues', getter[i]['w'])
 
-        loan_average = calculate_average_second(borrowChangeLogValues, borrowChangeLogTimestamps, timeCurrent)
-        balance_average = calculate_average_second(balanceChangeLogValues, balanceChangeLogTimestamps, timeCurrent)
-        deposit_average = calculate_average_second(depositChangeLogValues, depositChangeLogTimestamps, timeCurrent)
+        loan_average = calculate_average_second(borrowChangeLogValues, borrowChangeLogTimestamps, timeCurrent,
+                                                timestamps_chosen)
+        if loan_average == 0:
+            loan_average = borrowInUSD
+        balance_average = calculate_average_second(balanceChangeLogValues, balanceChangeLogTimestamps, timeCurrent,
+                                                   timestamps_chosen)
+        if balance_average == 0:
+            balance_average = balanceInUSD
+        deposit_average = calculate_average_second(depositChangeLogValues, depositChangeLogTimestamps, timeCurrent,
+                                                   timestamps_chosen)
+        if deposit_average == 0:
+            deposit_average = depositInUSD
+
         total_asset_average = balance_average + deposit_average - loan_average
         if(total_asset_average > 0):
             total_asset.append(total_asset_average)
@@ -174,4 +193,6 @@ def get_statistics():
 if __name__ == '__main__':
     get_statistics()
 
+    stop = timeit.default_timer()
+    print('Time: ', stop - start)
     pass
