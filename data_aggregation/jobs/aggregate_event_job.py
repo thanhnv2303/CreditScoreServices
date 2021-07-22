@@ -412,7 +412,7 @@ class AggregateEventJob(BaseJob):
         totalAmountOfLiquidation: tổng số tiền bị thanh lý khoản vay từ trước đến nay
         """
         self.klg_database.update_num_of_liquidation_100(to_wallet, 1)
-        token_address = event.get(LiquidationCallEventConstant.debtAsset)
+        token_address = event.get(LiquidationCallEventConstant.collateralAsset)
         amount = event.get(LiquidationCallEventConstant.liquidatedCollateralAmount)
         value_usd = self.price_service.token_amount_to_usd(token_address, amount)
         self.klg_database.update_total_amount_liquidation_100(to_wallet, value_usd)
