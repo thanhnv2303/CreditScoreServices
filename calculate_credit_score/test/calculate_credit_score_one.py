@@ -103,7 +103,11 @@ class CalculateCreditScoreOneWallet:
         except Exception:
             print('Neo4j Database is not connected')
         self.getter = self.graph.run("match (w:Wallet { address: $address }) return w;", address=address).data()
-        #print(self.getter)
+        print(self.getter)
+        if self.getter == []:
+            self.currentScore = 0
+        else:
+            self.currentScore = get_property('creditScore', self.getter)
 
         # get list of token
         token_creditScore = self.graph.run("match (t:Token) return t.address, t.creditScore;").data()
@@ -132,7 +136,7 @@ class CalculateCreditScoreOneWallet:
         self.timestamps_chosen = self.time - self.k * 86400
 
         ###
-        self.currentScore = get_property('creditScore', self.getter)
+
 
     def calculate_x2(self):
         createdAt = get_property('createdAt', self.getter)
@@ -343,13 +347,13 @@ class CalculateCreditScoreOneWallet:
         # self.result = self.graph.run(
         #      "MATCH (a:Wallet { address: $address }) SET a.creditScore = $creditScore, a.creditScoreChangeLogTimestamps = $ChangeLogTimestamps, a.creditScoreChangeLogValues = $ChangeLogValues, a.historyCreditScore = $historyCredit  RETURN a.creditScore",
         #      address=self.address, creditScore=credit_score, ChangeLogTimestamps=creditScoreChangeLogTimestamps, ChangeLogValues=creditScoreChangeLogValues, historyCredit = historyCreditScore)
-        print("Credit Score " + str(credit_score) + " was updated at " + datetime.utcfromtimestamp(self.time).strftime(
+        print("Credit Score " + str(self.currentScore) + " was updated at " + datetime.utcfromtimestamp(self.time).strftime(
             '%Y-%m-%d %H:%M:%S'))
         return self.currentScore
 
 
 if __name__ == '__main__':
-    calc = CalculateCreditScoreOneWallet('0x3662595eb998811d513d0032bf1d50ea691444ec')
+    calc = CalculateCreditScoreOneWallet('0xe4ba6fc98781577969426cd6cbe1beb7432f1c29')
     #calc = CalculateCreditScoreOneWallet('0x6fdc6468bfb9573050920af5e8db3b8a1d189727')  # VA
 
     #calc = CalculateCreditScoreOneWallet('0xf81f6bdcefc74238dc37703d66990f3b8228bbfe')  # H
