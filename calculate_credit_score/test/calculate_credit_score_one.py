@@ -307,13 +307,13 @@ class CalculateCreditScoreOneWallet:
 
     def calculate_credit_score(self):
 
-        x2 = self.calculate_x2()
+        # x2 = self.calculate_x2()
+        #
+        # [x1, x3, x4] = self.calculate_x134()
+        #
+        # x5 = self.calculate_x5()
 
-        [x1, x3, x4] = self.calculate_x134()
-
-        x5 = self.calculate_x5()
-
-        credit_score = c1 * x1 + c2 * x2 + c3 * x3 + c4 * x4 + c5 * x5
+        # credit_score = c1 * x1 + c2 * x2 + c3 * x3 + c4 * x4 + c5 * x5
         return int(self.currentScore)
 
     def updateCreditScore(self):
